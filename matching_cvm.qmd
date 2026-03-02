@@ -1,0 +1,6 @@
+---
+title: "Matching Methods"
+subtitle: "Covariate Matching"
+bibliography: references.bib
+---
+

@@ -1,0 +1,13 @@
+---
+title: "Workshop: Matching Estimation Strategies"
+bibliography: references.bib
+---
+
+# Motivation 
+
+# Overview 
+
+# Video Review 
+
+This workshop was graciously recorded by the MEL J-PAL staff. I have taken this recording and provided this as a publicly avaliable video reviewing the material to accompany this website training. You can view the recording at the following link: 
+[...](...)

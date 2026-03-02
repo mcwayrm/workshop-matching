@@ -1,0 +1,84 @@
+/*-- scss:defaults --*/
+
+@import 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap';
+
+$font-family: "Atkinson Hyperlegible", sans-serif;
+
+/*-- scss:rules --*/
+
+$body-bg: #fff;
+$body-color: #222;
+$sidebar-bg: #7a0019;
+$sidebar-fg: #f0c030;
+$link-color: #7a0019;
+
+img.sidebar-logo {
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+}
+.quarto-navigation-tool .bi,
+.quarto-color-scheme-toggle .bi {
+  color: #ffcc33 !important;
+  opacity: 0.9;
+}
+
+a, a:visited {
+  color: #7a0019;
+}
+
+a:hover, a:focus {
+  color: #d7263d;
+  text-decoration: underline;
+}
+
+.pagination-link:hover .nav-page-text,
+.pagination-link:hover .bi-arrow-right-short,
+.pagination-link:hover .bi-arrow-left-short {
+  color: #d7263d;
+  text-decoration: underline;
+}
+
+/* Sidebar link color */
+.sidebar-link {
+  color: #ffcc33 !important;
+}
+
+/* Sidebar link hover/focus */
+.sidebar-link:hover,
+.sidebar-link:focus {
+  color: #ffde7a !important;
+}
+
+/* Sidebar link for current/active page */
+.sidebar-link.active,
+.sidebar-link[aria-current="page"] {
+  color: #ffcc33 !important;
+  font-style: italic;
+}
+
+/* Only top-level sidebar section headers */
+.sidebar-menu-container > ul.list-unstyled.mt-1 > 
+li.sidebar-item.sidebar-item-section > 
+.sidebar-item-container > 
+a.sidebar-link.text-start {
+  font-weight: 700;
+  // text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  // padding-left: 0.5rem;
+  // border-left: 3px solid #ffcc33;
+}
+
+/* divider */
+.sidebar-menu-container > ul.list-unstyled.mt-1 > 
+li.sidebar-item.sidebar-item-section > 
+.sidebar-item-container > 
+a.sidebar-link.text-start::after {
+  content: "";
+  display: block;
+  height: 1px;
+  background: rgba(255, 204, 51, 0.4);
+  margin-top: 0.4rem;
+}

@@ -1,0 +1,62 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  page-navigation: false
+  open-graph: true
+  bread-crumbs: false
+  title: Matching Methods
+  description: Matching Method Estimation Strategies
+  site-url: d
+    
+  page-footer: 
+    right: "<div style='text-align:right;'>&copy; Copyright 2026, Ryan McWay. This site is built with <a href='https://quarto.org/' style='color:#1f4d4a;font-weight:bold;'>Quarto</a></div>"
+    background: "#bfe9e3"
+
+  sidebar:
+    background: "#bfe9e3"
+    # logo: "assets/apec8213_nonparametric_icon.png"
+    pinned: true
+    align: center
+    style: "docked"
+    collapse-level: 2
+    search: true
+    # tools:
+      # - icon: mortarboard-fill
+      #   href: https://canvas.umn.edu/courses/540298/modules
+      #   text: "Canvas"
+      #   target: _blank
+
+    contents:
+      - href: index.qmd
+        text: Overview
+      - href: concept.qmd
+        text: The Concept
+      - section: Matching Methods
+        contents:
+          - href: matching_psm.qmd
+            text: Propsensity Score Matching
+          - href: matching_cvm.qmd
+            text: Covariate Matching
+          - href: matching_lasso.qmd
+            text: LASSO Matching
+      - href: sensitivity.qmd
+        text: Sensitivity Analysis
+      - section: Empirical Application
+        contents:
+          # - href: natural_resource.qmd
+          #   text: Natural Resources
+          - href: application_psp.qmd
+            text: The PSP Program
+      - href: practice.qmd
+        text: Coding Practice
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: [sandstone, theme.scss]
+    code-copy: true
+    code-overflow: wrap
+    toc: true

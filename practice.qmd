@@ -1,0 +1,48 @@
+---
+title: "Coding Practice"
+bibliography: references.bib
+---
+
+Now that you have a sense of the purpose and methodology behind matching methods, we can attempt a simple application of coding this in practice. You are welcome to use your coding language of preference (`Stata`, `R`, or `Python`). But I will presume that you have both established your working environment to execute the code and familiarity in the language to adequately troubleshoot your technical issues. 
+
+
+For this exercise, we will be using data from XXX. You can download the sample data set here [](). 
+
+
+<!-- ```{r}
+#| label: setup
+#| include: false
+#| code-fold: true
+
+# Install reticulate if not already installed
+if (!require("reticulate", quietly = TRUE)) {
+    install.packages("reticulate")
+}
+
+library(reticulate)
+
+# Set Python environment to natcapenv
+use_condaenv("natcapenv", required = TRUE)
+``` -->
+
+
+
+# Context 
+
+- Matching context 
+- Endogeneity concern
+
+# The Data 
+
+- Description of what is in the data. 
+- Any data cleaning necessary 
+
+# Naive Estimation 
+
+- Show the results for a naive estimation  
+
+# Matching Estimation 
+
+
+# Sensitivity Analysis 
+
