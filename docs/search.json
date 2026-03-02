@@ -1,0 +1,78 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Workshop: Matching Estimation Strategies",
+    "section": "",
+    "text": "Motivation\n\n\nOverview\n\n\nVideo Review\nThis workshop was graciously recorded by the MEL J-PAL staff. I have taken this recording and provided this as a publicly avaliable video reviewing the material to accompany this website training. You can view the recording at the following link: …",
+    "crumbs": [
+      "Overview"
+    ]
+  },
+  {
+    "objectID": "CITATION_GUIDE.html",
+    "href": "CITATION_GUIDE.html",
+    "title": "Citation Guide",
+    "section": "",
+    "text": "This website uses a centralized bibliography system. All references are stored in references.bib and can be cited in any .qmd file.\n\n\nAdd new entries to references.bib in BibTeX format. Common entry types:\n\n\n@article{authorYear,\n  title={Article Title},\n  author={Last, First and Last, First},\n  journal={Journal Name},\n  volume={10},\n  number={2},\n  pages={123--145},\n  year={2024}\n}\n\n\n\n@book{authorYear,\n  title={Book Title},\n  author={Last, First},\n  year={2023},\n  publisher={Publisher Name}\n}\n\n\n\n\nUse the @ symbol followed by the citation key:\n\nIn-text citation: @authorYear renders as: Author (Year)\nParenthetical: [@authorYear] renders as: (Author, Year)\nMultiple citations: [@author2024; @other2023]\nWith page numbers: [@authorYear, pp. 42-43]\nSuppress author: [-@authorYear] renders as: (Year)\n\n\n\n\nAccording to @example2024, this is important. \nOther research supports this claim [@examplebook2023; @exampleconf2025].\n\n\n\nThe website uses APA style by default (configured in _quarto.yml). You can change this by:\n\nDownload a different .csl file from the Zotero Style Repository\nSave it in your project directory\nUpdate the csl: field in _quarto.yml\n\nCommon styles: apa.csl, chicago.csl, ieee.csl, nature.csl\n\n\n\nAll cited references automatically appear on the References page."
+  },
+  {
+    "objectID": "CITATION_GUIDE.html#how-to-add-references",
+    "href": "CITATION_GUIDE.html#how-to-add-references",
+    "title": "Citation Guide",
+    "section": "",
+    "text": "Add new entries to references.bib in BibTeX format. Common entry types:\n\n\n@article{authorYear,\n  title={Article Title},\n  author={Last, First and Last, First},\n  journal={Journal Name},\n  volume={10},\n  number={2},\n  pages={123--145},\n  year={2024}\n}\n\n\n\n@book{authorYear,\n  title={Book Title},\n  author={Last, First},\n  year={2023},\n  publisher={Publisher Name}\n}"
+  },
+  {
+    "objectID": "CITATION_GUIDE.html#how-to-cite-in-.qmd-files",
+    "href": "CITATION_GUIDE.html#how-to-cite-in-.qmd-files",
+    "title": "Citation Guide",
+    "section": "",
+    "text": "Use the @ symbol followed by the citation key:\n\nIn-text citation: @authorYear renders as: Author (Year)\nParenthetical: [@authorYear] renders as: (Author, Year)\nMultiple citations: [@author2024; @other2023]\nWith page numbers: [@authorYear, pp. 42-43]\nSuppress author: [-@authorYear] renders as: (Year)"
+  },
+  {
+    "objectID": "CITATION_GUIDE.html#example",
+    "href": "CITATION_GUIDE.html#example",
+    "title": "Citation Guide",
+    "section": "",
+    "text": "According to @example2024, this is important. \nOther research supports this claim [@examplebook2023; @exampleconf2025]."
+  },
+  {
+    "objectID": "CITATION_GUIDE.html#citation-style",
+    "href": "CITATION_GUIDE.html#citation-style",
+    "title": "Citation Guide",
+    "section": "",
+    "text": "The website uses APA style by default (configured in _quarto.yml). You can change this by:\n\nDownload a different .csl file from the Zotero Style Repository\nSave it in your project directory\nUpdate the csl: field in _quarto.yml\n\nCommon styles: apa.csl, chicago.csl, ieee.csl, nature.csl"
+  },
+  {
+    "objectID": "CITATION_GUIDE.html#references-page",
+    "href": "CITATION_GUIDE.html#references-page",
+    "title": "Citation Guide",
+    "section": "",
+    "text": "All cited references automatically appear on the References page."
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "All references cited throughout this website are listed below."
+  },
+  {
+    "objectID": "references.html#bibliography",
+    "href": "references.html#bibliography",
+    "title": "References",
+    "section": "",
+    "text": "All references cited throughout this website are listed below."
+  },
+  {
+    "objectID": "practice.html",
+    "href": "practice.html",
+    "title": "Coding Practice",
+    "section": "",
+    "text": "Now that you have a sense of the purpose and methodology behind matching methods, we can attempt a simple application of coding this in practice. You are welcome to use your coding language of preference (Stata, R, or Python). But I will presume that you have both established your working environment to execute the code and familiarity in the language to adequately troubleshoot your technical issues.\nFor this exercise, we will be using data from XXX. You can download the sample data set here .\n\n\nContext\n\nMatching context\nEndogeneity concern\n\n\n\nThe Data\n\nDescription of what is in the data.\nAny data cleaning necessary\n\n\n\nNaive Estimation\n\nShow the results for a naive estimation\n\n\n\nMatching Estimation\n\n\nSensitivity Analysis",
+    "crumbs": [
+      "Coding Practice"
+    ]
+  }
+]
