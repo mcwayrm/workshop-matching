@@ -5,9 +5,45 @@ bibliography: references.bib
 
 # Motivation 
 
+Start with settings. Why matching may be a useful application with limited ability to randomize treatment (contact of RCT gold standard)
+\item The Effect https://theeffectbook.net/ch-Matching.html
+\item Kennedy Book 
+\item Hansen 
+\item Harmless Econometrics 
+\item Guide to Data Analysis: https://bookdown.org/mike/data_analysis/sec-matching-methods.html
+\item https://www.stata.com/meeting/uk10/UKSUG10.Sianesi.pdf
+\item https://sites.google.com/site/econometricsacademy/econometrics-models/propensity-score-matching?authuser=0
+\item https://kosukeimai.github.io/MatchIt/articles/matching-methods.html
+
+
+Matching represents an intuitive (perhaps too much so) method for addressing causal
+question, primarily because it pushes the analyst to confront the process of causal
+exposure as well as the limitations of available data.
+
+"When estimating causal effects using observational data, it is desirable to replicate a randomized experiment as closely as possible by obtaining treated and control groups with similar covariate distributions. This goal can often be achieved by choosing well-matched samples of the original treated and control groups, thereby reducing bias due to the covariates. Since the 1970’s, work on matching methods has examined how to best choose treated and control subjects for comparison." [@Stuart2010]
+
 # Overview 
+
+Matching is usually introduced in one of two ways:
+1. As a method to form quasi-experimental contrasts by sampling comparable treatment and control cases from among two larger pools of such cases
+2. As a nonparametric method of adjustment for treatment assignment patterns when it is feared that ostensibly simple parametric regression estimators cannot be trusted.
+
+To implement a matching method, you will follow a simple four step procedure: 
+
+1. Defining “closeness”: the distance measure used to determine whether an individual is a good match for another,
+2. Implementing a matching method, given that measure of closeness,
+3. Assessing the quality of the resulting matched samples, and perhaps iterating with Steps (1) and (2) until well-matched samples result, and
+4. Analysis of the outcome and estimation of the treatment effect, given the matching done in Step (3).
 
 # Video Review 
 
-This workshop was graciously recorded by the MEL J-PAL staff. I have taken this recording and provided this as a publicly avaliable video reviewing the material to accompany this website training. You can view the recording at the following link: 
+This workshop was graciously recorded by the MEL J-PAL staff. I have taken this recording and provided this as a publicly avaliable video reviewing the material to accompany this website training. 
+
+You can view the recording at the following link: 
+
+
 [...](...)
+
+::: {#refs}
+:::
+

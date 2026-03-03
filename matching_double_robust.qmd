@@ -1,0 +1,16 @@
+---
+title: "Matching Methods"
+subtitle: "Doubly Robust Estimation"
+bibliography: references.bib
+---
+
+
+
+
+https://pubmed.ncbi.nlm.nih.gov/21385832/
+
+https://matheusfacure.github.io/python-causality-handbook/12-Doubly-Robust-Estimation.html
+
+
+::: {#refs}
+:::

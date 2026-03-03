@@ -33,6 +33,8 @@ website:
         text: Overview
       - href: concept.qmd
         text: The Concept
+      - href: distance_measure.qmd
+        text: Distance Measures
       - section: Matching Methods
         contents:
           - href: matching_psm.qmd
@@ -41,12 +43,12 @@ website:
             text: Covariate Matching
           - href: matching_lasso.qmd
             text: LASSO Matching
+          - href: matching_double_robust.qmd
+            text: Doubly Robust Estimation
       - href: sensitivity.qmd
         text: Sensitivity Analysis
       - section: Empirical Application
         contents:
-          # - href: natural_resource.qmd
-          #   text: Natural Resources
           - href: application_psp.qmd
             text: The PSP Program
       - href: practice.qmd

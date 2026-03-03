@@ -1,0 +1,62 @@
+---
+title: "Distance Measures"
+subtitle: "How to Determine Matching?"
+bibliography: references.bib
+---
+
+How you select 'similarity' between two observations is critical to the matching design. Once you have established a proability score of treatment, there are four generally accepted distance measures to detect the difference between any to observations on this measure. The objective of the researcher is to minimize this distance and in doing so only compare observations that are similar in likelihood of being in the same treatment status. 
+
+# Exact Matching
+
+
+𝐷𝑖⁢𝑗={0if𝑋𝑖=𝑋𝑗∞if𝑋𝑖≠𝑋𝑗,
+
+# Mahalanobis 
+
+𝐷𝑖⁢𝑗=(𝑋𝑖−𝑋𝑗)′⁢∑−1(𝑋𝑖−𝑋𝑗).
+
+If interest is in the ATT, Σ is the variance covariance matrix of X in the full control group; if interest is in the ATE then Σ is the variance covariance matrix of X in the pooled treatment and full control groups. If X contains categorical variables they should be converted to a series of binary indicators, although the distance works best with continuous variables.
+
+# Propensity Score
+
+An estimated propensity score is the estimated probability of taking the treatment as a
+function of variables that predict treatment assignment.
+Within a perfect stratification, the true propensity score is nothing other than the
+within-stratum probability of receiving the treatment, or Pr(D = 1jS), which you will
+recall is such that
+Pr(D = 1jS) =
+Pr(S = 1;D = 1)
+Pr(S = 1)
+by Bayes’ rule.
+
+We can recover that conditional probability by applying Bayes’ rule using the marginal
+distributions of D and S, such that
+Pr[S = 1jD = 1] =
+Pr(D = 1jS = 1)Pr(S = 1)
+Pr(D = 1)
+
+The (true) propensity scores encode all of the necessary information about the joint
+dependence of S and D needed to estimate treatment effects
+
+Because such sparseness is conditionally random, strata with identical propensity scores
+can be combined into more coarse strata.
+Over repeated samples from the same population, zero cells would emerge with equal
+frequency across all strata within these coarse propensity-score-defined strata.
+Because sparseness emerges in this predictable fashion, stratifying on the propensity
+score itself rather than more finely on all values of the variables in S solves the
+sparseness problem because the propensity score can be treated as a single stratifying
+variable.
+
+
+𝐷𝑖⁢𝑗=∣𝑒𝑖−𝑒𝑗∣,
+
+where ek is the propensity score for individual k, defined in detail below.
+
+
+# Linear Probability Score 
+
+𝐷𝑖⁢𝑗=∣logit⁡(𝑒𝑖)−logit⁡(𝑒𝑗)∣.
+
+
+::: {#refs}
+:::

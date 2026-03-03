@@ -20,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -37,7 +57,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-9f73f0360384f2ad29243049ae09fa4c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-c2c6a774d0aa08ed60d2e739c075b19b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -118,6 +138,12 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">The Concept</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./distance_measure.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Distance Measures</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
@@ -143,6 +169,12 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="./matching_lasso.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LASSO Matching</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./matching_double_robust.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Doubly Robust Estimation</span></a>
   </div>
 </li>
       </ul>
@@ -216,13 +248,39 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="motivation" class="level1">
 <h1>Motivation</h1>
+Start with settings. Why matching may be a useful application with limited ability to randomize treatment (contact of RCT gold standard)
+The Effect https://theeffectbook.net/ch-Matching.html
+Kennedy Book
+Hansen
+Harmless Econometrics
+Guide to Data Analysis: https://bookdown.org/mike/data_analysis/sec-matching-methods.html
+https://www.stata.com/meeting/uk10/UKSUG10.Sianesi.pdf
+https://sites.google.com/site/econometricsacademy/econometrics-models/propensity-score-matching?authuser=0
+<p>https://kosukeimai.github.io/MatchIt/articles/matching-methods.html</p>
+<p>Matching represents an intuitive (perhaps too much so) method for addressing causal question, primarily because it pushes the analyst to confront the process of causal exposure as well as the limitations of available data.</p>
+<p>“When estimating causal effects using observational data, it is desirable to replicate a randomized experiment as closely as possible by obtaining treated and control groups with similar covariate distributions. This goal can often be achieved by choosing well-matched samples of the original treated and control groups, thereby reducing bias due to the covariates. Since the 1970’s, work on matching methods has examined how to best choose treated and control subjects for comparison.” <span class="citation" data-cites="Stuart2010">(<a href="#ref-Stuart2010" role="doc-biblioref">Stuart 2010</a>)</span></p>
 </section>
 <section id="overview" class="level1">
 <h1>Overview</h1>
+<p>Matching is usually introduced in one of two ways: 1. As a method to form quasi-experimental contrasts by sampling comparable treatment and control cases from among two larger pools of such cases 2. As a nonparametric method of adjustment for treatment assignment patterns when it is feared that ostensibly simple parametric regression estimators cannot be trusted.</p>
+<p>To implement a matching method, you will follow a simple four step procedure:</p>
+<ol type="1">
+<li>Defining “closeness”: the distance measure used to determine whether an individual is a good match for another,</li>
+<li>Implementing a matching method, given that measure of closeness,</li>
+<li>Assessing the quality of the resulting matched samples, and perhaps iterating with Steps (1) and (2) until well-matched samples result, and</li>
+<li>Analysis of the outcome and estimation of the treatment effect, given the matching done in Step (3).</li>
+</ol>
 </section>
 <section id="video-review" class="level1">
 <h1>Video Review</h1>
-<p>This workshop was graciously recorded by the MEL J-PAL staff. I have taken this recording and provided this as a publicly avaliable video reviewing the material to accompany this website training. You can view the recording at the following link: <a href="...">…</a></p>
+<p>This workshop was graciously recorded by the MEL J-PAL staff. I have taken this recording and provided this as a publicly avaliable video reviewing the material to accompany this website training.</p>
+<p>You can view the recording at the following link:</p>
+<p><a href="...">…</a></p>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-Stuart2010" class="csl-entry" role="listitem">
+Stuart, Elizabeth A. 2010. <span>“Matching Methods for Causal Inference: A Review and a Look Forward.”</span> <em>Statistical Science</em> 25 (1): 1–21. <a href="https://doi.org/10.1214/09-STS313">https://doi.org/10.1214/09-STS313</a>.
+</div>
+</div>
 
 
 </section>

@@ -37,7 +37,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-9f73f0360384f2ad29243049ae09fa4c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-c2c6a774d0aa08ed60d2e739c075b19b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -68,6 +68,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 <meta property="og:title" content="Sensitivity Analysis – Matching Methods">
+<meta property="og:description" content="Matching Method Estimation Strategies">
 <meta property="og:site_name" content="Matching Methods">
 </head>
 
@@ -117,6 +118,12 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">The Concept</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./distance_measure.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Distance Measures</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
@@ -142,6 +149,12 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="./matching_lasso.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LASSO Matching</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./matching_double_robust.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Doubly Robust Estimation</span></a>
   </div>
 </li>
       </ul>
@@ -180,8 +193,17 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#assessing-common-support" id="toc-assessing-common-support" class="nav-link active" data-scroll-target="#assessing-common-support">Assessing Common Support</a></li>
+  <li><a href="#validation-tests" id="toc-validation-tests" class="nav-link" data-scroll-target="#validation-tests">Validation Tests</a></li>
+  <li><a href="#falisfication-tests" id="toc-falisfication-tests" class="nav-link" data-scroll-target="#falisfication-tests">Falisfication Tests</a></li>
+  <li><a href="#untestable-limitations" id="toc-untestable-limitations" class="nav-link" data-scroll-target="#untestable-limitations">Untestable Limitations</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -205,8 +227,29 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="assessing-common-support" class="level1">
+<h1>Assessing Common Support</h1>
+<p>One issue that comes up for all matching methods is that of “common support.” To this point, we have assumed that there is substantial overlap of the propensity score distributions in the two groups, but potentially density differences. However, in some situations there may not be complete overlap in the distributions. For example, many of the control individuals may be very different from all of the treatment group members, making them inappropriate as points of comparison when estimating the ATT (Austin and Mamdani, 2006). Nearest neighbor matching with calipers automatically only uses individuals in (or close to) the area of common support. In contrast, the subclassification and weighting methods generally use all individuals, regardless of the overlap of the distributions. When using those methods it may be beneficial to explicitly restrict the analysis to those individuals in the region of common support (as in Heckman et al., 1997; Dehejia and Wahba, 1999).</p>
+<p>Most analyses define common support using the propensity score, discarding individuals with propensity score values outside the range of the other group. A second method involves examining the “convex hull” of the covariates, identifying the multi-dimensional space that allows interpolation rather than extrapolation (King and Zeng, 2006). While these procedures can help identify who needs to be discarded, when many subjects are discarded it can help the interpretation of results if it is possible to define the discard rule using one or two covariates rather than the propensity score itself.</p>
+<p>It is also important to consider the implications of common support for the estimand of interest. Examining the common support may indicate that it is not possible to reliably estimate the ATE. This could happen, for example, if there are controls outside the range of the treated individuals and thus no way to estimate Y (1) for the controls without extensive extrapolation. When estimating the ATT it may be fine (and in fact beneficial) to discard controls outside the range of the treated individuals, but discarding treated individuals may change the group for which the results apply (Crump et al., 2009).</p>
+</section>
+<section id="validation-tests" class="level1">
+<h1>Validation Tests</h1>
+<p>Rubin (2001) presents three balance measures based on the theory in Rubin and Thomas (1996) that provide a comprehensive view of covariate balance:</p>
+<ol type="1">
+<li>The standardized difference of means of the propensity score</li>
+<li>The ratio of the variances of the propensity score in the treated and control groups</li>
+<li>For each covariate, the ratio of the variance of the residuals orthogonal to the propensity score in the treated and control groups.</li>
+</ol>
+</section>
+<section id="falisfication-tests" class="level1">
+<h1>Falisfication Tests</h1>
+</section>
+<section id="untestable-limitations" class="level1">
+<h1>Untestable Limitations</h1>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

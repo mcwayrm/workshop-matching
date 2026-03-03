@@ -4,3 +4,5 @@ subtitle: "Covariate Matching"
 bibliography: references.bib
 ---
 
+::: {#refs}
+:::

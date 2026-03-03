@@ -9,21 +9,114 @@ Now that you have a sense of the purpose and methodology behind matching methods
 For this exercise, we will be using data from XXX. You can download the sample data set here [](). 
 
 
-<!-- ```{r}
-#| label: setup
-#| include: false
-#| code-fold: true
+::: {.panel-tabset}
 
-# Install reticulate if not already installed
-if (!require("reticulate", quietly = TRUE)) {
-    install.packages("reticulate")
-}
+## R
 
-library(reticulate)
+```{r}
+#| eval: false
+#| cache: true
 
-# Set Python environment to natcapenv
-use_condaenv("natcapenv", required = TRUE)
-``` -->
+library(Matching); library(tidyverse)
+br <- causaldata::black_politicians
+
+# Outcome
+Y <- br %>%
+    pull(responded)
+# Treatment
+D <- br %>%
+    pull(leg_black)
+# Matching variables
+# Note select() is also in the Matching package, so we specify dplyr
+X <- br %>%
+    dplyr::select(medianhhincom, blackpercent, leg_democrat) %>%
+    as.matrix()
+
+# Weight = 2, oddly, denotes Mahalanobis distance
+M <- Match(Y, D, X, Weight = 2, caliper = 1)
+
+# See treatment effect estimate
+summary(M)
+
+# Get matched data for use elsewhere. Note that this approach will 
+# duplicate each observation for each time it was matched
+matched_treated <- tibble(id = M$index.treated,
+                          weight = M$weights)
+matched_control <- tibble(id = M$index.control,
+                          weight = M$weights)
+matched_sets <- bind_rows(matched_treated,
+                          matched_control) 
+# Simplify to one row per observation
+matched_sets <- matched_sets %>%
+                    group_by(id) %>%
+                    summarize(weight = sum(weight))
+# And bring back to data
+matched_br <- br %>%
+    mutate(id = row_number()) %>%
+    left_join(matched_sets, by = 'id')
+
+# To be used like this! The standard errors here are wrong
+lm(responded~leg_black, data = matched_br, weights = weight)
+```
+
+## Stata
+
+```{stata}
+#| eval: false
+#| cache: true
+
+causaldata black_politicians.dta, use clear download
+
+* Create an id variable based on row number,
+* which will be used to locate match IDs
+g id = _n
+
+* teffects nnmatch does nearest-neighbor matching using first the outcome 
+* variable and the matching variables then the treatment variable.
+* The generate option creates variables with the match identities
+teffects nnmatch (responded medianhhincom blackpercent leg_democrat) ///
+    (leg_black), nneighbor(1) metric(mahalanobis) gen(match)
+
+* Note this will produce a treatment effect by itself
+* Doing anything else with the match in Stata is pretty tricky
+* (or using a caliper). If you want either of those you may want to 
+* look into the mahapick or psmatch2 packages
+* Although these won't give the most accurate standard errors
+```
+
+
+## Python
+
+```{python}
+#| eval: false
+#| cache: true
+
+import pandas as pd
+import numpy as np
+# The more-popular matching tools in sklearn
+# are more geared towards machine learning than statistical inference
+from causalinference.causal import CausalModel
+from causaldata import black_politicians
+br = black_politicians.load_pandas().data
+
+# Get our outcome, treatment, and matching variables
+# We need these as numpy arrays
+Y = br['responded'].to_numpy()
+D = br['leg_black'].to_numpy()
+X = br[['medianhhincom', 'blackpercent', 'leg_democrat']].to_numpy()
+
+# Set up our model
+M = CausalModel(Y, D, X)
+
+# Fit, using Mahalanobis distance
+M.est_via_matching(weights = 'maha', matches = 1)
+
+print(M.estimates)
+# Note it automatically calcultes average treatments on
+# average, on treated, and on untreated/control (ATC)
+```
+
+:::
 
 
 
@@ -46,3 +139,6 @@ use_condaenv("natcapenv", required = TRUE)
 
 # Sensitivity Analysis 
 
+
+::: {#refs}
+:::

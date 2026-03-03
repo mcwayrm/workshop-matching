@@ -4,3 +4,93 @@ subtitle: "Why use Matching Methods?"
 bibliography: references.bib
 ---
 
+# Perfect Stratification 
+
+Suppose that those who take the treatment and those who do not are very much unlike
+each other, and yet the ways in which they differ are captured exhaustively by a set of
+observed treatment assignment and/or selection variables S.
+
+For the language we will adopt in this module, knowledge and observation of S allow
+for a “perfect stratification” of the data. By “perfect,” we mean precisely that individual
+within groups defined by values of the variables in S are entirely indistinguishable from
+each other except for (i) observed treatment status, and (ii) differences in the potential
+outcomes that are independent of treatment status.
+
+Under such perfect stratification, we would be able to assert
+Assumption 1-S: E[Y 1jD = 1; S] = E[Y 1jD = 0; S], and
+Assumption 2-S: E[Y 0jD = 1; S] = E[Y 0jD = 0; S].
+These assumptions are sufficient to enable consistent and unbiased estimation of the
+ATE because the treatment can be considered to be (as good as) randomly assigned
+within groups defined by values of the variables in S.
+
+Assumption of perfect stratification (Pearl DAG):
+
+```{latex}
+\usepackage{tikz}
+\begin{tikzpicture}
+  % Define nodes
+  \node (S) at (0, 2) {S};
+  \node (D) at (-1, 0) {D};
+  \node (Y) at (1, 0) {Y};
+  
+  % Draw edges
+  \draw[->] (S) -- (D);
+  \draw[->] (S) -- (Y);
+  \draw[->] (D) -- (Y);
+\end{tikzpicture}
+```
+
+If a stratifying variable S completely accounts for all systematic differences
+between those who take the treatment and those who do not, then conditional-on-S
+estimators yield consistent and unbiased estimates of the ATE conditional on a
+particular value of S, s.t.
+fEN[yi jdi = 1; si = s]g 􀀀 fEN[yi jdi = 0; si = s]g
+p!
+E[Y 1 􀀀 Y 0jS = s] = E[jS = S]: 
+
+# Visualization of Matching 
+
+# Randomized Controlled Trials (RCT) as a Form of Matching
+
+Randomized experiments use a known randomized assignment mechanism to ensure “balance” of the covariates between the treated and control groups: The groups will be only randomly different from one another on all covariates, observed and unobserved. In non-experimental studies, we must posit an assignment mechanism, which determines which individuals receive treatment and which receive control. A key assumption in non-experimental studies is that of strongly ignorable treatment assignment (Rosenbaum and Rubin, 1983b) which implies that (1) treatment assignment (T) is independent of the potential outcomes (Y (0), Y (1)) given the covariates (X): T ⊥ Y (0), Y (1))|X, and (2) there is a positive probability of receiving each treatment for all values of X: 0 < P(T = 1|X) < 1 for all X. The first component of the definition of strong ignorability is sometimes termed “ignorable,” “no hidden bias,” or “unconfounded.” Weaker versions of the ignorability assumption are sufficient for some quantities of interest, discussed further in Imbens (2004). This assumption is often more reasonable than it may sound at first since matching on or controlling for the observed covariates also matches on or controls for the unobserved covariates, in so much as they are correlated with those that are observed. Thus, the only unobserved covariates of concern are those unrelated to the observed covariates. Analyses can be done to assess sensitivity of the results to the existence of an unobserved confounder related to both treatment assignment and the outcome (see Section 6.1.2). Heller et al. (2009) also discuss how matching can make effect estimates less sensitive to an unobserved confounder, using a concept called “design sensitivity.” An additional assumption is the Stable Unit Treatment Value Assumption (SUTVA; Rubin, 1980), which states that the outcomes of one individual are not affected by the treatment assignment of any other individuals. While not always plausible–for example in school settings where treatment and control children may interact, leading to “spillover” effects–the plausibility of SUTVA can often be improved by design, such as by reducing interactions between the treated and control groups.
+
+To formalize, using notation similar to that in Rubin (1976b), we consider two populations, Pt and Pc, where the subscript t refers to a group exposed to the treatment and c refers to a group exposed to the control. Covariate data on p pre-treatment covariates is available on random samples of sizes Nt and Nc from Pt and Pc. The means and variance covariance matrix of the p covariates in group i are given by μi and Σi, respectively (i = t, c). For individual j, the p covariates are denoted by Xj, treatment assignment by Tj (Tj = 0 or 1), and the observed outcome by Yj. Without loss of generality we assume Nt < Nc.
+
+To define the treatment effect, let E(Y (1)|X) = R1(X) and E(Y (0)|X) = R0(X). In the matching context effects are usually defined as the difference in potential outcomes, τ(x) = R1(x) − R0(x), although other quantities, such as odds ratios, are also sometimes of interest. It is often assumed that the response surfaces, R0(x) and R1(x), are parallel, so that τ(x) = τ for all x. If the response surfaces are not parallel (i.e., the effect varies), an average effect over some population is generally estimated. Variation in effects is particularly relevant when the estimands of interest are not difference in means, but rather odds ratios or relative risks, for which the conditional and marginal effects are not necessarily equal (Austin, 2007; Lunt et al., 2009). The most common estimands in non-experimental studies are the “average effect of the treatment on the treated” (ATT), which is the effect for those in the treatment group, and the “average treatment effect” (ATE), which is the effect on all individuals (treatment and control).
+
+# Predicitive Determinants
+
+The key concept in determining which covariates to include in the matching process is that of strong ignorability. As discussed above, matching methods, and in fact most non-experimental study methods, rely on ignorability, which assumes that there are no unobserved differences between the treatment and control groups, conditional on the observed covariates. To satisfy the assumption of ignorable treatment assignment, it is important to include in the matching procedure all variables known to be related to both treatment assignment and the outcome (Rubin and Thomas, 1996; Heckman et al., 1998b; Glazerman et al., 2003; Hill et al., 2004). Generally poor performance is found of methods that use a relatively small set of “predictors of convenience,” such as demographics only (Shadish et al., 2008). 
+
+Including variables that are actually unassociated with the outcome can yield slight increases in variance. However, excluding a potentially important confounder can be very costly in terms of increased bias. Researchers should thus be liberal in terms of including variables that may be associated with treatment assignment and/or the outcomes. 
+
+One type of variable that should not be included in the matching process are those that may have been affected by the treatment of interest (Rosenbaum, 1984; Frangakis and Rubin, 2002; Greenland, 2003). This is especially important when the covariates, treatment indicator, and outcomes are all collected at the same point in time. If it is deemed to be critical to control for a variable potentially affected by treatment assignment, it is better to exclude that variable in the matching procedure and include it in the analysis model for the outcome (as in Reinisch et al., 1995).
+
+# Selecting Matches
+
+## Nearest Neighbor Matching 
+
+One of the most common, and easiest to implement and understand, methods is k:1 nearest neighbor matching (Rubin, 1973a). This is generally the most effective method for settings where the goal is to select individuals for follow-up. Nearest neighbor matching nearly always estimates the ATT, as it matches control individuals to the treated group and discards controls who are not selected as matches.
+
+In its simplest form, 1:1 nearest neighbor matching selects for each treated individual i the control individual with the smallest distance from individual i. A common complaint regarding 1:1 matching is that it can discard a large number of observations and thus would apparently lead to reduced power. However, the reduction in power is often minimal, for two main reasons. First, in a two-sample comparison of means, the precision is largely driven by the smaller group size (Cohen, 1988). So if the treatment group stays the same size, and only the control group decreases in size, the overall power may not actually be reduced very much (Ho et al., 2007). Second, the power increases when the groups are more similar because of the reduced extrapolation and higher precision that is obtained when comparing groups that are similar versus groups that are quite different (Snedecor and Cochran, 1980). This is also what yields the increased power of using matched pairs in randomized experiments (Wacholder and Weinberg, 1982). Smith (1997) provides an illustration where estimates from 1:1 matching have lower standard deviations than estimates from a linear regression, even though thousands of observations were discarded in the matching. An additional concern is that, without any restrictions, k:1 matching can lead to some poor matches, if for example, there are no control individuals with propensity scores similar to a given treated individual. One strategy to avoid poor matches is to impose a caliper and only select a match if it is within the caliper. This can lead to difficulties in interpreting effects if many treated individuals do not receive a match, but can help avoid poor matches. Rosenbaum and Rubin (1985a) discuss those trade-offs.
+
+## Optimal Matching 
+
+
+One complication of simple (“greedy”) nearest neighbor matching is that the order in which the treated subjects are matched may change the quality of the matches. Optimal matching avoids this issue by taking into account the overall set of matches when choosing individual matches, minimizing a global distance measure (Rosenbaum, 2002). Generally, greedy matching performs poorly when there is intense competition for controls, and performs well when there is little competition (Gu and Rosenbaum, 1993). Gu and Rosenbaum (1993) find that optimal matching does not in general perform any better than greedy matching in terms of creating groups with good balance, but does do better at reducing the distance within pairs (p. 413): “…optimal matching picks about the same controls [as greedy matching] but does a better job of assigning them to treated units.” Thus, if the goal is simply to find well-matched groups, greedy matching may be sufficient. However, if the goal is well-matched pairs, then optimal matching may be preferable.
+
+## Ratio Matching 
+
+When there are large numbers of control individuals, it is sometimes possible to get multiple good matches for each treated individual, called ratio matching (Smith, 1997; Rubin and Thomas, 2000). Selecting the number of matches involves a bias:variance trade-off. Selecting multiple controls for each treated individual will generally increase bias since the 2nd, 3rd, and 4th closest matches are, by definition, further away from the treated individual than is the 1st closest match. On the other hand, utilizing multiple matches can decrease variance due to the larger matched sample size. Approximations in Rubin and Thomas (1996) can help determine the best ratio. In settings where the outcome data has yet to be collected and there are cost constraints, researchers must also balance cost considerations. More methodological work needs to be done to more formally quantify the trade-offs involved. In addition, k:1 matching is not optimal since it does not account for the fact that some treated individuals may have many close matches while others have very few. A more advanced form of ratio matching, variable ratio matching, allows the ratio to vary, with different treated individuals receiving differing numbers of matches (Ming and Rosenbaum, 2001). Variable ratio matching is related to full matching, described below.
+
+## With or Without Replacement
+
+Another key issue is whether controls can be used as matches for more than one treated individual; whether the matching should be done “with replacement” or “without replacement.” Matching with replacement can often decrease bias because controls that look similar to many treated individuals can be used multiple times. This is particularly helpful in settings where there are few control individuals comparable to the treated individuals (e.g., Dehejia and Wahba, 1999). Additionally, when matching with replacement the order in which the treated individuals are matched does not matter. However, inference becomes more complex when matching with replacement, because the matched controls are no longer independent–some are in the matched sample more than once and this needs to be accounted for in the outcome analysis, for example by using frequency weights. When matching with replacement it is also possible that the treatment effect estimate will be based on just a small number of controls; the number of times each control is matched should be monitored.
+
+# Identifying Assumption
+
+Strong Ignorability 
+
+
+::: {#refs}
+:::
