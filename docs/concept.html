@@ -121,7 +121,10 @@ window.Quarto = {
 
 <meta property="og:title" content="The Concept – Matching Methods">
 <meta property="og:description" content="Why use Matching Methods?">
+<meta property="og:image" content="https://mcwayrm.github.io/matching_methods/assets/images/confoundness.png">
 <meta property="og:site_name" content="Matching Methods">
+<meta property="og:image:height" content="815">
+<meta property="og:image:width" content="1630">
 </head>
 
 <body class="nav-sidebar docked">
@@ -188,7 +191,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./matching_psm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Propsensity Score Matching</span></a>
+ <span class="menu-text">Propensity Score Matching</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -274,11 +277,14 @@ window.Quarto = {
   <li><a href="#causal-structure-pearl-dag" id="toc-causal-structure-pearl-dag" class="nav-link" data-scroll-target="#causal-structure-pearl-dag">Causal Structure (Pearl DAG)</a></li>
   <li><a href="#estimating-conditional-effects" id="toc-estimating-conditional-effects" class="nav-link" data-scroll-target="#estimating-conditional-effects">Estimating Conditional Effects</a></li>
   </ul></li>
-  <li><a href="#visualization-of-matching" id="toc-visualization-of-matching" class="nav-link" data-scroll-target="#visualization-of-matching">Visualization of Matching</a></li>
   <li><a href="#randomized-controlled-trials-rct-as-a-form-of-matching" id="toc-randomized-controlled-trials-rct-as-a-form-of-matching" class="nav-link" data-scroll-target="#randomized-controlled-trials-rct-as-a-form-of-matching">Randomized Controlled Trials (RCT) as a Form of Matching</a></li>
   <li><a href="#predicitive-determinants" id="toc-predicitive-determinants" class="nav-link" data-scroll-target="#predicitive-determinants">Predicitive Determinants</a></li>
   <li><a href="#selecting-matches" id="toc-selecting-matches" class="nav-link" data-scroll-target="#selecting-matches">Selecting Matches</a>
   <ul class="collapse">
+  <li><a href="#exact-matching" id="toc-exact-matching" class="nav-link" data-scroll-target="#exact-matching">Exact Matching</a>
+  <ul class="collapse">
+  <li><a href="#why-exact-matching-is-often-limited" id="toc-why-exact-matching-is-often-limited" class="nav-link" data-scroll-target="#why-exact-matching-is-often-limited">Why Exact Matching Is Often Limited</a></li>
+  </ul></li>
   <li><a href="#nearest-neighbor-matching" id="toc-nearest-neighbor-matching" class="nav-link" data-scroll-target="#nearest-neighbor-matching">Nearest Neighbor Matching</a></li>
   <li><a href="#optimal-matching" id="toc-optimal-matching" class="nav-link" data-scroll-target="#optimal-matching">Optimal Matching</a></li>
   <li><a href="#ratio-matching" id="toc-ratio-matching" class="nav-link" data-scroll-target="#ratio-matching">Ratio Matching</a></li>
@@ -328,6 +334,50 @@ window.Quarto = {
 <li>Observed treatment status</li>
 <li>Differences in potential outcomes that are independent of treatment status</li>
 </ol>
+<div class="cell" data-fig-width="8" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+        subgraph S1["Stratum S1"]
+            direction TB
+            T1((T1))
+            C1((C1))
+            C2((C2))
+        end
+
+        subgraph S2["Stratum S2"]
+            direction TB
+            T2((T2))
+            C3((C3))
+            C4((C4))
+        end
+
+        subgraph S3["Stratum S3"]
+            direction TB
+            T3((T3))
+            C5((C5))
+            C6((C6))
+        end
+
+        classDef stratum fill:#f8f9fa,stroke:#1f4d4a,stroke-width:2px,color:#1f4d4a;
+        classDef treat fill:#f7c948,stroke:#6b4f00,stroke-width:1.5px,color:#1f1f1f;
+        classDef control fill:#d8f3dc,stroke:#2d6a4f,stroke-width:1.5px,color:#1f1f1f;
+
+        style S1 fill:#f8f9fa,stroke:#1f4d4a,stroke-width:2px
+        style S2 fill:#f8f9fa,stroke:#1f4d4a,stroke-width:2px
+        style S3 fill:#f8f9fa,stroke:#1f4d4a,stroke-width:2px
+
+        class T1,T2,T3 treat;
+        class C1,C2,C3,C4,C5,C6 control;
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>In this Venn-style schematic, each circle represents a <strong>perfectly stratified group</strong>. Within each stratum, treated and control units are comparable on observed covariates <span class="math inline">\(S\)</span>, so outcome differences can be attributed to treatment rather than observed confounding.</p>
 <section id="conditional-independence-assumptions" class="level2">
 <h2 class="anchored" data-anchor-id="conditional-independence-assumptions">Conditional Independence Assumptions</h2>
 <p>Under perfect stratification, we can assert the following assumptions:</p>
@@ -337,11 +387,12 @@ E[Y^1 | D = 1, S] = E[Y^1 | D = 0, S]
 <p><strong>Assumption 2-S (Conditional Independence for <span class="math inline">\(Y^0\)</span>):</strong> <span class="math display">\[
 E[Y^0 | D = 1, S] = E[Y^0 | D = 0, S]
 \]</span></p>
-<p>These assumptions are sufficient to enable consistent and unbiased estimation of the average treatment effect (ATE) because treatment can be considered “as good as randomly assigned” within groups defined by values of <span class="math inline">\(S\)</span>.</p>
+<p>Assumption 1-S and 2-S asserts that the expected outcome <span class="math inline">\(Y\)</span> is the same across treatment status <span class="math inline">\(D\)</span> and stratification <span class="math inline">\(S\)</span>. This implies that conditional of stratification the treatment status is independent of the outcome – allowing for causal effects to be recovered.</p>
+<p>These assumptions are sufficient to enable consistent and unbiased estimation of the average treatment effect (ATE) because treatment can be considered “as good as randomly assigned” <em>within</em> groups defined by values of <span class="math inline">\(S\)</span>.</p>
 </section>
 <section id="causal-structure-pearl-dag" class="level2">
 <h2 class="anchored" data-anchor-id="causal-structure-pearl-dag">Causal Structure (Pearl DAG)</h2>
-<p>The perfect stratification assumption implies the following causal structure:</p>
+<p>The perfect stratification assumption implies the following causal structure using Judea Pearl’s Directed Acyclic Graph (DAG) paradigm <span class="citation" data-cites="pearl1995causal">(<a href="#ref-pearl1995causal" role="doc-biblioref">Pearl 1995</a>)</span>:</p>
 <div class="cell" data-fig-width="4" data-layout-align="center">
 <div class="cell-output-display">
 <div>
@@ -368,35 +419,139 @@ E[Y^0 | D = 1, S] = E[Y^0 | D = 0, S]
 <p>The average treatment effect across the entire population can then be obtained by averaging over the distribution of <span class="math inline">\(S\)</span>.</p>
 </section>
 </section>
-<section id="visualization-of-matching" class="level1">
-<h1>Visualization of Matching</h1>
-</section>
 <section id="randomized-controlled-trials-rct-as-a-form-of-matching" class="level1">
 <h1>Randomized Controlled Trials (RCT) as a Form of Matching</h1>
-<p>Randomized experiments use a known randomized assignment mechanism to ensure “balance” of the covariates between the treated and control groups: The groups will be only randomly different from one another on all covariates, observed and unobserved. In non-experimental studies, we must posit an assignment mechanism, which determines which individuals receive treatment and which receive control. A key assumption in non-experimental studies is that of strongly ignorable treatment assignment (Rosenbaum and Rubin, 1983b) which implies that (1) treatment assignment (T) is independent of the potential outcomes (Y (0), Y (1)) given the covariates (X): T ⊥ Y (0), Y (1))|X, and (2) there is a positive probability of receiving each treatment for all values of X: 0 &lt; P(T = 1|X) &lt; 1 for all X. The first component of the definition of strong ignorability is sometimes termed “ignorable,” “no hidden bias,” or “unconfounded.” Weaker versions of the ignorability assumption are sufficient for some quantities of interest, discussed further in Imbens (2004). This assumption is often more reasonable than it may sound at first since matching on or controlling for the observed covariates also matches on or controls for the unobserved covariates, in so much as they are correlated with those that are observed. Thus, the only unobserved covariates of concern are those unrelated to the observed covariates. Analyses can be done to assess sensitivity of the results to the existence of an unobserved confounder related to both treatment assignment and the outcome (see Section 6.1.2). Heller et al.&nbsp;(2009) also discuss how matching can make effect estimates less sensitive to an unobserved confounder, using a concept called “design sensitivity.” An additional assumption is the Stable Unit Treatment Value Assumption (SUTVA; Rubin, 1980), which states that the outcomes of one individual are not affected by the treatment assignment of any other individuals. While not always plausible–for example in school settings where treatment and control children may interact, leading to “spillover” effects–the plausibility of SUTVA can often be improved by design, such as by reducing interactions between the treated and control groups.</p>
-<p>To formalize, using notation similar to that in Rubin (1976b), we consider two populations, Pt and Pc, where the subscript t refers to a group exposed to the treatment and c refers to a group exposed to the control. Covariate data on p pre-treatment covariates is available on random samples of sizes Nt and Nc from Pt and Pc. The means and variance covariance matrix of the p covariates in group i are given by μi and Σi, respectively (i = t, c). For individual j, the p covariates are denoted by Xj, treatment assignment by Tj (Tj = 0 or 1), and the observed outcome by Yj. Without loss of generality we assume Nt &lt; Nc.</p>
-<p>To define the treatment effect, let E(Y (1)|X) = R1(X) and E(Y (0)|X) = R0(X). In the matching context effects are usually defined as the difference in potential outcomes, τ(x) = R1(x) − R0(x), although other quantities, such as odds ratios, are also sometimes of interest. It is often assumed that the response surfaces, R0(x) and R1(x), are parallel, so that τ(x) = τ for all x. If the response surfaces are not parallel (i.e., the effect varies), an average effect over some population is generally estimated. Variation in effects is particularly relevant when the estimands of interest are not difference in means, but rather odds ratios or relative risks, for which the conditional and marginal effects are not necessarily equal (Austin, 2007; Lunt et al., 2009). The most common estimands in non-experimental studies are the “average effect of the treatment on the treated” (ATT), which is the effect for those in the treatment group, and the “average treatment effect” (ATE), which is the effect on all individuals (treatment and control).</p>
+<p>Randomized experiments use a known randomized assignment mechanism to ensure “balance” of the covariates between the treated and control groups:</p>
+<blockquote class="blockquote">
+<p>The groups will be only randomly different from one another on all covariates, observed and unobserved. In non-experimental studies, we must posit an assignment mechanism, which determines which individuals receive treatment and which receive control.</p>
+</blockquote>
+<p>A key assumption in non-experimental studies is that of strongly ignorable treatment assignment <span class="citation" data-cites="rosenbaum1983central">(<a href="#ref-rosenbaum1983central" role="doc-biblioref">Rosenbaum and Rubin 1983</a>)</span> which implies that</p>
+<ol type="1">
+<li>Treatment assignment <span class="math inline">\((T)\)</span> is independent of the potential outcomes <span class="math inline">\((Y (0), Y (1))\)</span> given the covariates <span class="math inline">\((X): T ⊥ Y (0), Y (1))|X\)</span>, and</li>
+<li>There is a positive probability of receiving each treatment for all values of <span class="math inline">\(X: 0 &lt; P(T = 1|X) &lt; 1 \forall X\)</span>.</li>
+</ol>
+<p>The first component of the definition of strong ignorability is sometimes termed “ignorable,” “no hidden bias,” or “unconfounded.” Weaker versions of the ignorability assumption are sufficient for some quantities of interest, discussed further in <span class="citation" data-cites="imbens2004">(<a href="#ref-imbens2004" role="doc-biblioref">Imbens 2004</a>)</span>. This assumption is often more reasonable than it may sound at first since matching on or controlling for the observed covariates also matches on or controls for the unobserved covariates, in so much as they are correlated with those that are observed. Thus, the only unobserved covariates of concern are those unrelated to the observed covariates. Analyses can be done to assess sensitivity of the results to the existence of an unobserved confounder related to both treatment assignment and the outcome. <span class="citation" data-cites="heller2009">(<a href="#ref-heller2009" role="doc-biblioref">Heller, Rosenbaum, and Small 2009</a>)</span> also discuss how matching can make effect estimates less sensitive to an unobserved confounder, using a concept called “design sensitivity.”</p>
+<p>An additional assumption is the Stable Unit Treatment Value Assumption (SUTVA; <span class="citation" data-cites="rubin1980">(<a href="#ref-rubin1980" role="doc-biblioref">Rubin 1980</a>)</span>), which states that the outcomes of one individual are not affected by the treatment assignment of any other individuals. While not always plausible-for example in school settings where treatment and control children may interact, leading to “spillover” effects-the plausibility of SUTVA can often be improved by design, such as by reducing interactions between the treated and control groups.</p>
+<p>To formalize, using notation similar to that in <span class="citation" data-cites="rubin1976">(<a href="#ref-rubin1976" role="doc-biblioref">Rubin 1976</a>)</span>, we consider two populations, <span class="math inline">\(P_t\)</span> and <span class="math inline">\(P_c\)</span>, where the subscript <span class="math inline">\(t\)</span> refers to a group exposed to the treatment and <span class="math inline">\(c\)</span> refers to a group exposed to the control. Covariate data on <span class="math inline">\(p\)</span> pre-treatment covariates is available on random samples of sizes <span class="math inline">\(N_t\)</span> and <span class="math inline">\(N_c\)</span> from <span class="math inline">\(P_t\)</span> and <span class="math inline">\(P_c\)</span>. The means and variance covariance matrix of the <span class="math inline">\(p\)</span> covariates in group <span class="math inline">\(i\)</span> are given by <span class="math inline">\(\mu_i\)</span> and <span class="math inline">\(\Sigma_i\)</span>, respectively <span class="math inline">\((i = t, c)\)</span>. For individual <span class="math inline">\(j\)</span>, the <span class="math inline">\(p\)</span> covariates are denoted by <span class="math inline">\(X_j\)</span>, treatment assignment by <span class="math inline">\(T_j\)</span> <span class="math inline">\((T_j = 0\)</span> or <span class="math inline">\(1)\)</span>, and the observed outcome by <span class="math inline">\(Y_j\)</span>. Without loss of generality we assume <span class="math inline">\(N_t &lt; N_c\)</span>.</p>
+<p>To define the treatment effect, let <span class="math inline">\(E(Y (1)|X) = R_1(X)\)</span> and <span class="math inline">\(E(Y (0)|X) = R_0(X)\)</span>. In the matching context effects are usually defined as the difference in potential outcomes, <span class="math inline">\(\tau(x) = R_1(x) - R_0(x)\)</span>, although other quantities, such as odds ratios, are also sometimes of interest. It is often assumed that the response surfaces, <span class="math inline">\(R_0(x)\)</span> and <span class="math inline">\(R_1(x)\)</span>, are parallel, so that <span class="math inline">\(\tau(x) = \tau\)</span> for all <span class="math inline">\(x\)</span>. If the response surfaces are not parallel (i.e., the effect varies), an average effect over some population is generally estimated. Variation in effects is particularly relevant when the estimands of interest are not difference in means, but rather odds ratios or relative risks, for which the conditional and marginal effects are not necessarily equal <span class="citation" data-cites="austin2007 lunt2009">(<a href="#ref-austin2007" role="doc-biblioref">Austin 2007</a>; <a href="#ref-lunt2009" role="doc-biblioref">Lunt et al. 2009</a>)</span>.</p>
+<p>The most common estimands in non-experimental studies are the “average effect of the treatment on the treated” (ATT), which is the effect for those in the treatment group, and the “average treatment effect” (ATE), which is the effect on all individuals (treatment and control).</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Estimand</th>
+<th>Definition</th>
+<th>Population Targeted</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ATT</td>
+<td><span class="math inline">\(E[Y^1 - Y^0 \mid T=1]\)</span></td>
+<td>Treated units</td>
+<td>Average effect among units that actually received treatment</td>
+</tr>
+<tr class="even">
+<td>ATE</td>
+<td><span class="math inline">\(E[Y^1 - Y^0]\)</span></td>
+<td>Full population</td>
+<td>Average effect if everyone in the population were treated vs untreated</td>
+</tr>
+<tr class="odd">
+<td>ATU (or ATC)</td>
+<td><span class="math inline">\(E[Y^1 - Y^0 \mid T=0]\)</span></td>
+<td>Untreated/control units</td>
+<td>Average effect among units that did not receive treatment</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="predicitive-determinants" class="level1">
 <h1>Predicitive Determinants</h1>
-<p>The key concept in determining which covariates to include in the matching process is that of strong ignorability. As discussed above, matching methods, and in fact most non-experimental study methods, rely on ignorability, which assumes that there are no unobserved differences between the treatment and control groups, conditional on the observed covariates. To satisfy the assumption of ignorable treatment assignment, it is important to include in the matching procedure all variables known to be related to both treatment assignment and the outcome (Rubin and Thomas, 1996; Heckman et al., 1998b; Glazerman et al., 2003; Hill et al., 2004). Generally poor performance is found of methods that use a relatively small set of “predictors of convenience,” such as demographics only (Shadish et al., 2008).</p>
+<p>The key concept in determining which covariates to include in the matching process is that of strong ignorability. As discussed above, matching methods, and in fact most non-experimental study methods, rely on ignorability, which assumes that there are no unobserved differences between the treatment and control groups, conditional on the observed covariates. To satisfy the assumption of ignorable treatment assignment, it is important to include in the matching procedure all variables known to be related to both treatment assignment and the outcome <span class="citation" data-cites="rubinthomas1996 heckman1998 glazerman2003 hill2004">(<a href="#ref-rubinthomas1996" role="doc-biblioref">Rubin and Thomas 1996</a>; <a href="#ref-heckman1998" role="doc-biblioref">Heckman, Ichimura, and Todd 1998</a>; <a href="#ref-glazerman2003" role="doc-biblioref">Glazerman, Levy, and Myers 2003</a>; <a href="#ref-hill2004" role="doc-biblioref">Hill and Reiter 2004</a>)</span>. Generally poor performance is found in methods that use a relatively small set of “predictors of convenience,” such as demographics only <span class="citation" data-cites="shadish2008">(<a href="#ref-shadish2008" role="doc-biblioref">Shadish, Clark, and Steiner 2008</a>)</span>.</p>
 <p>Including variables that are actually unassociated with the outcome can yield slight increases in variance. However, excluding a potentially important confounder can be very costly in terms of increased bias. Researchers should thus be liberal in terms of including variables that may be associated with treatment assignment and/or the outcomes.</p>
-<p>One type of variable that should not be included in the matching process are those that may have been affected by the treatment of interest (Rosenbaum, 1984; Frangakis and Rubin, 2002; Greenland, 2003). This is especially important when the covariates, treatment indicator, and outcomes are all collected at the same point in time. If it is deemed to be critical to control for a variable potentially affected by treatment assignment, it is better to exclude that variable in the matching procedure and include it in the analysis model for the outcome (as in Reinisch et al., 1995).</p>
+<p>One type of variable that should <strong>not</strong> be included in the matching process are those that may have been affected by the treatment of interest <span class="citation" data-cites="rosenbaum1984 frangakis2002 greenland2003">(<a href="#ref-rosenbaum1984" role="doc-biblioref">Rosenbaum 1984</a>; <a href="#ref-frangakis2002" role="doc-biblioref">Frangakis and Rubin 2002</a>; <a href="#ref-greenland2003" role="doc-biblioref">Greenland 2003</a>)</span>. This is especially important when the covariates, treatment indicator, and outcomes are all collected at the same point in time. If it is deemed to be critical to control for a variable potentially affected by treatment assignment, it is better to exclude that variable in the matching procedure and include it in the analysis model for the outcome (as in <span class="citation" data-cites="reinisch1995">(<a href="#ref-reinisch1995" role="doc-biblioref">Reinisch et al. 1995</a>)</span>).</p>
 </section>
 <section id="selecting-matches" class="level1">
 <h1>Selecting Matches</h1>
+<section id="exact-matching" class="level2">
+<h2 class="anchored" data-anchor-id="exact-matching">Exact Matching</h2>
+<p>Exact matching pairs treated and control units only when they have identical values on the selected covariates. If a treated unit has no control unit with the same covariate profile (or vice versa), that unit is excluded from the matched sample.</p>
+<p>Formally, for a covariate vector <span class="math inline">\(X\)</span>, exact matching compares outcomes only within strata where:</p>
+<p><span class="math display">\[
+X_i = X_j \quad \text{for matched treated-control pairs } (i, j).
+\]</span></p>
+<p>This is the most transparent matching design because balance is perfect by construction on the matched variables.</p>
+<section id="why-exact-matching-is-often-limited" class="level3">
+<h3 class="anchored" data-anchor-id="why-exact-matching-is-often-limited">Why Exact Matching Is Often Limited</h3>
+<p>The main limitation is <strong>common support</strong> across treatment status. Exact matching requires overlap in the joint covariate distribution:</p>
+<p><span class="math display">\[
+0 &lt; P(T=1\mid X=x) &lt; 1
+\]</span></p>
+<p>for covariate profiles <span class="math inline">\(x\)</span> used in estimation. In practice, this fails quickly when:</p>
+<ul>
+<li>There are many covariates</li>
+<li>Covariates are continuous</li>
+<li>Treated and control groups come from very different populations</li>
+</ul>
+<p>As dimensionality grows, exact profile matches become rare (the “curse of dimensionality”[^1]), which can lead to substantial sample loss and limit external validity even if internal validity is improved.</p>
+<p>[^1] The curse of dimensionality is a phenomena that arise when analyzing high-dimensional data, where the volume of the space increases exponentially with dimensions, causing data to become sparse and, in turn, making distance-based models struggle to generalize.</p>
+<p>Exact matching works best when matching on a small set of key, coarsened, or categorical covariates. When overlap is weak, researchers typically move to near-exact approaches (for example, calipers, Mahalanobis distance, or propensity score methods) to preserve more observations while still improving balance.</p>
+</section>
+</section>
 <section id="nearest-neighbor-matching" class="level2">
 <h2 class="anchored" data-anchor-id="nearest-neighbor-matching">Nearest Neighbor Matching</h2>
-<p>One of the most common, and easiest to implement and understand, methods is k:1 nearest neighbor matching (Rubin, 1973a). This is generally the most effective method for settings where the goal is to select individuals for follow-up. Nearest neighbor matching nearly always estimates the ATT, as it matches control individuals to the treated group and discards controls who are not selected as matches.</p>
-<p>In its simplest form, 1:1 nearest neighbor matching selects for each treated individual i the control individual with the smallest distance from individual i. A common complaint regarding 1:1 matching is that it can discard a large number of observations and thus would apparently lead to reduced power. However, the reduction in power is often minimal, for two main reasons. First, in a two-sample comparison of means, the precision is largely driven by the smaller group size (Cohen, 1988). So if the treatment group stays the same size, and only the control group decreases in size, the overall power may not actually be reduced very much (Ho et al., 2007). Second, the power increases when the groups are more similar because of the reduced extrapolation and higher precision that is obtained when comparing groups that are similar versus groups that are quite different (Snedecor and Cochran, 1980). This is also what yields the increased power of using matched pairs in randomized experiments (Wacholder and Weinberg, 1982). Smith (1997) provides an illustration where estimates from 1:1 matching have lower standard deviations than estimates from a linear regression, even though thousands of observations were discarded in the matching. An additional concern is that, without any restrictions, k:1 matching can lead to some poor matches, if for example, there are no control individuals with propensity scores similar to a given treated individual. One strategy to avoid poor matches is to impose a caliper and only select a match if it is within the caliper. This can lead to difficulties in interpreting effects if many treated individuals do not receive a match, but can help avoid poor matches. Rosenbaum and Rubin (1985a) discuss those trade-offs.</p>
+<p>One of the most common, and easiest to implement and understand, methods is <span class="math inline">\(k:1\)</span> nearest neighbor matching <span class="citation" data-cites="rubin1973">(<a href="#ref-rubin1973" role="doc-biblioref">Rubin 1973</a>)</span>. This is matching on treatment observation to <span class="math inline">\(k\)</span> nearest neighbors along the covariate profile <span class="math inline">\(x\)</span> or a particular propensity <span class="math inline">\(s\)</span>. This is generally the most effective method for settings where the goal is to select individuals for follow-up. Nearest neighbor matching nearly always estimates the ATT, as it matches control individuals to the treated group and discards controls who are not selected as matches.</p>
+<div class="cell" data-fig-width="9" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    p0["0.00"] --- p1["0.20"] --- p2["0.40"] -."Propensity Score (p)".- p3["0.60"] --- p4["0.80"] --- p5["1.00"]
+
+
+    C1["C_1"] --- T1["T1"] --- C2["C_2"] --- T2["T2"]
+
+    T1 -. nearest neighbor .-&gt; C1
+    T2 -. nearest neighbor .-&gt; C2
+
+    classDef treat fill:#f7c948,stroke:#6b4f00,stroke-width:2px,color:#1f1f1f;
+    classDef control fill:#d8f3dc,stroke:#2d6a4f,stroke-width:2px,color:#1f1f1f;
+    classDef axis fill:#ffffff,stroke:#999999,stroke-width:1px,color:#444444;
+    classDef label fill:#ffffff,stroke:#1f4d4a,stroke-width:1px,color:#1f4d4a;
+
+    class T1,T2 treat;
+    class C1,C2 control;
+    class p0,p1,p2,p3,p4,p5 axis;
+    class PT label;
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>In this example on the propensity score axis <span class="math inline">\(p\)</span>, each treated unit is paired with the closest control unit: <span class="math inline">\(T1 \leftrightarrow C_1\)</span> and <span class="math inline">\(T2 \leftrightarrow C_2\)</span>.</p>
+<p>In its simplest form, <span class="math inline">\(1:1\)</span> nearest neighbor matching selects for each treated individual <span class="math inline">\(i\)</span> the control individual with the smallest distance from individual <span class="math inline">\(i\)</span>. A common complaint regarding <span class="math inline">\(1:1\)</span> matching is that it can discard a large number of observations and thus would may lead to reduced statistical power (the ability to detect false negatives). However, the reduction in power is often minimal, for two main reasons.</p>
+<ol type="1">
+<li>First, in a two-sample comparison of means, the precision is largely driven by the smaller group size <span class="citation" data-cites="cohen1988">(<a href="#ref-cohen1988" role="doc-biblioref">Cohen 1988</a>)</span>. So if the treatment group stays the same size, and only the control group decreases in size, the overall power may not actually be reduced very much <span class="citation" data-cites="ho2007">(<a href="#ref-ho2007" role="doc-biblioref">Ho et al. 2007</a>)</span>.</li>
+<li>Second, the power increases when the groups are more similar because of the reduced extrapolation and higher precision that is obtained when comparing groups that are similar versus groups that are quite different <span class="citation" data-cites="snedecor1980">(<a href="#ref-snedecor1980" role="doc-biblioref">Snedecor and Cochran 1980</a>)</span>. This is also what yields the increased power of using matched pairs in randomized experiments <span class="citation" data-cites="wacholder1982">(<a href="#ref-wacholder1982" role="doc-biblioref">Wacholder and Weinberg 1982</a>)</span>.</li>
+</ol>
+<p><span class="citation" data-cites="smith1997">(<a href="#ref-smith1997" role="doc-biblioref">Smith 1997</a>)</span> provides an illustration where estimates from 1:1 matching have lower standard deviations than estimates from a linear regression, even though thousands of observations were discarded in the matching. An additional concern is that, without any restrictions, <span class="math inline">\(k:1\)</span> matching can lead to some poor matches, if for example, there are no control individuals with propensity scores similar to a given treated individual. One strategy to avoid poor matches is to impose a caliper and only select a match if it is within the caliper. This can lead to difficulties in interpreting effects if many treated individuals do not receive a match, but can help avoid poor matches. <span class="citation" data-cites="rosenbaumrubin1985">(<a href="#ref-rosenbaumrubin1985" role="doc-biblioref">Rosenbaum and Rubin 1985</a>)</span> discuss those trade-offs.</p>
 </section>
 <section id="optimal-matching" class="level2">
 <h2 class="anchored" data-anchor-id="optimal-matching">Optimal Matching</h2>
-<p>One complication of simple (“greedy”) nearest neighbor matching is that the order in which the treated subjects are matched may change the quality of the matches. Optimal matching avoids this issue by taking into account the overall set of matches when choosing individual matches, minimizing a global distance measure (Rosenbaum, 2002). Generally, greedy matching performs poorly when there is intense competition for controls, and performs well when there is little competition (Gu and Rosenbaum, 1993). Gu and Rosenbaum (1993) find that optimal matching does not in general perform any better than greedy matching in terms of creating groups with good balance, but does do better at reducing the distance within pairs (p.&nbsp;413): “…optimal matching picks about the same controls [as greedy matching] but does a better job of assigning them to treated units.” Thus, if the goal is simply to find well-matched groups, greedy matching may be sufficient. However, if the goal is well-matched pairs, then optimal matching may be preferable.</p>
+<p>One complication of simple (“greedy”) nearest neighbor matching is that the order in which the treated subjects are matched may change the quality of the matches. Optimal matching avoids this issue by taking into account the overall set of matches when choosing individual matches, minimizing a global distance measure <span class="citation" data-cites="rosenbaum2002">(<a href="#ref-rosenbaum2002" role="doc-biblioref">Rosenbaum 2002</a>)</span>. Generally, greedy matching performs poorly when there is intense competition for controls (e.g., we wish to assign the same control observation as a much for multiple treatment observations), and performs well when there is little competition <span class="citation" data-cites="gu1993">(<a href="#ref-gu1993" role="doc-biblioref">Gu and Rosenbaum 1993</a>)</span>. <span class="citation" data-cites="gu1993">(<a href="#ref-gu1993" role="doc-biblioref">Gu and Rosenbaum 1993</a>)</span> find that optimal matching does not in general perform any better than greedy matching in terms of creating groups with good balance, but does do better at reducing the distance within pairs (p.&nbsp;413): ” <span class="math inline">\(\dots\)</span> optimal matching picks about the same controls [as greedy matching] but does a better job of assigning them to treated units.” Thus, if the goal is simply to find well-matched groups, greedy matching may be sufficient. However, if the goal is well-matched pairs, then optimal matching may be preferable.</p>
 </section>
 <section id="ratio-matching" class="level2">
 <h2 class="anchored" data-anchor-id="ratio-matching">Ratio Matching</h2>
-<p>When there are large numbers of control individuals, it is sometimes possible to get multiple good matches for each treated individual, called ratio matching (Smith, 1997; Rubin and Thomas, 2000). Selecting the number of matches involves a bias:variance trade-off. Selecting multiple controls for each treated individual will generally increase bias since the 2nd, 3rd, and 4th closest matches are, by definition, further away from the treated individual than is the 1st closest match. On the other hand, utilizing multiple matches can decrease variance due to the larger matched sample size. Approximations in Rubin and Thomas (1996) can help determine the best ratio. In settings where the outcome data has yet to be collected and there are cost constraints, researchers must also balance cost considerations. More methodological work needs to be done to more formally quantify the trade-offs involved. In addition, k:1 matching is not optimal since it does not account for the fact that some treated individuals may have many close matches while others have very few. A more advanced form of ratio matching, variable ratio matching, allows the ratio to vary, with different treated individuals receiving differing numbers of matches (Ming and Rosenbaum, 2001). Variable ratio matching is related to full matching, described below.</p>
+<p>When there are large numbers of control individuals, it is sometimes possible to get multiple good matches for each treated individual, called ratio matching <span class="citation" data-cites="smith1997 rubinthomas2000">(<a href="#ref-smith1997" role="doc-biblioref">Smith 1997</a>; <a href="#ref-rubinthomas2000" role="doc-biblioref">Rubin and Thomas 2000</a>)</span>. Selecting the number of matches involves a bias-variance trade-off. Selecting multiple controls for each treated individual will generally increase bias since the 2nd, 3rd, and 4th closest matches are, by definition, further away from the treated individual than is the 1st closest match. On the other hand, utilizing multiple matches can decrease variance due to the larger matched sample size. Approximations in <span class="citation" data-cites="rubinthomas1996">(<a href="#ref-rubinthomas1996" role="doc-biblioref">Rubin and Thomas 1996</a>)</span> can help determine the best ratio. In settings where the outcome data has yet to be collected and there are cost constraints, researchers must also balance cost considerations. In addition, <span class="math inline">\(k:1\)</span> matching is not optimal since it does not account for the fact that some treated individuals may have many close matches while others have very few. A more advanced form of ratio matching, variable ratio matching, allows the ratio to vary, with different treated individuals receiving differing numbers of matches <span class="citation" data-cites="ming2001">(<a href="#ref-ming2001" role="doc-biblioref">Ming and Rosenbaum 2001</a>)</span>.</p>
 </section>
 <section id="with-or-without-replacement" class="level2">
 <h2 class="anchored" data-anchor-id="with-or-without-replacement">With or Without Replacement</h2>
@@ -407,14 +562,15 @@ E[Y^0 | D = 1, S] = E[Y^0 | D = 0, S]
 <h1>Identifying Assumptions</h1>
 <section id="strong-ignorability-unconfoundedness" class="level2">
 <h2 class="anchored" data-anchor-id="strong-ignorability-unconfoundedness">Strong Ignorability (Unconfoundedness)</h2>
-<p>The cornerstone assumption of matching is <strong>strong ignorability</strong> or <strong>conditional independence</strong> <span class="citation" data-cites="rosenbaum1983central">(<a href="#ref-rosenbaum1983central" role="doc-biblioref">Rosenbaum and Rubin 1983</a>)</span>. This requires two components:</p>
+<p>The cornerstone assumption of matching is strong ignorability or conditional independence <span class="citation" data-cites="rosenbaum1983central">(<a href="#ref-rosenbaum1983central" role="doc-biblioref">Rosenbaum and Rubin 1983</a>)</span>. This requires three components:</p>
 <section id="unconfoundedness" class="level3">
 <h3 class="anchored" data-anchor-id="unconfoundedness">1. Unconfoundedness</h3>
 <p>Treatment assignment is independent of potential outcomes, conditional on covariates <span class="math inline">\(X\)</span>:</p>
 <p><span class="math display">\[
 (Y^1, Y^0) \perp T | X
 \]</span></p>
-<p>This means that, after controlling for observed covariates <span class="math inline">\(X\)</span>, treatment is “as good as randomly assigned.” All variables that jointly affect treatment assignment and outcomes must be observed and included in <span class="math inline">\(X\)</span>.</p>
+<p>This means that, after controlling for observed covariates <span class="math inline">\(X\)</span>, treatment is “as good as randomly assigned.” All variables that jointly affect treatment assignment and outcomes must be observed and included in <span class="math inline">\(X\)</span>. In the following diagram, <span class="math inline">\(W\)</span> is a confounder which violates this assumption.</p>
+<p><img src="./assets/images/confoundness.png" class="img-fluid"></p>
 </section>
 <section id="common-support-overlappositivity" class="level3">
 <h3 class="anchored" data-anchor-id="common-support-overlappositivity">2. Common Support (Overlap/Positivity)</h3>
@@ -428,19 +584,20 @@ E[Y^0 | D = 1, S] = E[Y^0 | D = 0, S]
 <li>Matching naturally enforces common support by discarding units outside the region of overlap</li>
 <li>This “pruning” improves internal validity but may reduce external validity</li>
 </ul>
+<p><img src="./assets/images/common_support.png.png" class="img-fluid"></p>
 </section>
 <section id="stable-unit-treatment-value-assumption-sutva" class="level3">
 <h3 class="anchored" data-anchor-id="stable-unit-treatment-value-assumption-sutva">3. Stable Unit Treatment Value Assumption (SUTVA)</h3>
 <p>The potential outcomes for any unit do not depend on the treatment assignment of other units:</p>
 <p><span class="math display">\[
-Y_i(T_i, T_{-i}) = Y_i(T_i) \quad \text{for all } i
+Y_i(T_i, T_{-i}) = Y_i(T_i) \quad \forall i
 \]</span></p>
 <p>This rules out:</p>
 <ul>
 <li><strong>Interference</strong>: Unit <span class="math inline">\(i\)</span>’s outcome depends on unit <span class="math inline">\(j\)</span>’s treatment</li>
 <li><strong>Multiple versions of treatment</strong>: The treatment is well-defined and homogeneous</li>
 </ul>
-<p><strong>Violations occur in:</strong></p>
+<p><strong>Common violations occur in settings with:</strong></p>
 <ul>
 <li>Education (peer effects)</li>
 <li>Epidemiology (disease transmission)<br>
@@ -452,16 +609,96 @@ Y_i(T_i, T_{-i}) = Y_i(T_i) \quad \text{for all } i
 <section id="selection-on-observables-vs.-unobservables" class="level2">
 <h2 class="anchored" data-anchor-id="selection-on-observables-vs.-unobservables">Selection on Observables vs.&nbsp;Unobservables</h2>
 <p>Matching methods address <strong>selection on observables</strong>—systematic differences between treated and control groups that can be measured and controlled. However, they cannot resolve <strong>selection on unobservables</strong> (hidden bias).</p>
-<p>When unobserved confounders exist, sensitivity analyses such as:</p>
+<p>When unobserved confounders exist, sensitivity analyses help assess how strong unmeasured confounding would need to be to overturn the findings. Some common sensitivity analyses are :</p>
 <ul>
 <li><strong>Rosenbaum bounds</strong> (quantify robustness to hidden bias)</li>
 <li><strong>Relative correlation restrictions</strong> (bound effects under assumptions)</li>
 <li><strong>Coefficient stability tests</strong> (assess impact of additional controls)</li>
 </ul>
-<p>help assess how strong unmeasured confounding would need to be to overturn the findings.</p>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-austin2007" class="csl-entry" role="listitem">
+Austin, Peter C. 2007. <span>“The Performance of Different Propensity-Score Methods for Estimating Relative Risks.”</span> <em>Journal of Clinical Epidemiology</em> 61 (6): 537–45. <a href="https://doi.org/10.1016/j.jclinepi.2007.07.011">https://doi.org/10.1016/j.jclinepi.2007.07.011</a>.
+</div>
+<div id="ref-cohen1988" class="csl-entry" role="listitem">
+Cohen, Jacob. 1988. <em>Statistical Power Analysis for the Behavioral Sciences</em>. 2nd ed. Lawrence Erlbaum Associates.
+</div>
+<div id="ref-frangakis2002" class="csl-entry" role="listitem">
+Frangakis, Constantine E., and Donald B. Rubin. 2002. <span>“Principal Stratification in Causal Inference.”</span> <em>Biometrics</em> 58 (1): 21–29. <a href="https://doi.org/10.1111/j.0006-341X.2002.00021.x">https://doi.org/10.1111/j.0006-341X.2002.00021.x</a>.
+</div>
+<div id="ref-glazerman2003" class="csl-entry" role="listitem">
+Glazerman, Steven, Dan M. Levy, and David Myers. 2003. <span>“Nonexperimental Replications of Social Experiments: A Systematic Review.”</span> Mathematica Policy Research.
+</div>
+<div id="ref-greenland2003" class="csl-entry" role="listitem">
+Greenland, Sander. 2003. <span>“Quantifying Biases in Causal Models: Classical Confounding Vs Collider-Stratification Bias.”</span> <em>Epidemiology</em> 14 (3): 300–306. <a href="https://doi.org/10.1097/01.EDE.0000042804.70377.45">https://doi.org/10.1097/01.EDE.0000042804.70377.45</a>.
+</div>
+<div id="ref-gu1993" class="csl-entry" role="listitem">
+Gu, Xing Sam, and Paul R. Rosenbaum. 1993. <span>“Comparison of Multivariate Matching Methods: Structures, Distances, and Algorithms.”</span> <em>Journal of Computational and Graphical Statistics</em> 2 (4): 405–20. <a href="https://doi.org/10.1080/10618600.1993.10474623">https://doi.org/10.1080/10618600.1993.10474623</a>.
+</div>
+<div id="ref-heckman1998" class="csl-entry" role="listitem">
+Heckman, James J., Hidehiko Ichimura, and Petra Todd. 1998. <span>“Matching as an Econometric Evaluation Estimator.”</span> <em>Review of Economic Studies</em> 65 (2): 261–94. <a href="https://doi.org/10.1111/1467-937X.00044">https://doi.org/10.1111/1467-937X.00044</a>.
+</div>
+<div id="ref-heller2009" class="csl-entry" role="listitem">
+Heller, Rebecca, Paul R. Rosenbaum, and Dylan S. Small. 2009. <span>“Using the Cross-Match Test to Appraise Covariate Balance in Matched Pairs.”</span> <em>The American Statistician</em> 64 (4): 299–309. <a href="https://doi.org/10.1198/tast.2010.09211">https://doi.org/10.1198/tast.2010.09211</a>.
+</div>
+<div id="ref-hill2004" class="csl-entry" role="listitem">
+Hill, Jennifer L., and Jerome P. Reiter. 2004. <span>“Interval Estimation for Treatment Effects Using Propensity Score Matching.”</span> <em>Statistics in Medicine</em> 25 (13): 2230–56. <a href="https://doi.org/10.1002/sim.2277">https://doi.org/10.1002/sim.2277</a>.
+</div>
+<div id="ref-ho2007" class="csl-entry" role="listitem">
+Ho, Daniel E., Kosuke Imai, Gary King, and Elizabeth A. Stuart. 2007. <span>“Matching as Nonparametric Preprocessing for Reducing Model Dependence in Parametric Causal Inference.”</span> <em>Political Analysis</em> 15 (3): 199–236. <a href="https://doi.org/10.1093/pan/mpl013">https://doi.org/10.1093/pan/mpl013</a>.
+</div>
+<div id="ref-imbens2004" class="csl-entry" role="listitem">
+Imbens, Guido W. 2004. <span>“Nonparametric Estimation of Average Treatment Effects Under Exogeneity: A Review.”</span> <em>Review of Economics and Statistics</em> 86 (1): 4–29. <a href="https://doi.org/10.1162/003465304323023651">https://doi.org/10.1162/003465304323023651</a>.
+</div>
+<div id="ref-lunt2009" class="csl-entry" role="listitem">
+Lunt, Mark, Daniel Solomon, Kenneth Rothman, Robert Glynn, Kim Hyrich, Deborah P. M. Symmons, and Til Sturmer. 2009. <span>“Different Methods of Balancing Covariates Leading to Different Effect Estimates in the Presence of Effect Modification.”</span> <em>American Journal of Epidemiology</em> 169 (7): 909–17. <a href="https://doi.org/10.1093/aje/kwn374">https://doi.org/10.1093/aje/kwn374</a>.
+</div>
+<div id="ref-ming2001" class="csl-entry" role="listitem">
+Ming, Kewei, and Paul R. Rosenbaum. 2001. <span>“A Note on Optimal Matching with Variable Controls Using the Assignment Algorithm.”</span> <em>Journal of Computational and Graphical Statistics</em> 10 (3): 455–63. <a href="https://doi.org/10.1198/106186001317115060">https://doi.org/10.1198/106186001317115060</a>.
+</div>
+<div id="ref-pearl1995causal" class="csl-entry" role="listitem">
+Pearl, Judea. 1995. <span>“Causal Diagrams for Empirical Research.”</span> <em>Biometrika</em> 82 (4): 669–710. <a href="https://doi.org/10.1093/biomet/82.4.669">https://doi.org/10.1093/biomet/82.4.669</a>.
+</div>
+<div id="ref-reinisch1995" class="csl-entry" role="listitem">
+Reinisch, June M., Stephanie A. Sanders, Erik L. Mortensen, and Donald B. Rubin. 1995. <span>“In Utero Exposure to Phenobarbital and Intelligence Deficits in Adult Men.”</span> <em>JAMA</em> 274 (19): 1518–25. <a href="https://doi.org/10.1001/jama.1995.03530190040032">https://doi.org/10.1001/jama.1995.03530190040032</a>.
+</div>
+<div id="ref-rosenbaum1984" class="csl-entry" role="listitem">
+Rosenbaum, Paul R. 1984. <span>“The Consequences of Adjustment for a Concomitant Variable That Has Been Affected by the Treatment.”</span> <em>Journal of the Royal Statistical Society: Series A</em> 147 (5): 656–66. <a href="https://doi.org/10.2307/2981697">https://doi.org/10.2307/2981697</a>.
+</div>
+<div id="ref-rosenbaum2002" class="csl-entry" role="listitem">
+———. 2002. <em>Observational Studies</em>. 2nd ed. Springer.
+</div>
 <div id="ref-rosenbaum1983central" class="csl-entry" role="listitem">
 Rosenbaum, Paul R., and Donald B. Rubin. 1983. <span>“The Central Role of the Propensity Score in Observational Studies for Causal Effects.”</span> <em>Biometrika</em> 70 (1): 41–55. <a href="https://doi.org/10.1093/biomet/70.1.41">https://doi.org/10.1093/biomet/70.1.41</a>.
+</div>
+<div id="ref-rosenbaumrubin1985" class="csl-entry" role="listitem">
+———. 1985. <span>“Constructing a Control Group Using Multivariate Matched Sampling Methods That Incorporate the Propensity Score.”</span> <em>The American Statistician</em> 39 (1): 33–38. <a href="https://doi.org/10.1080/00031305.1985.10479383">https://doi.org/10.1080/00031305.1985.10479383</a>.
+</div>
+<div id="ref-rubin1973" class="csl-entry" role="listitem">
+Rubin, Donald B. 1973. <span>“Matching to Remove Bias in Observational Studies.”</span> <em>Biometrics</em> 29 (1): 159–83. <a href="https://doi.org/10.2307/2529684">https://doi.org/10.2307/2529684</a>.
+</div>
+<div id="ref-rubin1976" class="csl-entry" role="listitem">
+———. 1976. <span>“Inference and Missing Data.”</span> <em>Biometrika</em> 63 (3): 581–92. <a href="https://doi.org/10.1093/biomet/63.3.581">https://doi.org/10.1093/biomet/63.3.581</a>.
+</div>
+<div id="ref-rubin1980" class="csl-entry" role="listitem">
+———. 1980. <span>“Randomization Analysis of Experimental Data: The Fisher Randomization Test Comment.”</span> <em>Journal of the American Statistical Association</em> 75 (371): 591–93. <a href="https://doi.org/10.1080/01621459.1980.10477280">https://doi.org/10.1080/01621459.1980.10477280</a>.
+</div>
+<div id="ref-rubinthomas1996" class="csl-entry" role="listitem">
+Rubin, Donald B., and Neal Thomas. 1996. <span>“Matching Using Estimated Propensity Scores: Relating Theory to Practice.”</span> <em>Biometrics</em> 52 (1): 249–64. <a href="https://doi.org/10.2307/2533160">https://doi.org/10.2307/2533160</a>.
+</div>
+<div id="ref-rubinthomas2000" class="csl-entry" role="listitem">
+———. 2000. <span>“Combining Propensity Score Matching with Additional Adjustments for Prognostic Covariates.”</span> <em>Journal of the American Statistical Association</em> 95 (450): 573–85. <a href="https://doi.org/10.1080/01621459.2000.10474233">https://doi.org/10.1080/01621459.2000.10474233</a>.
+</div>
+<div id="ref-shadish2008" class="csl-entry" role="listitem">
+Shadish, William R., Meredith H. Clark, and Peter M. Steiner. 2008. <span>“Can Nonrandomized Experiments Yield Accurate Answers? A Randomized Experiment Comparing Random and Nonrandom Assignments.”</span> <em>Journal of the American Statistical Association</em> 103 (484): 1334–44. <a href="https://doi.org/10.1198/016214508000000733">https://doi.org/10.1198/016214508000000733</a>.
+</div>
+<div id="ref-smith1997" class="csl-entry" role="listitem">
+Smith, Herbert L. 1997. <span>“Matching with Multiple Controls to Estimate Treatment Effects in Observational Studies.”</span> <em>Sociological Methodology</em> 27: 325–53. <a href="https://doi.org/10.1111/1467-9531.271030">https://doi.org/10.1111/1467-9531.271030</a>.
+</div>
+<div id="ref-snedecor1980" class="csl-entry" role="listitem">
+Snedecor, George W., and William G. Cochran. 1980. <em>Statistical Methods</em>. 7th ed. Iowa State University Press.
+</div>
+<div id="ref-wacholder1982" class="csl-entry" role="listitem">
+Wacholder, Sholom, and Clarice R. Weinberg. 1982. <span>“Flexible Maximum Likelihood Methods for Assessing Joint Effects in Matched Studies.”</span> <em>Biometrics</em> 38 (4): 963–70. <a href="https://doi.org/10.2307/2529880">https://doi.org/10.2307/2529880</a>.
 </div>
 </div>
 

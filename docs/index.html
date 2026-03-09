@@ -86,6 +86,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta property="og:title" content="Workshop: Matching Estimation Strategies – Matching Methods">
 <meta property="og:description" content="Matching Method Estimation Strategies">
@@ -156,7 +185,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./matching_psm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Propsensity Score Matching</span></a>
+ <span class="menu-text">Propensity Score Matching</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -276,12 +305,13 @@ div.csl-indent {
 
 <section id="motivation" class="level1">
 <h1>Motivation</h1>
-<p>While randomized controlled trials (RCTs) remain the gold standard for causal inference, many research settings make randomization infeasible or unethical. In these observational settings, matching methods offer a powerful quasi-experimental approach to estimate causal treatment effects.</p>
+<p>While randomized controlled trials (RCTs) remain the gold standard for causal inference, many research settings make randomization infeasible or unethical. In these observational settings, matching methods offer a quasi-experimental approach to estimate causal treatment effects.</p>
 <p>Matching represents an intuitive method for addressing causal questions, primarily because it pushes the analyst to confront both the process of treatment assignment and the limitations of available data. By constructing comparable treatment and control groups based on observed characteristics, matching attempts to replicate the balance we would expect from randomization.</p>
 <p>As <span class="citation" data-cites="Stuart2010">Stuart (<a href="#ref-Stuart2010" role="doc-biblioref">2010</a>)</span> notes:</p>
 <blockquote class="blockquote">
 <p>“When estimating causal effects using observational data, it is desirable to replicate a randomized experiment as closely as possible by obtaining treated and control groups with similar covariate distributions. This goal can often be achieved by choosing well-matched samples of the original treated and control groups, thereby reducing bias due to the covariates. Since the 1970’s, work on matching methods has examined how to best choose treated and control subjects for comparison.”</p>
 </blockquote>
+<p>Matching is a method of strategic subsampling from among treated and control cases. The investigator selects a nontreated control case for each treated case based on the characteristics in <span class="math inline">\(X_i\)</span>. All treated cases and matched control cases are retained, and all nonmatched control cases are discarded. Differences in <span class="math inline">\(Y_i\)</span> are then calculated for trea- ted and matched cases, with the average difference serving as the treat- ment effect estimate for the group of individuals given the treatment.</p>
 </section>
 <section id="overview" class="level1">
 <h1>Overview</h1>
@@ -290,46 +320,50 @@ div.csl-indent {
 <li>As a method to form quasi-experimental contrasts by sampling comparable treatment and control cases from among two larger pools of such cases</li>
 <li>As a nonparametric method of adjustment for treatment assignment patterns when parametric regression estimators may not be trusted</li>
 </ol>
+<p>Both strategies provide a means of recovering the causal effect of some treatment <span class="math inline">\(T_i\)</span> on an outcomes <span class="math inline">\(Y_i\)</span> given observable characteristics <span class="math inline">\(X_i\)</span>.</p>
 <section id="core-workflow" class="level2">
 <h2 class="anchored" data-anchor-id="core-workflow">Core Workflow</h2>
-<p>To implement a matching method, you will follow a four-step procedure:</p>
+<p>To implement a matching method, you will typically follow a five-step procedure:</p>
 <ol type="1">
-<li><strong>Defining closeness</strong>: Select a distance measure to determine whether an individual is a good match for another</li>
-<li><strong>Implementing the match</strong>: Apply a matching algorithm given your distance measure</li>
-<li><strong>Assessing match quality</strong>: Evaluate the balance of the resulting matched samples, iterating Steps 1 and 2 as needed</li>
-<li><strong>Estimating the effect</strong>: Analyze outcomes and estimate the treatment effect given the matched sample</li>
+<li><strong>Collect observable characteristics</strong>: Collect chracteristic information about both observations in the treatment and the control group.</li>
+<li><strong>Defining closeness</strong>: Select a distance measure to determine whether an individual is a good match for another.</li>
+<li><strong>Implementing the match</strong>: Apply a matching algorithm given your distance measure.</li>
+<li><strong>Assessing match quality</strong>: Evaluate the balance of the resulting matched samples, iterating Steps 2 and 3 to improve the balance post matching.</li>
+<li><strong>Estimating the effect</strong>: Analyze outcomes and estimate the treatment effect given the matched sample.</li>
 </ol>
 </section>
 </section>
 <section id="workshop-outline" class="level1">
 <h1>Workshop Outline</h1>
 <p>This workshop is organized into the following modules:</p>
-<section id="foundations" class="level2">
-<h2 class="anchored" data-anchor-id="foundations">Foundations</h2>
+<section id="foundations" class="level3">
+<h3 class="anchored" data-anchor-id="foundations">Foundations</h3>
 <ul>
 <li><strong>The Concept</strong>: Introduction to matching fundamentals and the intuition behind matching estimators</li>
 <li><strong>Distance Measures</strong>: Metrics for measuring similarity between units (Euclidean, Mahalanobis, propensity scores)</li>
 </ul>
 </section>
-<section id="matching-methods" class="level2">
-<h2 class="anchored" data-anchor-id="matching-methods">Matching Methods</h2>
+<section id="matching-methods" class="level3">
+<h3 class="anchored" data-anchor-id="matching-methods">Matching Methods</h3>
 <ul>
-<li><strong>Propensity Score Matching</strong>: Using predicted treatment probabilities to match units</li>
+<li><strong>Propensity Score Matching</strong>: Using predicted treatment probabilities to match observations</li>
 <li><strong>Covariate Matching</strong>: Direct matching on observed characteristics</li>
 <li><strong>LASSO Matching</strong>: High-dimensional variable selection with penalized propensity scores</li>
+<li><strong>Inverse Probability Weighting</strong>: Reweighting observations by inverse treatment probabilities to estimate causal effects without discarding observations</li>
+<li><strong>Entropy Balancing</strong>: Constructing optimization-based weights that exactly balance selected covariate moments between treatment groups</li>
 <li><strong>Doubly Robust Estimation</strong>: Combining propensity weighting with outcome regression for robustness</li>
 </ul>
 </section>
-<section id="validation-application" class="level2">
-<h2 class="anchored" data-anchor-id="validation-application">Validation &amp; Application</h2>
+<section id="validation-application" class="level3">
+<h3 class="anchored" data-anchor-id="validation-application">Validation &amp; Application</h3>
 <ul>
 <li><strong>Sensitivity Analysis</strong>: Testing the robustness of your findings to unobserved confounding</li>
 <li><strong>Coding Practice</strong>: Hands-on exercises with real data in R, Python, and Stata</li>
-<li><strong>The PSP Program</strong>: Empirical application using LASSO matching and matched-pair difference-in-differences</li>
+<li><strong>The PSP Program</strong>: Empirical application using LASSO matching and matched-pair difference-in-differences (J-PAL MEL project)</li>
 </ul>
 </section>
-<section id="additional-resources" class="level2">
-<h2 class="anchored" data-anchor-id="additional-resources">Additional Resources</h2>
+<section id="additional-resources" class="level3">
+<h3 class="anchored" data-anchor-id="additional-resources">Additional Resources</h3>
 <ul>
 <li>Recommended readings, software packages, and further learning materials</li>
 </ul>

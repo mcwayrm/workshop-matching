@@ -32,7 +32,7 @@ website:
       - section: Matching Methods
         contents:
           - href: matching_psm.qmd
-            text: Propsensity Score Matching
+            text: Propensity Score Matching
           - href: matching_cvm.qmd
             text: Covariate Matching
           - href: matching_lasso.qmd
