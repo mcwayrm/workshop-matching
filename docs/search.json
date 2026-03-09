@@ -1,5 +1,38 @@
 [
   {
+    "objectID": "matching_double_robust.html",
+    "href": "matching_double_robust.html",
+    "title": "Matching Methods",
+    "section": "",
+    "text": "Doubly robust estimation combines two adjustment strategies:\n\nAn outcome model (regression of \\(Y\\) on \\(X\\) and treatment status)\nA treatment model (propensity score \\(e(X)=P(T=1|X)\\))\n\nThe main benefit is the “double protection” property: if either model is correctly specified (not necessarily both), the causal effect estimator is consistent (Funk et al. 2011).\nThis makes doubly robust methods especially attractive after matching or weighting, where residual imbalance may remain and model misspecification is a concern.",
+    "crumbs": [
+      "Matching Methods",
+      "Doubly Robust Estimation"
+    ]
+  },
+  {
+    "objectID": "matching_double_robust.html#ate",
+    "href": "matching_double_robust.html#ate",
+    "title": "Matching Methods",
+    "section": "ATE",
+    "text": "ATE\nPopulation average treatment effect (formula above).",
+    "crumbs": [
+      "Matching Methods",
+      "Doubly Robust Estimation"
+    ]
+  },
+  {
+    "objectID": "matching_double_robust.html#att-common-in-matching-studies",
+    "href": "matching_double_robust.html#att-common-in-matching-studies",
+    "title": "Matching Methods",
+    "section": "ATT (common in matching studies)",
+    "text": "ATT (common in matching studies)\nFor ATT, a doubly robust estimator can be written with treated-group focus and appropriate control reweighting/regression adjustment.\n\nRPythonStata\n\n\n\nlibrary(MatchIt)\n\n# Step 1: matching (example)\nm.out &lt;- matchit(treat ~ age + educ + married + re74 + re75,\n                data = data,\n                method = \"nearest\",\n                ratio = 1,\n                caliper = 0.2)\n\nmatched &lt;- match.data(m.out)\n\n# Step 2: propensity model on matched sample\nps_mod &lt;- glm(treat ~ age + educ + married + re74 + re75,\n            family = binomial(),\n            data = matched)\nmatched$ps &lt;- pmin(pmax(predict(ps_mod, type = \"response\"), 1e-6), 1 - 1e-6)\n\n# Step 3: outcome models\nmu1_mod &lt;- lm(outcome ~ age + educ + married + re74 + re75,\n            data = subset(matched, treat == 1))\nmu0_mod &lt;- lm(outcome ~ age + educ + married + re74 + re75,\n            data = subset(matched, treat == 0))\n\nmatched$mu1 &lt;- predict(mu1_mod, newdata = matched)\nmatched$mu0 &lt;- predict(mu0_mod, newdata = matched)\n\n# Step 4: AIPW estimate\naipw &lt;- with(matched,\n            mean(treat*(outcome - mu1)/ps + mu1 -\n                (1-treat)*(outcome - mu0)/(1-ps) - mu0))\n\naipw\n\n\n\n\nimport numpy as np\nfrom sklearn.linear_model import LogisticRegression, LinearRegression\n\nX_cols = [\"age\", \"educ\", \"married\", \"re74\", \"re75\"]\nX = df[X_cols].values\nT = df[\"treat\"].values\nY = df[\"outcome\"].values\n\n# Propensity model\nps_model = LogisticRegression(max_iter=2000)\nps_model.fit(X, T)\nps = np.clip(ps_model.predict_proba(X)[:, 1], 1e-6, 1-1e-6)\n\n# Outcome models\nmu1_model = LinearRegression().fit(X[T==1], Y[T==1])\nmu0_model = LinearRegression().fit(X[T==0], Y[T==0])\n\nmu1 = mu1_model.predict(X)\nmu0 = mu0_model.predict(X)\n\naipw = np.mean(T*(Y-mu1)/ps + mu1 - (1-T)*(Y-mu0)/(1-ps) - mu0)\nprint(\"AIPW ATE:\", aipw)\n\n\n\n\n* 1) Fit propensity model\nlogit treat age educ married re74 re75\npredict ps, pr\nreplace ps = max(min(ps, .999999), .000001)\n\n* 2) Fit outcome models separately\nreg outcome age educ married re74 re75 if treat==1\npredict mu1, xb\n\nreg outcome age educ married re74 re75 if treat==0\npredict mu0, xb\n\n* 3) Build AIPW score and average\ngen aipw_i = treat*(outcome-mu1)/ps + mu1 - (1-treat)*(outcome-mu0)/(1-ps) - mu0\nsum aipw_i",
+    "crumbs": [
+      "Matching Methods",
+      "Doubly Robust Estimation"
+    ]
+  },
+  {
     "objectID": "distance_measure.html",
     "href": "distance_measure.html",
     "title": "Distance Measures",
@@ -150,6 +183,83 @@
     ]
   },
   {
+    "objectID": "application_psp.html",
+    "href": "application_psp.html",
+    "title": "Empirical Application",
+    "section": "",
+    "text": "Our empirical strategy uses a matched-pair difference-in-differences (DiD) design to estimate the intent-to-treat effect of the Pioneer Schools Program (PSP).\nConceptually:\n\nBuild a credible school-level counterfactual with matching.\nTrack baseline-to-endline changes in PSP and comparison schools.\nEstimate treatment effects from within-pair differences over time.\n\nThis design was implemented on two program waves (Cohort 1 and Cohort 2), with school pairs formed before impact estimation.",
+    "crumbs": [
+      "Empirical Application",
+      "The PSP Program"
+    ]
+  },
+  {
+    "objectID": "application_psp.html#step-1-build-the-school-level-candidate-database",
+    "href": "application_psp.html#step-1-build-the-school-level-candidate-database",
+    "title": "Empirical Application",
+    "section": "Step 1: Build the school-level candidate database",
+    "text": "Step 1: Build the school-level candidate database\nWe start from an administrative school-level dataset covering public primary schools (8,034 schools), with a high-dimensional set of candidate predictors (248 variables).",
+    "crumbs": [
+      "Empirical Application",
+      "The PSP Program"
+    ]
+  },
+  {
+    "objectID": "application_psp.html#step-2-use-post-double-selection-lasso-pdslasso-for-variable-selection",
+    "href": "application_psp.html#step-2-use-post-double-selection-lasso-pdslasso-for-variable-selection",
+    "title": "Empirical Application",
+    "section": "Step 2: Use post-double-selection LASSO (PDSLASSO) for variable selection",
+    "text": "Step 2: Use post-double-selection LASSO (PDSLASSO) for variable selection\nTo avoid arbitrary manual covariate selection, we run two LASSO models at the school level:\n\nOutcome-selection equation:\n\n\nBaseline outcome as dependent variable.\nAll candidate school predictors as controls.\n\n\nTreatment-selection equation:\n\n\nPSP treatment indicator as dependent variable.\nSame set of candidate predictors as controls.\n\nThe final matching covariate set is the union of variables selected by these two LASSO models. In our implementation, this procedure selected 16 variables from the original 248 candidates.",
+    "crumbs": [
+      "Empirical Application",
+      "The PSP Program"
+    ]
+  },
+  {
+    "objectID": "application_psp.html#step-3-match-schools-using-calibrated-mahalanobis-distance",
+    "href": "application_psp.html#step-3-match-schools-using-calibrated-mahalanobis-distance",
+    "title": "Empirical Application",
+    "section": "Step 3: Match schools using calibrated Mahalanobis distance",
+    "text": "Step 3: Match schools using calibrated Mahalanobis distance\nUsing the LASSO-selected variables, we match non-PSP schools to PSP schools with an iterative, calibrated Mahalanobis-distance procedure.\nThe calibration loop:\n\nRun matching with a candidate caliper.\nCheck post-match diagnostics:\n\n\nCommon support.\nCovariate balance (e.g., standardized differences).\nDistributional similarity between treated and comparison schools.\n\n\nTighten calipers iteratively (descending sequence) until acceptable balance is achieved.\n\nThis produced matched school pairs that were closer and more comparable than the initial uncalibrated match attempts.",
+    "crumbs": [
+      "Empirical Application",
+      "The PSP Program"
+    ]
+  },
+  {
+    "objectID": "application_psp.html#estimating-equation-paper-notation",
+    "href": "application_psp.html#estimating-equation-paper-notation",
+    "title": "Empirical Application",
+    "section": "Estimating Equation (paper notation)",
+    "text": "Estimating Equation (paper notation)\nUsing paper notation, the regression is:\n\\[\nY_{igsjt} = \\beta\\,(TREAT_{sj}\\times POST_t)\n+ \\gamma\\,(X_{igsj}\\times POST_t)\n+ \\phi\\,(\\zeta_j\\times \\vartheta_g\\times POST_t)\n+ \\alpha_{igsj} + \\varepsilon_{igsjt}\n\\]\nwhere:\n\n\\(Y_{igsjt}\\) is outcome \\(Y\\) for student \\(i\\), grade \\(g\\), school \\(s\\), matched pair \\(j\\), period \\(t\\).\n\\(TREAT_{sj}\\) indicates PSP assignment for school \\(s\\) in pair \\(j\\).\n\\(POST_t\\) indicates endline period.\n\\(X_{igsj}\\) are baseline student and school controls.\n\\(\\zeta_j\\times\\vartheta_g\\times POST_t\\) are grade-by-matched-pair-by-post interactions.\n\\(\\beta\\) is the intent-to-treat effect of PSP.\n\nStandard errors are clustered at the matched-pair level, consistent with the pairing-based assignment structure.",
+    "crumbs": [
+      "Empirical Application",
+      "The PSP Program"
+    ]
+  },
+  {
+    "objectID": "application_psp.html#why-this-helps-identification",
+    "href": "application_psp.html#why-this-helps-identification",
+    "title": "Empirical Application",
+    "section": "Why this helps identification",
+    "text": "Why this helps identification\n\nMatching improves pre-treatment comparability (selection on observables).\nDiD differences out pair-invariant unobservables and common shocks.\nPair-by-grade-by-post structure allows flexible local trends within matched pair contexts.",
+    "crumbs": [
+      "Empirical Application",
+      "The PSP Program"
+    ]
+  },
+  {
+    "objectID": "application_psp.html#controls-used-in-selection",
+    "href": "application_psp.html#controls-used-in-selection",
+    "title": "Empirical Application",
+    "section": "Controls Used in Selection",
+    "text": "Controls Used in Selection\nThe candidate set includes baseline student-level variables (e.g., demographics, baseline score measures, social safety net status) and baseline school-level variables (e.g., school average test scores, region, average class size, student-teacher ratio), plus interactions as specified in the paper’s high-dimensional design.",
+    "crumbs": [
+      "Empirical Application",
+      "The PSP Program"
+    ]
+  },
+  {
     "objectID": "matching_psm.html",
     "href": "matching_psm.html",
     "title": "Matching Methods",
@@ -220,7 +330,7 @@
     "href": "matching_psm.html#kernel-matching",
     "title": "Matching Methods",
     "section": "3. Kernel Matching",
-    "text": "3. Kernel Matching\nWeighted average of all controls, with weights inversely proportional to distance:\n\\[\n\\hat{Y}_i^0 = \\frac{\\sum_{j:T_j=0} K\\left(\\frac{e(X_i) - e(X_j)}{h}\\right) Y_j}{\\sum_{j:T_j=0} K\\left(\\frac{e(X_i) - e(X_j)}{h}\\right)}\n\\]\nwhere \\(K(\\cdot)\\) is a kernel function and \\(h\\) is the bandwidth.",
+    "text": "3. Kernel Matching\nWeighted average of all controls, with weights inversely proportional to distance:\n\\[\n\\hat{Y}_i^0 = \\frac{\\sum_{j:T_j=0} K\\left(\\frac{e(X_i) - e(X_j)}{h}\\right) Y_j}{\\sum_{j:T_j=0} K\\left(\\frac{e(X_i) - e(X_j)}{h}\\right)}\n\\]\nwhere \\(K(\\cdot)\\) is a kernel function and \\(h\\) is the bandwidth.\n\nRPythonStata\n\n\n\nlibrary(MatchIt)\n\n# Estimate propensity scores and match\nm.out &lt;- matchit(\n  treat ~ age + educ + race + married + nodegree + re74 + re75,\n  data = mydata,\n  method = \"nearest\",\n  distance = \"glm\",  # logistic regression\n  ratio = 1,         # 1:1 matching\n  caliper = 0.25,    # caliper in standard deviations\n  replace = FALSE\n)\n\n# Check balance\nsummary(m.out, un = FALSE)\n\n# Visualize overlap\nplot(m.out, type = \"jitter\", interactive = FALSE)\n\n# Extract matched data\nmatched_data &lt;- match.data(m.out)\n\n# Estimate treatment effect\nlibrary(lmtest)\nlibrary(sandwich)\n\nfit &lt;- lm(outcome ~ treat + age + educ + race + re74 + re75,\n          data = matched_data,\n          weights = weights)\n\n# Robust standard errors\ncoeftest(fit, vcov = vcovCL, cluster = ~subclass)\n\n\n\n\nfrom causalinference import CausalModel\n\n# Prepare data\nY = data['outcome'].values\nD = data['treat'].values  \nX = data[['age', 'educ', 'married', 're74', 're75']].values\n\n# Fit model\ncausal = CausalModel(Y, D, X)\n\n# Estimate propensity scores\ncausal.est_propensity_s()\n\n# Match with caliper\ncausal.est_via_matching(matches=1, bias_adj=True)\n\n# Results\nprint(causal.estimates)\n\n\n\n\n* Estimate propensity score\nlogit treat age educ black hispanic married nodegree re74 re75\n\n* Predict propensity scores\npredict pscore, pr\n\n* Nearest neighbor matching with caliper\npsmatch2 treat, pscore(pscore) outcome(re78) caliper(0.25) ate\n\n* Check balance\npstest age educ black hispanic married nodegree re74 re75, ///\n       treated(treat) pscore(pscore)",
     "crumbs": [
       "Matching Methods",
       "Propsensity Score Matching"
@@ -444,40 +554,7 @@
     "href": "matching_cvm.html#limitations",
     "title": "Matching Methods",
     "section": "Limitations",
-    "text": "Limitations\n\nCurse of dimensionality: Performance degrades with many covariates\nSensitive to outliers: Extreme values can distort \\(S\\)\nAssumes multivariate normality (implicitly)",
-    "crumbs": [
-      "Matching Methods",
-      "Covariate Matching"
-    ]
-  },
-  {
-    "objectID": "matching_cvm.html#implementation-in-r",
-    "href": "matching_cvm.html#implementation-in-r",
-    "title": "Matching Methods",
-    "section": "Implementation in R",
-    "text": "Implementation in R\n\nlibrary(MatchIt)\nlibrary(Matching)\n\n# Mahalanobis distance matching\nm.out &lt;- matchit(\n  treat ~ age + educ + race + married + nodegree + re74 + re75,\n  data = mydata,\n  method = \"nearest\",\n  distance = \"mahalanobis\"\n)\n\n# With caliper on propensity score\nm.out2 &lt;- matchit(\n  treat ~ age + educ + race + married + nodegree + re74 + re75,\n  data = mydata,\n  method = \"nearest\",\n  distance = \"mahalanobis\",\n  mahvars = ~ age + educ + re74 + re75,  # Variables for Mahal distance\n  caliper = 0.25,                         # Caliper on propensity score\n  std.caliper = TRUE\n)\n\n# Check balance\nsummary(m.out, un = FALSE)",
-    "crumbs": [
-      "Matching Methods",
-      "Covariate Matching"
-    ]
-  },
-  {
-    "objectID": "matching_cvm.html#implementation-in-python",
-    "href": "matching_cvm.html#implementation-in-python",
-    "title": "Matching Methods",
-    "section": "Implementation in Python",
-    "text": "Implementation in Python\n\nimport numpy as np\nfrom scipy.spatial.distance import mahalanobis\nfrom sklearn.covariance import EmpiricalCovariance\n\n# Compute covariance matrix\nX = data[['age', 'educ', 'married', 're74', 're75']].values\ncov = EmpiricalCovariance().fit(X)\nS_inv = np.linalg.inv(cov.covariance_)\n\n# Calculate distance between two units\ndist = mahalanobis(X[i], X[j], S_inv)\n\n# Using causalinference package\nfrom causalinference import CausalModel\n\nY = data['outcome'].values\nD = data['treat'].values\nX = data[['age', 'educ', 'married', 're74', 're75']].values\n\ncausal = CausalModel(Y, D, X)\ncausal.est_via_matching(matches=1, bias_adj=True)\nprint(causal.estimates)",
-    "crumbs": [
-      "Matching Methods",
-      "Covariate Matching"
-    ]
-  },
-  {
-    "objectID": "matching_cvm.html#implementation-in-stata",
-    "href": "matching_cvm.html#implementation-in-stata",
-    "title": "Matching Methods",
-    "section": "Implementation in Stata",
-    "text": "Implementation in Stata\n* Install mahapick if needed\n* ssc install mahapick\n\nmahapick treat age educ black hispanic married nodegree re74 re75, ///\n         idvar(id) nummatches(1) scorevar(mahal_dist) matchedvar(matched)\n\n* Keep matched observations\nkeep if matched == 1\n\n* Estimate treatment effect\nreg outcome treat age educ black hispanic married nodegree re74 re75",
+    "text": "Limitations\n\nCurse of dimensionality: Performance degrades with many covariates\nSensitive to outliers: Extreme values can distort \\(S\\)\nAssumes multivariate normality (implicitly)\n\n\nRPythonStata\n\n\n\nlibrary(MatchIt)\nlibrary(Matching)\n\n# Mahalanobis distance matching\nm.out &lt;- matchit(\n  treat ~ age + educ + race + married + nodegree + re74 + re75,\n  data = mydata,\n  method = \"nearest\",\n  distance = \"mahalanobis\"\n)\n\n# With caliper on propensity score\nm.out2 &lt;- matchit(\n  treat ~ age + educ + race + married + nodegree + re74 + re75,\n  data = mydata,\n  method = \"nearest\",\n  distance = \"mahalanobis\",\n  mahvars = ~ age + educ + re74 + re75,  # Variables for Mahal distance\n  caliper = 0.25,                         # Caliper on propensity score\n  std.caliper = TRUE\n)\n\n# Check balance\nsummary(m.out, un = FALSE)\n\n\n\n\nimport numpy as np\nfrom scipy.spatial.distance import mahalanobis\nfrom sklearn.covariance import EmpiricalCovariance\n\n# Compute covariance matrix\nX = data[['age', 'educ', 'married', 're74', 're75']].values\ncov = EmpiricalCovariance().fit(X)\nS_inv = np.linalg.inv(cov.covariance_)\n\n# Calculate distance between two units\ndist = mahalanobis(X[i], X[j], S_inv)\n\n# Using causalinference package\nfrom causalinference import CausalModel\n\nY = data['outcome'].values\nD = data['treat'].values\nX = data[['age', 'educ', 'married', 're74', 're75']].values\n\ncausal = CausalModel(Y, D, X)\ncausal.est_via_matching(matches=1, bias_adj=True)\nprint(causal.estimates)\n\n\n\n\n* Install mahapick if needed\n* ssc install mahapick\n\nmahapick treat age educ black hispanic married nodegree re74 re75, ///\n         idvar(id) nummatches(1) scorevar(mahal_dist) matchedvar(matched)\n\n* Keep matched observations\nkeep if matched == 1\n\n* Estimate treatment effect\nreg outcome treat age educ black hispanic married nodegree re74 re75",
     "crumbs": [
       "Matching Methods",
       "Covariate Matching"
@@ -510,40 +587,7 @@
     "href": "matching_cvm.html#monotonic-imbalance-bounding",
     "title": "Matching Methods",
     "section": "Monotonic Imbalance Bounding",
-    "text": "Monotonic Imbalance Bounding\nCEM guarantees that finer coarsening cannot increase imbalance.\nLet \\(L(C(X))\\) measure imbalance under coarsening \\(C\\). If \\(C_1 \\preceq C_2\\) (finer), then:\n\\[\nL(C_1(X)) \\leq L(C_2(X))\n\\]\nThis provides ex ante control over balance.",
-    "crumbs": [
-      "Matching Methods",
-      "Covariate Matching"
-    ]
-  },
-  {
-    "objectID": "matching_cvm.html#implementation-in-r-1",
-    "href": "matching_cvm.html#implementation-in-r-1",
-    "title": "Matching Methods",
-    "section": "Implementation in R",
-    "text": "Implementation in R\n\nlibrary(cem)\n\n# Automatic coarsening\nmat &lt;- cem(\n  treatment = \"treat\",\n  data = mydata,\n  drop = \"outcome\",\n  keep.all = TRUE\n)\n\n# Manual coarsening with custom bins\neducut &lt;- c(0, 6.5, 8.5, 12.5, 17)\nmat2 &lt;- cem(\n  treatment = \"treat\",\n  data = mydata,\n  drop = \"outcome\",\n  cutpoints = list(education = educut)\n)\n\n# Check imbalance\nimbalance(group = mydata$treat, data = mydata[covariates])\n\n# Estimate treatment effect with weights\nfit &lt;- lm(outcome ~ treat + age + educ, data = mydata, weights = mat$w)\nsummary(fit)",
-    "crumbs": [
-      "Matching Methods",
-      "Covariate Matching"
-    ]
-  },
-  {
-    "objectID": "matching_cvm.html#implementation-in-python-1",
-    "href": "matching_cvm.html#implementation-in-python-1",
-    "title": "Matching Methods",
-    "section": "Implementation in Python",
-    "text": "Implementation in Python\n\n# CEM not natively available in Python\n# Use rpy2 to call R's cem package\n\nimport rpy2.robjects as ro\nfrom rpy2.robjects import pandas2ri\npandas2ri.activate()\n\nro.r('library(cem)')\n\n# Convert pandas df to R df\nr_data = pandas2ri.py2rpy(data)\n\n# Run CEM in R\nresult = ro.r.cem('treat', data=r_data, drop='outcome')\nweights = ro.r('result$w')",
-    "crumbs": [
-      "Matching Methods",
-      "Covariate Matching"
-    ]
-  },
-  {
-    "objectID": "matching_cvm.html#implementation-in-stata-1",
-    "href": "matching_cvm.html#implementation-in-stata-1",
-    "title": "Matching Methods",
-    "section": "Implementation in Stata",
-    "text": "Implementation in Stata\n* Install cem\n* ssc install cem\n\ncem age (#3) educ (#4) black hispanic married, treatment(treat)\n\n* Check balance\nimbalance age educ black hispanic married, by(treat)\n\n* Regression with CEM weights\nreg outcome treat age educ black hispanic married [iw=cem_weights]",
+    "text": "Monotonic Imbalance Bounding\nCEM guarantees that finer coarsening cannot increase imbalance.\nLet \\(L(C(X))\\) measure imbalance under coarsening \\(C\\). If \\(C_1 \\preceq C_2\\) (finer), then:\n\\[\nL(C_1(X)) \\leq L(C_2(X))\n\\]\nThis provides ex ante control over balance.\n\nRPythonStata\n\n\n\nlibrary(cem)\n\n# Automatic coarsening\nmat &lt;- cem(\n  treatment = \"treat\",\n  data = mydata,\n  drop = \"outcome\",\n  keep.all = TRUE\n)\n\n# Manual coarsening with custom bins\neducut &lt;- c(0, 6.5, 8.5, 12.5, 17)\nmat2 &lt;- cem(\n  treatment = \"treat\",\n  data = mydata,\n  drop = \"outcome\",\n  cutpoints = list(education = educut)\n)\n\n# Check imbalance\nimbalance(group = mydata$treat, data = mydata[covariates])\n\n# Estimate treatment effect with weights\nfit &lt;- lm(outcome ~ treat + age + educ, data = mydata, weights = mat$w)\nsummary(fit)\n\n\n\n\n# CEM not natively available in Python\n# Use rpy2 to call R's cem package\n\nimport rpy2.robjects as ro\nfrom rpy2.robjects import pandas2ri\npandas2ri.activate()\n\nro.r('library(cem)')\n\n# Convert pandas df to R df\nr_data = pandas2ri.py2rpy(data)\n\n# Run CEM in R\nresult = ro.r.cem('treat', data=r_data, drop='outcome')\nweights = ro.r('result$w')\n\n\n\n\n* Install cem\n* ssc install cem\n\ncem age (#3) educ (#4) black hispanic married, treatment(treat)\n\n* Check balance\nimbalance age educ black hispanic married, by(treat)\n\n* Regression with CEM weights\nreg outcome treat age educ black hispanic married [iw=cem_weights]",
     "crumbs": [
       "Matching Methods",
       "Covariate Matching"
@@ -576,18 +620,7 @@
     "href": "matching_cvm.html#balance-criteria",
     "title": "Matching Methods",
     "section": "Balance Criteria",
-    "text": "Balance Criteria\nMinimize:\n\\[\nB = \\sum_{k=1}^p w_k b_k^2\n\\]\nwhere \\(b_k\\) is a balance metric (e.g., standardized mean difference, KS statistic) for covariate \\(k\\).",
-    "crumbs": [
-      "Matching Methods",
-      "Covariate Matching"
-    ]
-  },
-  {
-    "objectID": "matching_cvm.html#implementation-in-r-2",
-    "href": "matching_cvm.html#implementation-in-r-2",
-    "title": "Matching Methods",
-    "section": "Implementation in R",
-    "text": "Implementation in R\n\nlibrary(Matching)\n\n# Define covariates\nX &lt;- cbind(age, educ, black, hisp, married, nodegr, u74, u75, re75, re74)\n\n# Genetic matching to find optimal weights\ngenout &lt;- GenMatch(\n  Tr = treat,\n  X = X,\n  estimand = \"ATT\",\n  M = 1,\n  pop.size = 100,\n  max.generations = 25\n)\n\n# Match using optimized weights\nmout &lt;- Match(\n  Y = outcome,\n  Tr = treat,\n  X = X,\n  estimand = \"ATT\",\n  Weight.matrix = genout\n)\n\n# Results\nsummary(mout)\n\n# Assess balance\nmb &lt;- MatchBalance(\n  treat ~ age + educ + black + hisp + married + nodegr + u74 + u75 + re75 + re74,\n  match.out = mout,\n  nboots = 500\n)",
+    "text": "Balance Criteria\nMinimize:\n\\[\nB = \\sum_{k=1}^p w_k b_k^2\n\\]\nwhere \\(b_k\\) is a balance metric (e.g., standardized mean difference, KS statistic) for covariate \\(k\\).\n\nR\n\n\n\nlibrary(Matching)\n\n# Define covariates\nX &lt;- cbind(age, educ, black, hisp, married, nodegr, u74, u75, re75, re74)\n\n# Genetic matching to find optimal weights\ngenout &lt;- GenMatch(\n  Tr = treat,\n  X = X,\n  estimand = \"ATT\",\n  M = 1,\n  pop.size = 100,\n  max.generations = 25\n)\n\n# Match using optimized weights\nmout &lt;- Match(\n  Y = outcome,\n  Tr = treat,\n  X = X,\n  estimand = \"ATT\",\n  Weight.matrix = genout\n)\n\n# Results\nsummary(mout)\n\n# Assess balance\nmb &lt;- MatchBalance(\n  treat ~ age + educ + black + hisp + married + nodegr + u74 + u75 + re75 + re74,\n  match.out = mout,\n  nboots = 500\n)",
     "crumbs": [
       "Matching Methods",
       "Covariate Matching"
@@ -620,18 +653,7 @@
     "href": "matching_cvm.html#advantages",
     "title": "Matching Methods",
     "section": "Advantages",
-    "text": "Advantages\n\nExact balance on specified moments (means, variances, etc.)\nUnique solution via convex optimization\nNo iteration required",
-    "crumbs": [
-      "Matching Methods",
-      "Covariate Matching"
-    ]
-  },
-  {
-    "objectID": "matching_cvm.html#implementation-in-r-3",
-    "href": "matching_cvm.html#implementation-in-r-3",
-    "title": "Matching Methods",
-    "section": "Implementation in R",
-    "text": "Implementation in R\n\nlibrary(ebal)\n\n# Entropy balancing\neb.out &lt;- ebalance(\n  Treatment = treat,\n  X = cbind(age, educ, black, married, re74, re75)\n)\n\n# Construct weights\nweights &lt;- c(eb.out$w, rep(1, sum(treat)))\n\n# Estimate ATE\nfit &lt;- lm(outcome ~ treat, weights = weights)\nsummary(fit)",
+    "text": "Advantages\n\nExact balance on specified moments (means, variances, etc.)\nUnique solution via convex optimization\nNo iteration required\n\n\nR\n\n\n\nlibrary(ebal)\n\n# Entropy balancing\neb.out &lt;- ebalance(\n  Treatment = treat,\n  X = cbind(age, educ, black, married, re74, re75)\n)\n\n# Construct weights\nweights &lt;- c(eb.out$w, rep(1, sum(treat)))\n\n# Estimate ATE\nfit &lt;- lm(outcome ~ treat, weights = weights)\nsummary(fit)",
     "crumbs": [
       "Matching Methods",
       "Covariate Matching"
@@ -642,20 +664,9 @@
     "href": "practice.html",
     "title": "Coding Practice",
     "section": "",
-    "text": "Now that you have a sense of the purpose and methodology behind matching methods, we can attempt a simple application of coding this in practice. You are welcome to use your coding language of preference (Stata, R, or Python). But I will presume that you have both established your working environment to execute the code and familiarity in the language to adequately troubleshoot your technical issues.\nFor this exercise, we will be using data from XXX. You can download the sample data set here .\n\nRStataPython\n\n\n\nlibrary(Matching); library(tidyverse)\nbr &lt;- causaldata::black_politicians\n\n# Outcome\nY &lt;- br %&gt;%\n    pull(responded)\n# Treatment\nD &lt;- br %&gt;%\n    pull(leg_black)\n# Matching variables\n# Note select() is also in the Matching package, so we specify dplyr\nX &lt;- br %&gt;%\n    dplyr::select(medianhhincom, blackpercent, leg_democrat) %&gt;%\n    as.matrix()\n\n# Weight = 2, oddly, denotes Mahalanobis distance\nM &lt;- Match(Y, D, X, Weight = 2, caliper = 1)\n\n# See treatment effect estimate\nsummary(M)\n\n# Get matched data for use elsewhere. Note that this approach will \n# duplicate each observation for each time it was matched\nmatched_treated &lt;- tibble(id = M$index.treated,\n                          weight = M$weights)\nmatched_control &lt;- tibble(id = M$index.control,\n                          weight = M$weights)\nmatched_sets &lt;- bind_rows(matched_treated,\n                          matched_control) \n# Simplify to one row per observation\nmatched_sets &lt;- matched_sets %&gt;%\n                    group_by(id) %&gt;%\n                    summarize(weight = sum(weight))\n# And bring back to data\nmatched_br &lt;- br %&gt;%\n    mutate(id = row_number()) %&gt;%\n    left_join(matched_sets, by = 'id')\n\n# To be used like this! The standard errors here are wrong\nlm(responded~leg_black, data = matched_br, weights = weight)\n\n\n\n\ncausaldata black_politicians.dta, use clear download\n\n* Create an id variable based on row number,\n* which will be used to locate match IDs\ng id = _n\n\n* teffects nnmatch does nearest-neighbor matching using first the outcome \n* variable and the matching variables then the treatment variable.\n* The generate option creates variables with the match identities\nteffects nnmatch (responded medianhhincom blackpercent leg_democrat) ///\n    (leg_black), nneighbor(1) metric(mahalanobis) gen(match)\n\n* Note this will produce a treatment effect by itself\n* Doing anything else with the match in Stata is pretty tricky\n* (or using a caliper). If you want either of those you may want to \n* look into the mahapick or psmatch2 packages\n* Although these won't give the most accurate standard errors\n\n\n\n\nimport pandas as pd\nimport numpy as np\n# The more-popular matching tools in sklearn\n# are more geared towards machine learning than statistical inference\nfrom causalinference.causal import CausalModel\nfrom causaldata import black_politicians\nbr = black_politicians.load_pandas().data\n\n# Get our outcome, treatment, and matching variables\n# We need these as numpy arrays\nY = br['responded'].to_numpy()\nD = br['leg_black'].to_numpy()\nX = br[['medianhhincom', 'blackpercent', 'leg_democrat']].to_numpy()\n\n# Set up our model\nM = CausalModel(Y, D, X)\n\n# Fit, using Mahalanobis distance\nM.est_via_matching(weights = 'maha', matches = 1)\n\nprint(M.estimates)\n# Note it automatically calcultes average treatments on\n# average, on treated, and on untreated/control (ATC)\n\n\n\n\n\nContext\n\nMatching context\nEndogeneity concern\n\n\n\nThe Data\n\nDescription of what is in the data.\nAny data cleaning necessary\n\n\n\nNaive Estimation\n\nShow the results for a naive estimation\n\n\n\nMatching Estimation\n\n\nSensitivity Analysis",
+    "text": "Now that you have a sense of the purpose and methodology behind matching methods, we can attempt a simple application of coding this in practice. You are welcome to use your coding language of preference (Stata, R, or Python). But I will presume that you have both established your working environment to execute the code and familiarity in the language to adequately troubleshoot your technical issues.\nFor this exercise, we will be using data from XXX. You can download the sample data set here .\n\nRStataPython\n\n\n\nlibrary(Matching); library(tidyverse)\nbr &lt;- causaldata::black_politicians\n\n# Outcome\nY &lt;- br %&gt;%\n    pull(responded)\n# Treatment\nD &lt;- br %&gt;%\n    pull(leg_black)\n# Matching variables\n# Note select() is also in the Matching package, so we specify dplyr\nX &lt;- br %&gt;%\n    dplyr::select(medianhhincom, blackpercent, leg_democrat) %&gt;%\n    as.matrix()\n\n# Weight = 2, oddly, denotes Mahalanobis distance\nM &lt;- Match(Y, D, X, Weight = 2, caliper = 1)\n\n# See treatment effect estimate\nsummary(M)\n\n# Get matched data for use elsewhere. Note that this approach will \n# duplicate each observation for each time it was matched\nmatched_treated &lt;- tibble(id = M$index.treated,\n                          weight = M$weights)\nmatched_control &lt;- tibble(id = M$index.control,\n                          weight = M$weights)\nmatched_sets &lt;- bind_rows(matched_treated,\n                          matched_control) \n# Simplify to one row per observation\nmatched_sets &lt;- matched_sets %&gt;%\n                    group_by(id) %&gt;%\n                    summarize(weight = sum(weight))\n# And bring back to data\nmatched_br &lt;- br %&gt;%\n    mutate(id = row_number()) %&gt;%\n    left_join(matched_sets, by = 'id')\n\n# To be used like this! The standard errors here are wrong\nlm(responded~leg_black, data = matched_br, weights = weight)\n\n\n\n\ncausaldata black_politicians.dta, use clear download\n\n* Create an id variable based on row number,\n* which will be used to locate match IDs\ng id = _n\n\n* teffects nnmatch does nearest-neighbor matching using first the outcome \n* variable and the matching variables then the treatment variable.\n* The generate option creates variables with the match identities\nteffects nnmatch (responded medianhhincom blackpercent leg_democrat) ///\n    (leg_black), nneighbor(1) metric(mahalanobis) gen(match)\n\n* Note this will produce a treatment effect by itself\n* Doing anything else with the match in Stata is pretty tricky\n* (or using a caliper). If you want either of those you may want to \n* look into the mahapick or psmatch2 packages\n* Although these won't give the most accurate standard errors\n\n\n\n\nimport pandas as pd\nimport numpy as np\n# The more-popular matching tools in sklearn\n# are more geared towards machine learning than statistical inference\nfrom causalinference.causal import CausalModel\nfrom causaldata import black_politicians\nbr = black_politicians.load_pandas().data\n\n# Get our outcome, treatment, and matching variables\n# We need these as numpy arrays\nY = br['responded'].to_numpy()\nD = br['leg_black'].to_numpy()\nX = br[['medianhhincom', 'blackpercent', 'leg_democrat']].to_numpy()\n\n# Set up our model\nM = CausalModel(Y, D, X)\n\n# Fit, using Mahalanobis distance\nM.est_via_matching(weights = 'maha', matches = 1)\n\nprint(M.estimates)\n# Note it automatically calcultes average treatments on\n# average, on treated, and on untreated/control (ATC)\n\n\n\n\n\nNaive Estimation\nFirst, estimate the treatment effect without any matching/adjustment. This gives a baseline estimate that may be biased by selection on observables.\nThe naive estimator is:\n\\[\n\\hat\\tau_{naive} = E[Y\\mid T=1] - E[Y\\mid T=0]\n\\]\nIf treated and control groups differ systematically in pre-treatment covariates, this difference combines treatment effect plus selection bias.\n\nRStataPython\n\n\n\nlibrary(causaldata)\nlibrary(dplyr)\n\nbr &lt;- black_politicians\n\n# Naive difference in means\nnaive_diff &lt;- with(br, mean(responded[leg_black == 1]) - mean(responded[leg_black == 0]))\nnaive_diff\n\n# Naive OLS (unadjusted)\nnaive_lm &lt;- lm(responded ~ leg_black, data = br)\nsummary(naive_lm)\n\n\n\n\n* Naive difference in means\nmean responded, over(leg_black)\n\n* Naive unadjusted regression\nreg responded leg_black\n\n\n\n\nfrom causaldata import black_politicians\nimport statsmodels.formula.api as smf\n\nbr = black_politicians.load_pandas().data\n\nnaive_diff = br.loc[br.leg_black == 1, \"responded\"].mean() - \\\n                         br.loc[br.leg_black == 0, \"responded\"].mean()\nprint(\"Naive diff in means:\", naive_diff)\n\nnaive_model = smf.ols(\"responded ~ leg_black\", data=br).fit()\nprint(naive_model.summary())\n\n\n\n\n\n\nMatching Estimation\nNow compare with the matching-based estimate from the code above. The key teaching point is:\n\nIf \\(\\hat\\tau_{naive}\\) and \\(\\hat\\tau_{match}\\) differ meaningfully, imbalance likely biased the naive estimate.\n\nDefine an estimated bias proxy:\n\\[\n\\widehat{Bias}_{selection} \\approx \\hat\\tau_{naive} - \\hat\\tau_{match}\n\\]\nThis is not the true bias (which is unobserved), but it is a useful diagnostic for teaching.\n\nRStataPython\n\n\n\n# From previous sections:\n# naive_diff already computed\n# M &lt;- Match(...)\n\nmatch_est &lt;- M$est\nbias_proxy &lt;- naive_diff - match_est\n\ncat(\"Naive estimate:\", naive_diff, \"\\n\")\ncat(\"Matching estimate:\", match_est, \"\\n\")\ncat(\"Estimated selection bias proxy (naive - match):\", bias_proxy, \"\\n\")\n\n\n\n\n* Save naive coefficient\nreg responded leg_black\nscalar b_naive = _b[leg_black]\n\n* Matching estimator (ATT reported by teffects)\nteffects nnmatch (responded medianhhincom blackpercent leg_democrat) ///\n        (leg_black), nneighbor(1) metric(mahalanobis)\n\nmatrix b = e(b)\nscalar b_match = b[1,1]\n\ndisplay \"Naive estimate: \" b_naive\ndisplay \"Matching estimate: \" b_match\ndisplay \"Estimated selection bias proxy (naive - match): \" (b_naive - b_match)\n\n\n\n\n# naive_diff from previous section\n# M.estimates from causalinference output\n\nprint(M.estimates)\nprint(\"Compare naive_diff to ATT/ATE above to discuss selection bias.\")\n\n\n\n\n\n\nSensitivity Analysis\nEven after matching, hidden confounding may remain. Use sensitivity analysis to ask: “How strong would an unobserved confounder need to be to overturn the result?”\nFor matched pairs, Rosenbaum bounds are standard.\n\nRStataPython\n\n\n\nlibrary(MatchIt)\nlibrary(rbounds)\n\n# Reconstruct matched dataset via MatchIt for sensitivity workflow\nm.out &lt;- matchit(\n    leg_black ~ medianhhincom + blackpercent + leg_democrat,\n    data = br,\n    method = \"nearest\",\n    ratio = 1\n)\n\nmd &lt;- match.data(m.out)\n\n# Build paired outcomes by subclass (1 treated + 1 control each subclass)\npair_summ &lt;- md %&gt;%\n    group_by(subclass) %&gt;%\n    summarize(\n        y_t = responded[leg_black == 1][1],\n        y_c = responded[leg_black == 0][1],\n        .groups = \"drop\"\n    )\n\n# Rosenbaum sensitivity for Wilcoxon signed-rank p-value\npsens(pair_summ$y_t, pair_summ$y_c, Gamma = 2, GammaInc = 0.1)\n\n# Hodges-Lehmann sensitivity\nhlsens(pair_summ$y_t, pair_summ$y_c, Gamma = 2, GammaInc = 0.1)\n\nInterpretation guide:\n\nIf significance disappears around \\(\\Gamma \\approx 1.1\\), results are fragile.\nIf significance persists until \\(\\Gamma &gt; 2\\), results are relatively robust.\n\n\n\n\n* After nearest-neighbor matching, run rbounds (user-written)\n* ssc install rbounds\n\n* Example sensitivity check across gamma values\nrbounds responded, gamma(1(0.1)2)\n\n\n\n\n# Python has limited native Rosenbaum-bounds tooling.\n# Practical option: run sensitivity in R (rbounds) after exporting matched pairs,\n# or use rpy2 from Python to call psens()/hlsens().\n\n\n\n\nSuggested student exercise:\n\nCompute and report naive and matched estimates.\nQuantify the bias proxy (naive - matched).\nRun Rosenbaum bounds and report the critical Gamma where inference changes.\nConclude whether results are robust to moderate hidden bias.",
     "crumbs": [
       "Coding Practice"
-    ]
-  },
-  {
-    "objectID": "matching_double_robust.html",
-    "href": "matching_double_robust.html",
-    "title": "Matching Methods",
-    "section": "",
-    "text": "https://pubmed.ncbi.nlm.nih.gov/21385832/\nhttps://matheusfacure.github.io/python-causality-handbook/12-Doubly-Robust-Estimation.html",
-    "crumbs": [
-      "Matching Methods",
-      "Doubly Robust Estimation"
     ]
   },
   {
@@ -683,7 +694,7 @@
     "href": "sensitivity.html#diagnosing-lack-of-overlap",
     "title": "Sensitivity Analysis",
     "section": "Diagnosing Lack of Overlap",
-    "text": "Diagnosing Lack of Overlap\n\n1. Propensity Score Histograms\n\nlibrary(ggplot2)\n\n# Visualize propensity score distributions\nggplot(data, aes(x = pscore, fill = factor(treat))) +\n  geom_histogram(alpha = 0.5, position = \"identity\", bins = 30) +\n  labs(x = \"Propensity Score\", y = \"Count\", fill = \"Treatment\") +\n  theme_minimal()\n\nLook for:\n\nNon-overlapping regions at extreme values\nTreatment group with no control counterparts (or vice versa)\n\n\n\n2. Convex Hull Method\nThe convex hull identifies the multidimensional space where interpolation (not extrapolation) is possible (King and Zeng 2006).\n\nDiscard units outside the convex hull of the opposite group\nMore restrictive than propensity score trimming\n\n\n\n3. Discarding Units Outside Common Support\nBy propensity score:\n\n# Define range\nps_min &lt;- max(min(data$pscore[data$treat == 1]), \n              min(data$pscore[data$treat == 0]))\nps_max &lt;- min(max(data$pscore[data$treat == 1]), \n              max(data$pscore[data$treat == 0]))\n\n# Keep only units in common support\ndata_trimmed &lt;- data %&gt;%\n  filter(pscore &gt;= ps_min & pscore &lt;= ps_max)",
+    "text": "Diagnosing Lack of Overlap\n\n1. Propensity Score Histograms\n\nlibrary(ggplot2)\n\n# Visualize propensity score distributions\nggplot(data, aes(x = pscore, fill = factor(treat))) +\n  geom_histogram(alpha = 0.5, position = \"identity\", bins = 30) +\n  labs(x = \"Propensity Score\", y = \"Count\", fill = \"Treatment\") +\n  theme_minimal()\n\nLook for:\n\nNon-overlapping regions at extreme values\nTreatment group with no control counterparts (or vice versa)\n\n\n\n2. Convex Hull Method\nThe convex hull identifies the multidimensional space where interpolation (not extrapolation) is possible (King and Zeng 2006).\n\nDiscard units outside the convex hull of the opposite group\nMore restrictive than propensity score trimming\n\n\n\n3. Discarding Units Outside Common Support\nBy propensity score:\n\n# Define range\nps_min &lt;- max(min(data$pscore[data$treat == 1]), \n            min(data$pscore[data$treat == 0]))\nps_max &lt;- min(max(data$pscore[data$treat == 1]), \n            max(data$pscore[data$treat == 0]))\n\n# Keep only units in common support\ndata_trimmed &lt;- data %&gt;%\n  filter(pscore &gt;= ps_min & pscore &lt;= ps_max)",
     "crumbs": [
       "Sensitivity Analysis"
     ]
@@ -733,7 +744,7 @@
     "href": "sensitivity.html#graphical-diagnostics",
     "title": "Sensitivity Analysis",
     "section": "Graphical Diagnostics",
-    "text": "Graphical Diagnostics\n\nLove Plots\nDisplay standardized mean differences before and after matching:\n\nlibrary(cobalt)\n\nbal.plot(m.out, var.name = \"distance\", which = \"both\")\n\nlove.plot(m.out, threshold = 0.1, \n          abs = TRUE, \n          var.order = \"unadjusted\")\n\n\n\nQQ Plots\nCompare empirical distributions of covariates:\n\nplot(m.out, type = \"qq\", which.xs = c(\"age\", \"educ\", \"re74\"))\n\n\n\nEmpirical CDFs\n\nplot(m.out, type = \"ecdf\")",
+    "text": "Graphical Diagnostics\n\nLove Plots\nDisplay standardized mean differences before and after matching:\n\nlibrary(cobalt)\n\nbal.plot(m.out, var.name = \"distance\", which = \"both\")\n\nlove.plot(m.out, threshold = 0.1, \n        abs = TRUE, \n        var.order = \"unadjusted\")\n\n\n\nQQ Plots\nCompare empirical distributions of covariates:\n\nplot(m.out, type = \"qq\", which.xs = c(\"age\", \"educ\", \"re74\"))\n\n\n\nEmpirical CDFs\n\nplot(m.out, type = \"ecdf\")",
     "crumbs": [
       "Sensitivity Analysis"
     ]
@@ -783,47 +794,7 @@
     "href": "sensitivity.html#procedure",
     "title": "Sensitivity Analysis",
     "section": "Procedure",
-    "text": "Procedure\n\nChoose a range of \\(\\Gamma\\) values (e.g., 1.0, 1.1, 1.2, …, 3.0)\nFor each \\(\\Gamma\\), compute bounds on the p-value or treatment effect estimate\nReport the critical \\(\\Gamma\\) at which the effect becomes insignificant",
-    "crumbs": [
-      "Sensitivity Analysis"
-    ]
-  },
-  {
-    "objectID": "sensitivity.html#implementation-in-r",
-    "href": "sensitivity.html#implementation-in-r",
-    "title": "Sensitivity Analysis",
-    "section": "Implementation in R",
-    "text": "Implementation in R\n\nlibrary(rbounds)\nlibrary(MatchIt)\n\n# Perform matching\nm.out &lt;- matchit(treat ~ age + educ, data = mydata, method = \"nearest\")\nmatched_data &lt;- match.data(m.out)\n\n# Split into groups\ntreat_y &lt;- matched_data$outcome[matched_data$treat == 1]\ncontrol_y &lt;- matched_data$outcome[matched_data$treat == 0]\n\n# P-value sensitivity\npsens(treat_y, control_y, Gamma = 3, GammaInc = 0.1)\n\n# Hodges-Lehmann point estimate sensitivity\nhlsens(treat_y, control_y, Gamma = 3, GammaInc = 0.1)\n\nOutput:\n\nTables showing p-values and confidence intervals at different \\(\\Gamma\\) levels\nIdentify \\(\\Gamma\\) where effect loses significance",
-    "crumbs": [
-      "Sensitivity Analysis"
-    ]
-  },
-  {
-    "objectID": "sensitivity.html#interpretation-1",
-    "href": "sensitivity.html#interpretation-1",
-    "title": "Sensitivity Analysis",
-    "section": "Interpretation",
-    "text": "Interpretation\nIf the critical \\(\\Gamma\\) is:\n\n&lt; 1.5: Results are very sensitive to hidden bias\n1.5 - 2.5: Moderately robust\n&gt; 2.5: Highly robust—unobserved confounder would need to be very strong",
-    "crumbs": [
-      "Sensitivity Analysis"
-    ]
-  },
-  {
-    "objectID": "sensitivity.html#stata-implementation",
-    "href": "sensitivity.html#stata-implementation",
-    "title": "Sensitivity Analysis",
-    "section": "Stata Implementation",
-    "text": "Stata Implementation\n* After matching, save matched sample\nssc install rbounds\n\n* Sensitivity analysis\nrbounds outcome, gamma(1(0.1)3)",
-    "crumbs": [
-      "Sensitivity Analysis"
-    ]
-  },
-  {
-    "objectID": "sensitivity.html#python-implementation",
-    "href": "sensitivity.html#python-implementation",
-    "title": "Sensitivity Analysis",
-    "section": "Python Implementation",
-    "text": "Python Implementation\n\n# No direct Rosenbaum bounds in Python\n# Use R via rpy2 or implement manually using Wilcoxon signed-rank test\nimport rpy2.robjects as ro\nro.r('library(rbounds)')\nresult = ro.r('psens(treat_y, control_y, Gamma=2)')",
+    "text": "Procedure\n\nChoose a range of \\(\\Gamma\\) values (e.g., 1.0, 1.1, 1.2, …, 3.0)\nFor each \\(\\Gamma\\), compute bounds on the p-value or treatment effect estimate\nReport the critical \\(\\Gamma\\) at which the effect becomes insignificant\n\n\nRStataPython\n\n\n\nlibrary(rbounds)\nlibrary(MatchIt)\n\n# Perform matching\nm.out &lt;- matchit(treat ~ age + educ, data = mydata, method = \"nearest\")\nmatched_data &lt;- match.data(m.out)\n\n# Split into groups\ntreat_y &lt;- matched_data$outcome[matched_data$treat == 1]\ncontrol_y &lt;- matched_data$outcome[matched_data$treat == 0]\n\n# P-value sensitivity\npsens(treat_y, control_y, Gamma = 3, GammaInc = 0.1)\n\n# Hodges-Lehmann point estimate sensitivity\nhlsens(treat_y, control_y, Gamma = 3, GammaInc = 0.1)\n\n\nOutput\n\nTables showing p-values and confidence intervals at different \\(\\Gamma\\) levels\nIdentify \\(\\Gamma\\) where effect loses significance\n\n\n\nInterpretation\nIf the critical \\(\\Gamma\\) is:\n\n&lt; 1.5: Results are very sensitive to hidden bias\n1.5 - 2.5: Moderately robust\n&gt; 2.5: Highly robust—unobserved confounder would need to be very strong\n\n\n\n\n\n* After matching, save matched sample\nssc install rbounds\n\n* Sensitivity analysis\nrbounds outcome, gamma(1(0.1)3)\n\n\n\n\n# No direct Rosenbaum bounds in Python\n# Use R via rpy2 or implement manually using Wilcoxon signed-rank test\nimport rpy2.robjects as ro\nro.r('library(rbounds)')\nresult = ro.r('psens(treat_y, control_y, Gamma=2)')",
     "crumbs": [
       "Sensitivity Analysis"
     ]
@@ -896,6 +867,138 @@
     "text": "Permutation Tests\nRandomly reassign treatment status and re-estimate the effect. The true effect should be an outlier in the permutation distribution.",
     "crumbs": [
       "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "matching_lasso.html",
+    "href": "matching_lasso.html",
+    "title": "Matching Methods",
+    "section": "",
+    "text": "When the number of candidate covariates is large, standard propensity score modeling can overfit and produce unstable matches. A common strategy is to estimate the propensity score with LASSO-regularized logistic regression, which performs shrinkage and variable selection simultaneously (Tibshirani 1996).\nIn this module, “LASSO matching” means:\n\nEstimate treatment propensity with penalized logistic regression.\nUse the resulting propensity scores for matching (nearest neighbor, caliper, or subclassification).\nCheck balance and estimate treatment effects on the matched sample.",
+    "crumbs": [
+      "Matching Methods",
+      "LASSO Matching"
+    ]
+  },
+  {
+    "objectID": "matching_lasso.html#main-advantages",
+    "href": "matching_lasso.html#main-advantages",
+    "title": "Matching Methods",
+    "section": "Main Advantages",
+    "text": "Main Advantages\n\nHandles many covariates and interactions without manual pre-screening.\nReduces variance from overfit propensity models.\nImproves interpretability via sparse selected features.\nCan be used when \\(p\\) is large relative to \\(n\\).",
+    "crumbs": [
+      "Matching Methods",
+      "LASSO Matching"
+    ]
+  },
+  {
+    "objectID": "matching_lasso.html#key-caveat",
+    "href": "matching_lasso.html#key-caveat",
+    "title": "Matching Methods",
+    "section": "Key Caveat",
+    "text": "Key Caveat\nLASSO optimizes prediction loss, not balance directly. You still must verify post-match balance (SMDs, variance ratios, overlap).",
+    "crumbs": [
+      "Matching Methods",
+      "LASSO Matching"
+    ]
+  },
+  {
+    "objectID": "matching_lasso.html#step-1-build-candidate-covariate-set",
+    "href": "matching_lasso.html#step-1-build-candidate-covariate-set",
+    "title": "Matching Methods",
+    "section": "Step 1: Build Candidate Covariate Set",
+    "text": "Step 1: Build Candidate Covariate Set\n\nInclude pre-treatment confounders (predict treatment and outcome).\nOptionally include interactions and nonlinear terms.\nExclude post-treatment variables.",
+    "crumbs": [
+      "Matching Methods",
+      "LASSO Matching"
+    ]
+  },
+  {
+    "objectID": "matching_lasso.html#step-2-fit-lasso-logistic-model-for-treatment",
+    "href": "matching_lasso.html#step-2-fit-lasso-logistic-model-for-treatment",
+    "title": "Matching Methods",
+    "section": "Step 2: Fit LASSO Logistic Model for Treatment",
+    "text": "Step 2: Fit LASSO Logistic Model for Treatment\nUse cross-validation to choose \\(\\lambda\\) (e.g., lambda.min or more conservative lambda.1se).",
+    "crumbs": [
+      "Matching Methods",
+      "LASSO Matching"
+    ]
+  },
+  {
+    "objectID": "matching_lasso.html#step-3-compute-propensity-scores",
+    "href": "matching_lasso.html#step-3-compute-propensity-scores",
+    "title": "Matching Methods",
+    "section": "Step 3: Compute Propensity Scores",
+    "text": "Step 3: Compute Propensity Scores\n\\[\n\\hat e_i = \\Pr(T_i=1\\mid X_i;\\hat\\beta_{\\text{lasso}}).\n\\]",
+    "crumbs": [
+      "Matching Methods",
+      "LASSO Matching"
+    ]
+  },
+  {
+    "objectID": "matching_lasso.html#step-4-match-on-hat-e_i",
+    "href": "matching_lasso.html#step-4-match-on-hat-e_i",
+    "title": "Matching Methods",
+    "section": "Step 4: Match on \\(\\hat e_i\\)",
+    "text": "Step 4: Match on \\(\\hat e_i\\)\n\nNearest neighbor matching with caliper is common.\nOptionally use replacement if overlap is weak.",
+    "crumbs": [
+      "Matching Methods",
+      "LASSO Matching"
+    ]
+  },
+  {
+    "objectID": "matching_lasso.html#step-5-diagnose-balance-and-overlap",
+    "href": "matching_lasso.html#step-5-diagnose-balance-and-overlap",
+    "title": "Matching Methods",
+    "section": "Step 5: Diagnose Balance and Overlap",
+    "text": "Step 5: Diagnose Balance and Overlap\n\nStandardized mean differences (target: absolute SMD &lt; 0.1).\nVariance ratios (target: roughly 0.5 to 2).\nPropensity score distribution overlap.",
+    "crumbs": [
+      "Matching Methods",
+      "LASSO Matching"
+    ]
+  },
+  {
+    "objectID": "matching_lasso.html#step-6-estimate-treatment-effect-and-uncertainty",
+    "href": "matching_lasso.html#step-6-estimate-treatment-effect-and-uncertainty",
+    "title": "Matching Methods",
+    "section": "Step 6: Estimate Treatment Effect and Uncertainty",
+    "text": "Step 6: Estimate Treatment Effect and Uncertainty\n\nDifference in means on matched data or regression adjustment.\nUse robust or clustered standard errors by matched subclass where appropriate.\n\n\nRPythonStata\n\n\nLASSO Propensity + Matching\n\nlibrary(glmnet)\nlibrary(MatchIt)\nlibrary(cobalt)\n\n# Example inputs:\n# data$treat is binary treatment indicator\n# outcome is data$outcome\n\nX &lt;- model.matrix(\n  treat ~ age + educ + race + married + nodegree + re74 + re75 +\n    age:educ + I(age^2) + I(re74^2),\n  data = data\n)[, -1]\n\ny &lt;- data$treat\n\n# Cross-validated LASSO logistic regression\ncvfit &lt;- cv.glmnet(\n  x = X,\n  y = y,\n  family = \"binomial\",\n  alpha = 1,\n  nfolds = 10\n)\n\n# Choose lambda (more parsimonious: lambda.1se)\nps_hat &lt;- as.numeric(predict(cvfit, newx = X, s = \"lambda.1se\", type = \"response\"))\ndata$ps_lasso &lt;- pmin(pmax(ps_hat, 1e-6), 1 - 1e-6)\n\n# Matching on LASSO propensity score\nm.out &lt;- matchit(\n  treat ~ 1,\n  data = data,\n  method = \"nearest\",\n  distance = data$ps_lasso,\n  caliper = 0.2,\n  std.caliper = TRUE,\n  replace = FALSE\n)\n\nsummary(m.out)\nlove.plot(m.out, threshold = 0.1, abs = TRUE)\n\nmatched &lt;- match.data(m.out)\natt_fit &lt;- lm(outcome ~ treat, data = matched, weights = weights)\nsummary(att_fit)\n\n\n\nL1 Logistic + Matching\n\nimport numpy as np\nimport pandas as pd\nfrom sklearn.linear_model import LogisticRegressionCV\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.pipeline import make_pipeline\n\n# Suppose df has columns: treat, outcome, and covariates\ncovars = [\"age\", \"educ\", \"married\", \"nodegree\", \"re74\", \"re75\"]\nX = df[covars].to_numpy()\ny = df[\"treat\"].to_numpy()\n\n# L1-penalized logistic with CV\nclf = make_pipeline(\n    StandardScaler(),\n    LogisticRegressionCV(\n        penalty=\"l1\",\n        solver=\"saga\",\n        cv=10,\n        scoring=\"neg_log_loss\",\n        max_iter=5000,\n        n_jobs=-1,\n        refit=True\n    )\n)\n\nclf.fit(X, y)\nps = clf.predict_proba(X)[:, 1]\ndf[\"ps_lasso\"] = np.clip(ps, 1e-6, 1-1e-6)\n\n# Then perform nearest-neighbor matching on ps_lasso\n# (using your preferred matching package/tool)\n\n\n\nPenalized PS then Match\n\n* User-written command may be required depending on setup\n* Example logic:\n\n* 1) Fit lasso-logit propensity model\nlasso logit treat age educ i.race married nodegree re74 re75\n\n* 2) Predict propensity scores\npredict double ps_lasso, pr\n\n* 3) Match using propensity score\n* (psmatch2 is user-written)\npsmatch2 treat, pscore(ps_lasso) outcome(outcome) neighbor(1) caliper(0.2)\n\n* 4) Check balance\npstest age educ married nodegree re74 re75, both",
+    "crumbs": [
+      "Matching Methods",
+      "LASSO Matching"
+    ]
+  },
+  {
+    "objectID": "matching_lasso.html#tuning-parameter-choice",
+    "href": "matching_lasso.html#tuning-parameter-choice",
+    "title": "Matching Methods",
+    "section": "Tuning Parameter Choice",
+    "text": "Tuning Parameter Choice\n\nlambda.min: better in-sample fit, less sparse.\nlambda.1se: more stable and parsimonious (often preferred for design stages).",
+    "crumbs": [
+      "Matching Methods",
+      "LASSO Matching"
+    ]
+  },
+  {
+    "objectID": "matching_lasso.html#include-interactions-thoughtfully",
+    "href": "matching_lasso.html#include-interactions-thoughtfully",
+    "title": "Matching Methods",
+    "section": "Include Interactions Thoughtfully",
+    "text": "Include Interactions Thoughtfully\nHigh-dimensional sets can include interactions and nonlinear terms, but retain only pre-treatment features.",
+    "crumbs": [
+      "Matching Methods",
+      "LASSO Matching"
+    ]
+  },
+  {
+    "objectID": "matching_lasso.html#do-not-skip-diagnostics",
+    "href": "matching_lasso.html#do-not-skip-diagnostics",
+    "title": "Matching Methods",
+    "section": "Do Not Skip Diagnostics",
+    "text": "Do Not Skip Diagnostics\nA good propensity model is one that yields balance, not just high AUC.",
+    "crumbs": [
+      "Matching Methods",
+      "LASSO Matching"
     ]
   }
 ]

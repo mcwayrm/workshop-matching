@@ -54,9 +54,9 @@ The **convex hull** identifies the multidimensional space where interpolation (n
 
 # Define range
 ps_min <- max(min(data$pscore[data$treat == 1]), 
-              min(data$pscore[data$treat == 0]))
+            min(data$pscore[data$treat == 0]))
 ps_max <- min(max(data$pscore[data$treat == 1]), 
-              max(data$pscore[data$treat == 0]))
+            max(data$pscore[data$treat == 0]))
 
 # Keep only units in common support
 data_trimmed <- data %>%
@@ -113,8 +113,8 @@ library(cobalt)
 bal.plot(m.out, var.name = "distance", which = "both")
 
 love.plot(m.out, threshold = 0.1, 
-          abs = TRUE, 
-          var.order = "unadjusted")
+        abs = TRUE, 
+        var.order = "unadjusted")
 ```
 
 ### QQ Plots
@@ -175,7 +175,9 @@ $$
 2. For each $\Gamma$, compute **bounds** on the p-value or treatment effect estimate
 3. Report the **critical $\Gamma$** at which the effect becomes insignificant
 
-## Implementation in R
+::: {.panel-tabset}
+
+## R
 
 ```{r}
 #| eval: false
@@ -198,12 +200,12 @@ psens(treat_y, control_y, Gamma = 3, GammaInc = 0.1)
 hlsens(treat_y, control_y, Gamma = 3, GammaInc = 0.1)
 ```
 
-**Output:**
+### Output
 
 - Tables showing p-values and confidence intervals at different $\Gamma$ levels
 - Identify $\Gamma$ where effect loses significance
 
-## Interpretation
+### Interpretation
 
 If the critical $\Gamma$ is:
 
@@ -211,9 +213,11 @@ If the critical $\Gamma$ is:
 - **1.5 - 2.5**: Moderately robust
 - **> 2.5**: Highly robust—unobserved confounder would need to be very strong
 
-## Stata Implementation
+## Stata
 
-```stata
+```{stata}
+#| eval: false
+
 * After matching, save matched sample
 ssc install rbounds
 
@@ -221,7 +225,7 @@ ssc install rbounds
 rbounds outcome, gamma(1(0.1)3)
 ```
 
-## Python Implementation
+## Python
 
 ```{python}
 #| eval: false
@@ -232,6 +236,8 @@ import rpy2.robjects as ro
 ro.r('library(rbounds)')
 result = ro.r('psens(treat_y, control_y, Gamma=2)')
 ```
+
+:::
 
 # Relative Correlation Restrictions
 

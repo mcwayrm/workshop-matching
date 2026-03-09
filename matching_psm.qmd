@@ -93,7 +93,10 @@ $$
 
 where $K(\cdot)$ is a kernel function and $h$ is the bandwidth.
 
-# Implementation in R
+
+::: {.panel-tabset}
+
+## R
 
 ```{r}
 #| eval: false
@@ -132,7 +135,7 @@ fit <- lm(outcome ~ treat + age + educ + race + re74 + re75,
 coeftest(fit, vcov = vcovCL, cluster = ~subclass)
 ```
 
-# Implementation in Python
+## Python
 
 ```{python}
 #| eval: false
@@ -157,9 +160,11 @@ causal.est_via_matching(matches=1, bias_adj=True)
 print(causal.estimates)
 ```
 
-# Implementation in Stata
+## Stata
 
-```stata
+```{stata}
+#| eval: false
+
 * Estimate propensity score
 logit treat age educ black hispanic married nodegree re74 re75
 
@@ -173,6 +178,8 @@ psmatch2 treat, pscore(pscore) outcome(re78) caliper(0.25) ate
 pstest age educ black hispanic married nodegree re74 re75, ///
        treated(treat) pscore(pscore)
 ```
+
+::: 
 
 # Why PSM Is No Longer Recommended
 

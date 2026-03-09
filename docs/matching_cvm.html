@@ -90,7 +90,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-621824942a01be5cbf2512f0d37b7298.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-80a345afc1c9f3da059abe3689c4514e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -296,32 +296,24 @@ window.Quarto = {
   <li><a href="#why-not-euclidean-distance" id="toc-why-not-euclidean-distance" class="nav-link" data-scroll-target="#why-not-euclidean-distance">Why Not Euclidean Distance?</a></li>
   <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">Properties</a></li>
   <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
-  <li><a href="#implementation-in-r" id="toc-implementation-in-r" class="nav-link" data-scroll-target="#implementation-in-r">Implementation in R</a></li>
-  <li><a href="#implementation-in-python" id="toc-implementation-in-python" class="nav-link" data-scroll-target="#implementation-in-python">Implementation in Python</a></li>
-  <li><a href="#implementation-in-stata" id="toc-implementation-in-stata" class="nav-link" data-scroll-target="#implementation-in-stata">Implementation in Stata</a></li>
   </ul></li>
   <li><a href="#coarsened-exact-matching-cem" id="toc-coarsened-exact-matching-cem" class="nav-link" data-scroll-target="#coarsened-exact-matching-cem">Coarsened Exact Matching (CEM)</a>
   <ul class="collapse">
   <li><a href="#concept" id="toc-concept" class="nav-link" data-scroll-target="#concept">Concept</a></li>
   <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm">Algorithm</a></li>
   <li><a href="#monotonic-imbalance-bounding" id="toc-monotonic-imbalance-bounding" class="nav-link" data-scroll-target="#monotonic-imbalance-bounding">Monotonic Imbalance Bounding</a></li>
-  <li><a href="#implementation-in-r-1" id="toc-implementation-in-r-1" class="nav-link" data-scroll-target="#implementation-in-r-1">Implementation in R</a></li>
-  <li><a href="#implementation-in-python-1" id="toc-implementation-in-python-1" class="nav-link" data-scroll-target="#implementation-in-python-1">Implementation in Python</a></li>
-  <li><a href="#implementation-in-stata-1" id="toc-implementation-in-stata-1" class="nav-link" data-scroll-target="#implementation-in-stata-1">Implementation in Stata</a></li>
   </ul></li>
   <li><a href="#genetic-matching" id="toc-genetic-matching" class="nav-link" data-scroll-target="#genetic-matching">Genetic Matching</a>
   <ul class="collapse">
   <li><a href="#concept-1" id="toc-concept-1" class="nav-link" data-scroll-target="#concept-1">Concept</a></li>
   <li><a href="#genetic-algorithm" id="toc-genetic-algorithm" class="nav-link" data-scroll-target="#genetic-algorithm">Genetic Algorithm</a></li>
   <li><a href="#balance-criteria" id="toc-balance-criteria" class="nav-link" data-scroll-target="#balance-criteria">Balance Criteria</a></li>
-  <li><a href="#implementation-in-r-2" id="toc-implementation-in-r-2" class="nav-link" data-scroll-target="#implementation-in-r-2">Implementation in R</a></li>
   </ul></li>
   <li><a href="#entropy-balancing" id="toc-entropy-balancing" class="nav-link" data-scroll-target="#entropy-balancing">Entropy Balancing</a>
   <ul class="collapse">
   <li><a href="#concept-2" id="toc-concept-2" class="nav-link" data-scroll-target="#concept-2">Concept</a></li>
   <li><a href="#optimization-problem" id="toc-optimization-problem" class="nav-link" data-scroll-target="#optimization-problem">Optimization Problem</a></li>
   <li><a href="#advantages" id="toc-advantages" class="nav-link" data-scroll-target="#advantages">Advantages</a></li>
-  <li><a href="#implementation-in-r-3" id="toc-implementation-in-r-3" class="nav-link" data-scroll-target="#implementation-in-r-3">Implementation in R</a></li>
   </ul></li>
   <li><a href="#comparison-of-methods" id="toc-comparison-of-methods" class="nav-link" data-scroll-target="#comparison-of-methods">Comparison of Methods</a></li>
   </ul>
@@ -405,9 +397,10 @@ D_E(X_i, X_j) = \sqrt{(X_i - X_j)^\top (X_i - X_j)}
 <li><strong>Sensitive to outliers</strong>: Extreme values can distort <span class="math inline">\(S\)</span></li>
 <li><strong>Assumes multivariate normality</strong> (implicitly)</li>
 </ul>
-</section>
-<section id="implementation-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="implementation-in-r">Implementation in R</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Stata</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MatchIt)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Matching)</span>
@@ -434,9 +427,8 @@ D_E(X_i, X_j) = \sqrt{(X_i - X_j)^\top (X_i - X_j)}
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Check balance</span></span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m.out, <span class="at">un =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="implementation-in-python" class="level2">
-<h2 class="anchored" data-anchor-id="implementation-in-python">Implementation in Python</h2>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.spatial.distance <span class="im">import</span> mahalanobis</span>
@@ -461,10 +453,10 @@ D_E(X_i, X_j) = \sqrt{(X_i - X_j)^\top (X_i - X_j)}
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>causal.est_via_matching(matches<span class="op">=</span><span class="dv">1</span>, bias_adj<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(causal.estimates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="implementation-in-stata" class="level2">
-<h2 class="anchored" data-anchor-id="implementation-in-stata">Implementation in Stata</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>* Install mahapick <span class="kw">if</span> needed</span>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>* Install mahapick <span class="kw">if</span> needed</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>* <span class="kw">ssc</span> install mahapick</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>mahapick treat age educ <span class="bn">black</span> hispanic married nodegree re74 re75, <span class="co">///</span></span>
@@ -475,6 +467,10 @@ D_E(X_i, X_j) = \sqrt{(X_i - X_j)^\top (X_i - X_j)}
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>* Estimate treatment effect</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> outcome treat age educ <span class="bn">black</span> hispanic married nodegree re74 re75</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="coarsened-exact-matching-cem" class="level1">
@@ -508,9 +504,10 @@ D_E(X_i, X_j) = \sqrt{(X_i - X_j)^\top (X_i - X_j)}
 L(C_1(X)) \leq L(C_2(X))
 \]</span></p>
 <p>This provides <strong>ex ante control</strong> over balance.</p>
-</section>
-<section id="implementation-in-r-1" class="level2">
-<h2 class="anchored" data-anchor-id="implementation-in-r-1">Implementation in R</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Python</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Stata</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cem)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -538,9 +535,8 @@ L(C_1(X)) \leq L(C_2(X))
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(outcome <span class="sc">~</span> treat <span class="sc">+</span> age <span class="sc">+</span> educ, <span class="at">data =</span> mydata, <span class="at">weights =</span> mat<span class="sc">$</span>w)</span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="implementation-in-python-1" class="level2">
-<h2 class="anchored" data-anchor-id="implementation-in-python-1">Implementation in Python</h2>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># CEM not natively available in Python</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Use rpy2 to call R's cem package</span></span>
@@ -558,10 +554,10 @@ L(C_1(X)) \leq L(C_2(X))
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> ro.r.cem(<span class="st">'treat'</span>, data<span class="op">=</span>r_data, drop<span class="op">=</span><span class="st">'outcome'</span>)</span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> ro.r(<span class="st">'result$w'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="implementation-in-stata-1" class="level2">
-<h2 class="anchored" data-anchor-id="implementation-in-stata-1">Implementation in Stata</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>* Install cem</span>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>* Install cem</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>* <span class="kw">ssc</span> install cem</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>cem age (#3) educ (#4) <span class="bn">black</span> hispanic married, treatment(treat)</span>
@@ -571,6 +567,10 @@ L(C_1(X)) \leq L(C_2(X))
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>* Regression with CEM weights</span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> outcome treat age educ <span class="bn">black</span> hispanic married [iw=cem_weights]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="genetic-matching" class="level1">
@@ -600,9 +600,10 @@ D_{\text{gen}}(X_i, X_j) = \sqrt{(X_i - X_j)^\top W (X_i - X_j)}
 B = \sum_{k=1}^p w_k b_k^2
 \]</span></p>
 <p>where <span class="math inline">\(b_k\)</span> is a balance metric (e.g., standardized mean difference, KS statistic) for covariate <span class="math inline">\(k\)</span>.</p>
-</section>
-<section id="implementation-in-r-2" class="level2">
-<h2 class="anchored" data-anchor-id="implementation-in-r-2">Implementation in R</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">R</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Matching)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -638,6 +639,9 @@ B = \sum_{k=1}^p w_k b_k^2
 <span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">nboots =</span> <span class="dv">500</span></span>
 <span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="entropy-balancing" class="level1">
@@ -666,9 +670,10 @@ B = \sum_{k=1}^p w_k b_k^2
 <li><strong>Unique solution</strong> via convex optimization</li>
 <li><strong>No iteration</strong> required</li>
 </ul>
-</section>
-<section id="implementation-in-r-3" class="level2">
-<h2 class="anchored" data-anchor-id="implementation-in-r-3">Implementation in R</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ebal)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -684,6 +689,9 @@ B = \sum_{k=1}^p w_k b_k^2
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate ATE</span></span>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(outcome <span class="sc">~</span> treat, <span class="at">weights =</span> weights)</span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
 </div>
 </section>
 </section>

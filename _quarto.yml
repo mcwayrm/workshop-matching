@@ -16,17 +16,11 @@ website:
 
   sidebar:
     background: "#c09925"
-    # logo: "assets/apec8213_nonparametric_icon.png"
     pinned: true
     align: center
     style: "docked"
     collapse-level: 2
     search: true
-    # tools:
-      # - icon: mortarboard-fill
-      #   href: https://canvas.umn.edu/courses/540298/modules
-      #   text: "Canvas"
-      #   target: _blank
 
     contents:
       - href: index.qmd

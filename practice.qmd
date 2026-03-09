@@ -120,25 +120,219 @@ print(M.estimates)
 
 
 
-# Context 
 
-- Matching context 
-- Endogeneity concern
-
-# The Data 
-
-- Description of what is in the data. 
-- Any data cleaning necessary 
 
 # Naive Estimation 
 
-- Show the results for a naive estimation  
+First, estimate the treatment effect **without any matching/adjustment**. This gives a baseline estimate that may be biased by selection on observables.
+
+The naive estimator is:
+
+$$
+\hat\tau_{naive} = E[Y\mid T=1] - E[Y\mid T=0]
+$$
+
+If treated and control groups differ systematically in pre-treatment covariates, this difference combines treatment effect plus selection bias.
+
+::: {.panel-tabset}
+
+## R
+
+```{r}
+#| eval: false
+
+library(causaldata)
+library(dplyr)
+
+br <- black_politicians
+
+# Naive difference in means
+naive_diff <- with(br, mean(responded[leg_black == 1]) - mean(responded[leg_black == 0]))
+naive_diff
+
+# Naive OLS (unadjusted)
+naive_lm <- lm(responded ~ leg_black, data = br)
+summary(naive_lm)
+```
+
+## Stata
+
+```{stata}
+#| eval: false
+
+* Naive difference in means
+mean responded, over(leg_black)
+
+* Naive unadjusted regression
+reg responded leg_black
+```
+
+## Python
+
+```{python}
+#| eval: false
+
+from causaldata import black_politicians
+import statsmodels.formula.api as smf
+
+br = black_politicians.load_pandas().data
+
+naive_diff = br.loc[br.leg_black == 1, "responded"].mean() - \
+                         br.loc[br.leg_black == 0, "responded"].mean()
+print("Naive diff in means:", naive_diff)
+
+naive_model = smf.ols("responded ~ leg_black", data=br).fit()
+print(naive_model.summary())
+```
+
+:::
 
 # Matching Estimation 
 
+Now compare with the matching-based estimate from the code above. The key teaching point is:
+
+- If $\hat\tau_{naive}$ and $\hat\tau_{match}$ differ meaningfully, imbalance likely biased the naive estimate.
+
+Define an estimated bias proxy:
+
+$$
+\widehat{Bias}_{selection} \approx \hat\tau_{naive} - \hat\tau_{match}
+$$
+
+This is not the true bias (which is unobserved), but it is a useful diagnostic for teaching.
+
+::: {.panel-tabset}
+
+## R
+
+```{r}
+#| eval: false
+
+# From previous sections:
+# naive_diff already computed
+# M <- Match(...)
+
+match_est <- M$est
+bias_proxy <- naive_diff - match_est
+
+cat("Naive estimate:", naive_diff, "\n")
+cat("Matching estimate:", match_est, "\n")
+cat("Estimated selection bias proxy (naive - match):", bias_proxy, "\n")
+```
+
+## Stata
+
+```{stata}
+#| eval: false
+
+* Save naive coefficient
+reg responded leg_black
+scalar b_naive = _b[leg_black]
+
+* Matching estimator (ATT reported by teffects)
+teffects nnmatch (responded medianhhincom blackpercent leg_democrat) ///
+        (leg_black), nneighbor(1) metric(mahalanobis)
+
+matrix b = e(b)
+scalar b_match = b[1,1]
+
+display "Naive estimate: " b_naive
+display "Matching estimate: " b_match
+display "Estimated selection bias proxy (naive - match): " (b_naive - b_match)
+```
+
+## Python
+
+```{python}
+#| eval: false
+
+# naive_diff from previous section
+# M.estimates from causalinference output
+
+print(M.estimates)
+print("Compare naive_diff to ATT/ATE above to discuss selection bias.")
+```
+
+:::
 
 # Sensitivity Analysis 
 
+Even after matching, hidden confounding may remain. Use sensitivity analysis to ask:
+"How strong would an unobserved confounder need to be to overturn the result?"
+
+For matched pairs, Rosenbaum bounds are standard.
+
+::: {.panel-tabset}
+
+## R
+
+```{r}
+#| eval: false
+
+library(MatchIt)
+library(rbounds)
+
+# Reconstruct matched dataset via MatchIt for sensitivity workflow
+m.out <- matchit(
+    leg_black ~ medianhhincom + blackpercent + leg_democrat,
+    data = br,
+    method = "nearest",
+    ratio = 1
+)
+
+md <- match.data(m.out)
+
+# Build paired outcomes by subclass (1 treated + 1 control each subclass)
+pair_summ <- md %>%
+    group_by(subclass) %>%
+    summarize(
+        y_t = responded[leg_black == 1][1],
+        y_c = responded[leg_black == 0][1],
+        .groups = "drop"
+    )
+
+# Rosenbaum sensitivity for Wilcoxon signed-rank p-value
+psens(pair_summ$y_t, pair_summ$y_c, Gamma = 2, GammaInc = 0.1)
+
+# Hodges-Lehmann sensitivity
+hlsens(pair_summ$y_t, pair_summ$y_c, Gamma = 2, GammaInc = 0.1)
+```
+
+Interpretation guide:
+
+- If significance disappears around $\Gamma \approx 1.1$, results are fragile.
+- If significance persists until $\Gamma > 2$, results are relatively robust.
+
+## Stata
+
+```{stata}
+#| eval: false
+
+* After nearest-neighbor matching, run rbounds (user-written)
+* ssc install rbounds
+
+* Example sensitivity check across gamma values
+rbounds responded, gamma(1(0.1)2)
+```
+
+## Python
+
+```{python}
+#| eval: false
+
+# Python has limited native Rosenbaum-bounds tooling.
+# Practical option: run sensitivity in R (rbounds) after exporting matched pairs,
+# or use rpy2 from Python to call psens()/hlsens().
+```
+
+:::
+
+Suggested student exercise:
+
+1. Compute and report naive and matched estimates.
+2. Quantify the bias proxy (naive - matched).
+3. Run Rosenbaum bounds and report the critical Gamma where inference changes.
+4. Conclude whether results are robust to moderate hidden bias.
 
 ::: {#refs}
 :::

@@ -4,13 +4,200 @@ subtitle: "Doubly Robust Estimation"
 bibliography: references.bib
 ---
 
+# Introduction
+
+Doubly robust estimation combines two adjustment strategies:
+
+1. An **outcome model** (regression of $Y$ on $X$ and treatment status)
+2. A **treatment model** (propensity score $e(X)=P(T=1|X)$)
+
+The main benefit is the "double protection" property: if either model is correctly specified (not necessarily both), the causal effect estimator is consistent [@funk2011dr].
+
+This makes doubly robust methods especially attractive after matching or weighting, where residual imbalance may remain and model misspecification is a concern.
+
+# Why It Is "Doubly Robust"
+
+Let:
+
+- $T_i \in \{0,1\}$ be treatment
+- $Y_i$ be outcome
+- $X_i$ be pre-treatment covariates
+- $\hat e(X_i)$ be estimated propensity score
+- $\hat\mu_1(X_i)$ and $\hat\mu_0(X_i)$ be estimated conditional mean outcomes
+
+The augmented inverse probability weighted (AIPW) estimator of the ATE is:
+
+$$
+\widehat{ATE}_{AIPW} = \frac{1}{n}\sum_{i=1}^n\left[\frac{T_i\left(Y_i-\hat\mu_1(X_i)\right)}{\hat e(X_i)} + \hat\mu_1(X_i) - \frac{(1-T_i)\left(Y_i-\hat\mu_0(X_i)\right)}{1-\hat e(X_i)} - \hat\mu_0(X_i)\right]
+$$
+
+Intuition:
+
+- If the outcome model is correct, residual correction terms average to zero.
+- If the propensity model is correct, weighting correction recovers the right estimand even if outcome regression is wrong.
+
+A practical walkthrough with this intuition is shown in the Python Causality Handbook [@facure2022dr].
+
+# Link to Matching
+
+Matching is often used as a **design stage** to improve overlap and comparability. Doubly robust estimation can then be used as an **analysis stage** on the matched sample to reduce bias from remaining imbalance.
+
+Typical workflow:
+
+1. Estimate propensity scores and match treated/control units.
+2. Check overlap and covariate balance.
+3. On the matched sample, fit outcome and propensity models.
+4. Compute AIPW (or DR-ATT) estimate.
+
+This pairing gives robust finite-sample performance in many applied settings.
+
+# Assumptions
+
+Doubly robust methods still require core causal assumptions:
+
+1. **Conditional exchangeability**:
+$$
+(Y(1),Y(0)) \perp T \mid X
+$$
+2. **Positivity/overlap**:
+$$
+0 < P(T=1\mid X) < 1
+$$
+3. **SUTVA**: no interference and well-defined treatment.
+
+Double robustness does **not** solve unobserved confounding.
+
+# Estimands
+
+## ATE
+
+Population average treatment effect (formula above).
+
+## ATT (common in matching studies)
+
+For ATT, a doubly robust estimator can be written with treated-group focus and appropriate control reweighting/regression adjustment.
 
 
+::: {.panel-tabset}
 
-https://pubmed.ncbi.nlm.nih.gov/21385832/
+## R
 
-https://matheusfacure.github.io/python-causality-handbook/12-Doubly-Robust-Estimation.html
+```{r}
+#| eval: false
 
+library(MatchIt)
+
+# Step 1: matching (example)
+m.out <- matchit(treat ~ age + educ + married + re74 + re75,
+                data = data,
+                method = "nearest",
+                ratio = 1,
+                caliper = 0.2)
+
+matched <- match.data(m.out)
+
+# Step 2: propensity model on matched sample
+ps_mod <- glm(treat ~ age + educ + married + re74 + re75,
+            family = binomial(),
+            data = matched)
+matched$ps <- pmin(pmax(predict(ps_mod, type = "response"), 1e-6), 1 - 1e-6)
+
+# Step 3: outcome models
+mu1_mod <- lm(outcome ~ age + educ + married + re74 + re75,
+            data = subset(matched, treat == 1))
+mu0_mod <- lm(outcome ~ age + educ + married + re74 + re75,
+            data = subset(matched, treat == 0))
+
+matched$mu1 <- predict(mu1_mod, newdata = matched)
+matched$mu0 <- predict(mu0_mod, newdata = matched)
+
+# Step 4: AIPW estimate
+aipw <- with(matched,
+            mean(treat*(outcome - mu1)/ps + mu1 -
+                (1-treat)*(outcome - mu0)/(1-ps) - mu0))
+
+aipw
+```
+
+## Python
+
+```{python}
+#| eval: false
+
+import numpy as np
+from sklearn.linear_model import LogisticRegression, LinearRegression
+
+X_cols = ["age", "educ", "married", "re74", "re75"]
+X = df[X_cols].values
+T = df["treat"].values
+Y = df["outcome"].values
+
+# Propensity model
+ps_model = LogisticRegression(max_iter=2000)
+ps_model.fit(X, T)
+ps = np.clip(ps_model.predict_proba(X)[:, 1], 1e-6, 1-1e-6)
+
+# Outcome models
+mu1_model = LinearRegression().fit(X[T==1], Y[T==1])
+mu0_model = LinearRegression().fit(X[T==0], Y[T==0])
+
+mu1 = mu1_model.predict(X)
+mu0 = mu0_model.predict(X)
+
+aipw = np.mean(T*(Y-mu1)/ps + mu1 - (1-T)*(Y-mu0)/(1-ps) - mu0)
+print("AIPW ATE:", aipw)
+```
+
+## Stata
+
+```{stata}
+#| eval: false
+
+* 1) Fit propensity model
+logit treat age educ married re74 re75
+predict ps, pr
+replace ps = max(min(ps, .999999), .000001)
+
+* 2) Fit outcome models separately
+reg outcome age educ married re74 re75 if treat==1
+predict mu1, xb
+
+reg outcome age educ married re74 re75 if treat==0
+predict mu0, xb
+
+* 3) Build AIPW score and average
+gen aipw_i = treat*(outcome-mu1)/ps + mu1 - (1-treat)*(outcome-mu0)/(1-ps) - mu0
+sum aipw_i
+```
+
+::: 
+
+# Diagnostics and Pitfalls
+
+1. **Extreme propensity scores** cause unstable weights.
+- Use trimming or overlap checks.
+- Consider stabilized weights.
+
+2. **Poor overlap after matching** can still bias estimates.
+- Inspect propensity distributions and common support.
+
+3. **Both models wrong** can perform poorly.
+- Compare to simpler estimators (matched difference in means, regression adjustment).
+- Run sensitivity analyses.
+
+4. **Inference**:
+- Use robust standard errors or bootstrap for confidence intervals [@funk2011dr].
+
+# Practical Recommendations
+
+- Use doubly robust estimation as a complement to matching, not a replacement for design diagnostics.
+- Keep covariates pre-treatment and theory-driven.
+- Report model specifications for both propensity and outcome models.
+- Report overlap diagnostics, balance statistics, and uncertainty method.
+
+# Summary
+
+Doubly robust estimators are a practical way to combine matching-style design ideas with model-based correction. They provide protection against one model being misspecified and are especially useful in high-dimensional or moderately misspecified observational analyses [@funk2011dr; @facure2022dr].
 
 ::: {#refs}
 :::

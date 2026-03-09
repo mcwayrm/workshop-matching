@@ -91,7 +91,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-621824942a01be5cbf2512f0d37b7298.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-80a345afc1c9f3da059abe3689c4514e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -317,10 +317,6 @@ window.Quarto = {
   <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
   <li><a href="#procedure" id="toc-procedure" class="nav-link" data-scroll-target="#procedure">Procedure</a></li>
-  <li><a href="#implementation-in-r" id="toc-implementation-in-r" class="nav-link" data-scroll-target="#implementation-in-r">Implementation in R</a></li>
-  <li><a href="#interpretation-1" id="toc-interpretation-1" class="nav-link" data-scroll-target="#interpretation-1">Interpretation</a></li>
-  <li><a href="#stata-implementation" id="toc-stata-implementation" class="nav-link" data-scroll-target="#stata-implementation">Stata Implementation</a></li>
-  <li><a href="#python-implementation" id="toc-python-implementation" class="nav-link" data-scroll-target="#python-implementation">Python Implementation</a></li>
   </ul></li>
   <li><a href="#relative-correlation-restrictions" id="toc-relative-correlation-restrictions" class="nav-link" data-scroll-target="#relative-correlation-restrictions">Relative Correlation Restrictions</a>
   <ul class="collapse">
@@ -408,9 +404,9 @@ window.Quarto = {
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define range</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>ps_min <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">min</span>(data<span class="sc">$</span>pscore[data<span class="sc">$</span>treat <span class="sc">==</span> <span class="dv">1</span>]), </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>              <span class="fu">min</span>(data<span class="sc">$</span>pscore[data<span class="sc">$</span>treat <span class="sc">==</span> <span class="dv">0</span>]))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">min</span>(data<span class="sc">$</span>pscore[data<span class="sc">$</span>treat <span class="sc">==</span> <span class="dv">0</span>]))</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>ps_max <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">max</span>(data<span class="sc">$</span>pscore[data<span class="sc">$</span>treat <span class="sc">==</span> <span class="dv">1</span>]), </span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">max</span>(data<span class="sc">$</span>pscore[data<span class="sc">$</span>treat <span class="sc">==</span> <span class="dv">0</span>]))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">max</span>(data<span class="sc">$</span>pscore[data<span class="sc">$</span>treat <span class="sc">==</span> <span class="dv">0</span>]))</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only units in common support</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>data_trimmed <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
@@ -462,8 +458,8 @@ window.Quarto = {
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bal.plot</span>(m.out, <span class="at">var.name =</span> <span class="st">"distance"</span>, <span class="at">which =</span> <span class="st">"both"</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">love.plot</span>(m.out, <span class="at">threshold =</span> <span class="fl">0.1</span>, </span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">abs =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">var.order =</span> <span class="st">"unadjusted"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">abs =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">var.order =</span> <span class="st">"unadjusted"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="qq-plots" class="level3">
@@ -522,9 +518,10 @@ window.Quarto = {
 <li>For each <span class="math inline">\(\Gamma\)</span>, compute <strong>bounds</strong> on the p-value or treatment effect estimate</li>
 <li>Report the <strong>critical <span class="math inline">\(\Gamma\)</span></strong> at which the effect becomes insignificant</li>
 </ol>
-</section>
-<section id="implementation-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="implementation-in-r">Implementation in R</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Stata</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rbounds)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MatchIt)</span>
@@ -543,14 +540,15 @@ window.Quarto = {
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Hodges-Lehmann point estimate sensitivity</span></span>
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="fu">hlsens</span>(treat_y, control_y, <span class="at">Gamma =</span> <span class="dv">3</span>, <span class="at">GammaInc =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><strong>Output:</strong></p>
+<section id="output" class="level3">
+<h3 class="anchored" data-anchor-id="output">Output</h3>
 <ul>
 <li>Tables showing p-values and confidence intervals at different <span class="math inline">\(\Gamma\)</span> levels</li>
 <li>Identify <span class="math inline">\(\Gamma\)</span> where effect loses significance</li>
 </ul>
 </section>
-<section id="interpretation-1" class="level2">
-<h2 class="anchored" data-anchor-id="interpretation-1">Interpretation</h2>
+<section id="interpretation-1" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-1">Interpretation</h3>
 <p>If the critical <span class="math inline">\(\Gamma\)</span> is:</p>
 <ul>
 <li><strong>&lt; 1.5</strong>: Results are <strong>very sensitive</strong> to hidden bias</li>
@@ -558,22 +556,26 @@ window.Quarto = {
 <li><strong>&gt; 2.5</strong>: Highly robust—unobserved confounder would need to be very strong</li>
 </ul>
 </section>
-<section id="stata-implementation" class="level2">
-<h2 class="anchored" data-anchor-id="stata-implementation">Stata Implementation</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>* After matching, <span class="kw">save</span> matched <span class="kw">sample</span></span>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>* After matching, <span class="kw">save</span> matched <span class="kw">sample</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ssc</span> install rbounds</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>* Sensitivity analysis</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>rbounds outcome, <span class="kw">gamma</span>(1(0.1)3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="python-implementation" class="level2">
-<h2 class="anchored" data-anchor-id="python-implementation">Python Implementation</h2>
+</div>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># No direct Rosenbaum bounds in Python</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Use R via rpy2 or implement manually using Wilcoxon signed-rank test</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> rpy2.robjects <span class="im">as</span> ro</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>ro.r(<span class="st">'library(rbounds)'</span>)</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> ro.r(<span class="st">'psens(treat_y, control_y, Gamma=2)'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
 </div>
 </section>
 </section>

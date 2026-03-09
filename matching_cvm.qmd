@@ -57,7 +57,11 @@ Mahalanobis distance **standardizes** by $S^{-1}$, making it:
 - **Sensitive to outliers**: Extreme values can distort $S$
 - **Assumes multivariate normality** (implicitly)
 
-## Implementation in R
+
+
+::: {.panel-tabset}
+
+## R
 
 ```{r}
 #| eval: false
@@ -88,7 +92,7 @@ m.out2 <- matchit(
 summary(m.out, un = FALSE)
 ```
 
-## Implementation in Python
+## Python
 
 ```{python}
 #| eval: false
@@ -117,9 +121,11 @@ causal.est_via_matching(matches=1, bias_adj=True)
 print(causal.estimates)
 ```
 
-## Implementation in Stata
+## Stata
 
-```stata
+```{stata}
+#| eval: false
+
 * Install mahapick if needed
 * ssc install mahapick
 
@@ -132,6 +138,8 @@ keep if matched == 1
 * Estimate treatment effect
 reg outcome treat age educ black hispanic married nodegree re74 re75
 ```
+
+:::
 
 # Coarsened Exact Matching (CEM)
 
@@ -166,7 +174,10 @@ $$
 
 This provides **ex ante control** over balance.
 
-## Implementation in R
+
+::: {.panel-tabset}
+
+## R
 
 ```{r}
 #| eval: false
@@ -198,7 +209,7 @@ fit <- lm(outcome ~ treat + age + educ, data = mydata, weights = mat$w)
 summary(fit)
 ```
 
-## Implementation in Python
+## Python
 
 ```{python}
 #| eval: false
@@ -220,9 +231,11 @@ result = ro.r.cem('treat', data=r_data, drop='outcome')
 weights = ro.r('result$w')
 ```
 
-## Implementation in Stata
+## Stata
 
-```stata
+```{stata}
+#| eval: false
+
 * Install cem
 * ssc install cem
 
@@ -234,6 +247,8 @@ imbalance age educ black hispanic married, by(treat)
 * Regression with CEM weights
 reg outcome treat age educ black hispanic married [iw=cem_weights]
 ```
+
+:::
 
 # Genetic Matching
 
@@ -265,7 +280,10 @@ $$
 
 where $b_k$ is a balance metric (e.g., standardized mean difference, KS statistic) for covariate $k$.
 
-## Implementation in R
+
+::: {.panel-tabset}
+
+## R
 
 ```{r}
 #| eval: false
@@ -305,6 +323,8 @@ mb <- MatchBalance(
 )
 ```
 
+::: 
+
 # Entropy Balancing
 
 ## Concept
@@ -333,7 +353,10 @@ where $w_i^{(0)} = 1/n_0$ are uniform base weights.
 - **Unique solution** via convex optimization
 - **No iteration** required
 
-## Implementation in R
+
+::: {.panel-tabset}
+
+## R
 
 ```{r}
 #| eval: false
@@ -353,6 +376,8 @@ weights <- c(eb.out$w, rep(1, sum(treat)))
 fit <- lm(outcome ~ treat, weights = weights)
 summary(fit)
 ```
+
+:::
 
 # Comparison of Methods
 

@@ -4,5 +4,244 @@ subtitle: "LASSO Matching"
 bibliography: references.bib
 ---
 
+# Introduction
+
+When the number of candidate covariates is large, standard propensity score modeling can overfit and produce unstable matches. A common strategy is to estimate the propensity score with **LASSO-regularized logistic regression**, which performs shrinkage and variable selection simultaneously [@tibshirani1996].
+
+In this module, "LASSO matching" means:
+
+1. Estimate treatment propensity with penalized logistic regression.
+2. Use the resulting propensity scores for matching (nearest neighbor, caliper, or subclassification).
+3. Check balance and estimate treatment effects on the matched sample.
+
+# LASSO Refresher
+
+LASSO (Least Absolute Shrinkage and Selection Operator) solves
+
+$$
+\hat{\beta} = \arg\min_{\beta}\; \frac{1}{n}\sum_{i=1}^n \ell(y_i, x_i^\top\beta) + \lambda\|\beta\|_1
+$$
+
+where:
+
+- $\ell(\cdot)$ is the loss (for propensity scores, usually logistic deviance),
+- $\|\beta\|_1 = \sum_j |\beta_j|$ is the L1 penalty,
+- $\lambda \ge 0$ controls shrinkage strength.
+
+For logistic propensity score models,
+
+$$
+\Pr(T_i=1\mid X_i)=e(X_i)=\frac{1}{1+\exp(-X_i^\top\beta)}.
+$$
+
+The L1 penalty pushes many coefficients exactly to zero, giving a sparse and more stable model in high-dimensional settings.
+
+# Why Use LASSO for Propensity Scores?
+
+## Main Advantages
+
+- Handles many covariates and interactions without manual pre-screening.
+- Reduces variance from overfit propensity models.
+- Improves interpretability via sparse selected features.
+- Can be used when $p$ is large relative to $n$.
+
+## Key Caveat
+
+LASSO optimizes prediction loss, not balance directly. You still must verify post-match balance (SMDs, variance ratios, overlap).
+
+# Statistical Workflow
+
+## Step 1: Build Candidate Covariate Set
+
+- Include pre-treatment confounders (predict treatment and outcome).
+- Optionally include interactions and nonlinear terms.
+- Exclude post-treatment variables.
+
+## Step 2: Fit LASSO Logistic Model for Treatment
+
+Use cross-validation to choose $\lambda$ (e.g., `lambda.min` or more conservative `lambda.1se`).
+
+## Step 3: Compute Propensity Scores
+
+$$
+\hat e_i = \Pr(T_i=1\mid X_i;\hat\beta_{\text{lasso}}).
+$$
+
+## Step 4: Match on $\hat e_i$
+
+- Nearest neighbor matching with caliper is common.
+- Optionally use replacement if overlap is weak.
+
+## Step 5: Diagnose Balance and Overlap
+
+- Standardized mean differences (target: absolute SMD < 0.1).
+- Variance ratios (target: roughly 0.5 to 2).
+- Propensity score distribution overlap.
+
+## Step 6: Estimate Treatment Effect and Uncertainty
+
+- Difference in means on matched data or regression adjustment.
+- Use robust or clustered standard errors by matched subclass where appropriate.
+
+
+::: {.panel-tabset}
+
+## R 
+
+LASSO Propensity + Matching
+
+```{r}
+#| eval: false
+
+library(glmnet)
+library(MatchIt)
+library(cobalt)
+
+# Example inputs:
+# data$treat is binary treatment indicator
+# outcome is data$outcome
+
+X <- model.matrix(
+  treat ~ age + educ + race + married + nodegree + re74 + re75 +
+    age:educ + I(age^2) + I(re74^2),
+  data = data
+)[, -1]
+
+y <- data$treat
+
+# Cross-validated LASSO logistic regression
+cvfit <- cv.glmnet(
+  x = X,
+  y = y,
+  family = "binomial",
+  alpha = 1,
+  nfolds = 10
+)
+
+# Choose lambda (more parsimonious: lambda.1se)
+ps_hat <- as.numeric(predict(cvfit, newx = X, s = "lambda.1se", type = "response"))
+data$ps_lasso <- pmin(pmax(ps_hat, 1e-6), 1 - 1e-6)
+
+# Matching on LASSO propensity score
+m.out <- matchit(
+  treat ~ 1,
+  data = data,
+  method = "nearest",
+  distance = data$ps_lasso,
+  caliper = 0.2,
+  std.caliper = TRUE,
+  replace = FALSE
+)
+
+summary(m.out)
+love.plot(m.out, threshold = 0.1, abs = TRUE)
+
+matched <- match.data(m.out)
+att_fit <- lm(outcome ~ treat, data = matched, weights = weights)
+summary(att_fit)
+```
+
+## Python
+
+L1 Logistic + Matching
+
+```{python}
+#| eval: false
+
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LogisticRegressionCV
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
+# Suppose df has columns: treat, outcome, and covariates
+covars = ["age", "educ", "married", "nodegree", "re74", "re75"]
+X = df[covars].to_numpy()
+y = df["treat"].to_numpy()
+
+# L1-penalized logistic with CV
+clf = make_pipeline(
+    StandardScaler(),
+    LogisticRegressionCV(
+        penalty="l1",
+        solver="saga",
+        cv=10,
+        scoring="neg_log_loss",
+        max_iter=5000,
+        n_jobs=-1,
+        refit=True
+    )
+)
+
+clf.fit(X, y)
+ps = clf.predict_proba(X)[:, 1]
+df["ps_lasso"] = np.clip(ps, 1e-6, 1-1e-6)
+
+# Then perform nearest-neighbor matching on ps_lasso
+# (using your preferred matching package/tool)
+```
+
+## Stata
+
+Penalized PS then Match
+
+```{stata}
+#| eval: false
+
+* User-written command may be required depending on setup
+* Example logic:
+
+* 1) Fit lasso-logit propensity model
+lasso logit treat age educ i.race married nodegree re74 re75
+
+* 2) Predict propensity scores
+predict double ps_lasso, pr
+
+* 3) Match using propensity score
+* (psmatch2 is user-written)
+psmatch2 treat, pscore(ps_lasso) outcome(outcome) neighbor(1) caliper(0.2)
+
+* 4) Check balance
+pstest age educ married nodegree re74 re75, both
+```
+
+::: 
+
+# Practical Guidance
+
+## Tuning Parameter Choice
+
+- `lambda.min`: better in-sample fit, less sparse.
+- `lambda.1se`: more stable and parsimonious (often preferred for design stages).
+
+## Include Interactions Thoughtfully
+
+High-dimensional sets can include interactions and nonlinear terms, but retain only pre-treatment features.
+
+## Do Not Skip Diagnostics
+
+A good propensity model is one that yields balance, not just high AUC.
+
+# Connection to High-Dimensional Treatment Effect Literature
+
+The high-dimensional treatment-effect literature emphasizes that regularization can reduce overfitting and improve precision, but valid inference still requires careful design and diagnostics. Bloniarz et al. show that LASSO-based adjustment can improve efficiency and recommend a practical two-step variant (LASSO selection followed by OLS refit) in some settings [@bloniarz2016lasso].
+
+For observational matching, this translates to a pragmatic approach:
+
+1. Use LASSO to stabilize propensity estimation and feature selection.
+2. Match on the estimated score.
+3. Validate balance rigorously.
+4. Report sensitivity analyses.
+
+# Reporting Checklist
+
+- Candidate covariate set and feature engineering.
+- LASSO specification (`family`, `alpha`, CV folds).
+- Tuning rule (`lambda.min` or `lambda.1se`).
+- Matching algorithm and caliper choice.
+- Balance diagnostics before and after matching.
+- Effective sample size and discarded units.
+- Outcome model and uncertainty method.
+
 ::: {#refs}
 :::

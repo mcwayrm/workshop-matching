@@ -4,6 +4,125 @@ subtitle: "The Pioneer Schools Program (PSP): Education Reform in Morocco"
 bibliography: references.bib
 ---
 
+# Study Design Overview
+
+Our empirical strategy uses a **matched-pair difference-in-differences (DiD)** design to estimate the intent-to-treat effect of the Pioneer Schools Program (PSP).
+
+Conceptually:
+
+1. Build a credible school-level counterfactual with matching.
+2. Track baseline-to-endline changes in PSP and comparison schools.
+3. Estimate treatment effects from within-pair differences over time.
+
+This design was implemented on two program waves (Cohort 1 and Cohort 2), with school pairs formed before impact estimation.
+
+# How We Constructed Matched School Pairs
+
+## Step 1: Build the school-level candidate database
+
+We start from an administrative school-level dataset covering public primary schools (8,034 schools), with a high-dimensional set of candidate predictors (248 variables).
+
+## Step 2: Use post-double-selection LASSO (PDSLASSO) for variable selection
+
+To avoid arbitrary manual covariate selection, we run two LASSO models at the school level:
+
+1. **Outcome-selection equation**:
+- Baseline outcome as dependent variable.
+- All candidate school predictors as controls.
+
+2. **Treatment-selection equation**:
+- PSP treatment indicator as dependent variable.
+- Same set of candidate predictors as controls.
+
+The final matching covariate set is the **union** of variables selected by these two LASSO models. In our implementation, this procedure selected 16 variables from the original 248 candidates.
+
+## Step 3: Match schools using calibrated Mahalanobis distance
+
+Using the LASSO-selected variables, we match non-PSP schools to PSP schools with an iterative, calibrated Mahalanobis-distance procedure.
+
+The calibration loop:
+
+1. Run matching with a candidate caliper.
+2. Check post-match diagnostics:
+- Common support.
+- Covariate balance (e.g., standardized differences).
+- Distributional similarity between treated and comparison schools.
+3. Tighten calipers iteratively (descending sequence) until acceptable balance is achieved.
+
+This produced matched school pairs that were closer and more comparable than the initial uncalibrated match attempts.
+
+# Difference-in-Differences Estimation on Matched Pairs
+
+After pair formation, treatment effects are estimated with a student-level matched-pair DiD specification.
+
+## Estimating Equation (paper notation)
+
+Using paper notation, the regression is:
+
+$$
+Y_{igsjt} = \beta\,(TREAT_{sj}\times POST_t)
++ \gamma\,(X_{igsj}\times POST_t)
++ \phi\,(\zeta_j\times \vartheta_g\times POST_t)
++ \alpha_{igsj} + \varepsilon_{igsjt}
+$$
+
+where:
+
+- $Y_{igsjt}$ is outcome $Y$ for student $i$, grade $g$, school $s$, matched pair $j$, period $t$.
+- $TREAT_{sj}$ indicates PSP assignment for school $s$ in pair $j$.
+- $POST_t$ indicates endline period.
+- $X_{igsj}$ are baseline student and school controls.
+- $\zeta_j\times\vartheta_g\times POST_t$ are grade-by-matched-pair-by-post interactions.
+- $\beta$ is the intent-to-treat effect of PSP.
+
+Standard errors are clustered at the matched-pair level, consistent with the pairing-based assignment structure.
+
+## Why this helps identification
+
+- **Matching** improves pre-treatment comparability (selection on observables).
+- **DiD** differences out pair-invariant unobservables and common shocks.
+- **Pair-by-grade-by-post structure** allows flexible local trends within matched pair contexts.
+
+# LASSO Inside the DiD Specification
+
+The DiD model includes many candidate interaction controls. To avoid overfitting while keeping relevant heterogeneity, we implement post-double-selection LASSO in the analysis stage.
+
+Paper-aligned implementation steps:
+
+1. For each student, compute baseline-to-endline test score change.
+2. Residualize this change by subtracting the comparison group grade-by-matched-pair mean.
+3. Run PDSLASSO on the residualized outcome with the candidate control set.
+4. Include selected $X_{igsj}\times POST_t$ interactions in the final DiD equation.
+
+This mirrors the paper's approach: machine-learning selection is used to discipline a high-dimensional control space, while treatment effects are estimated in the final matched-pair DiD regression.
+
+## Controls Used in Selection
+
+The candidate set includes baseline student-level variables (e.g., demographics, baseline score measures, social safety net status) and baseline school-level variables (e.g., school average test scores, region, average class size, student-teacher ratio), plus interactions as specified in the paper's high-dimensional design.
+
+# Practical Replication Workflow
+
+For readers reproducing the PSP approach:
+
+1. Prepare baseline school-level data and treatment flag.
+2. Run PDSLASSO (outcome model + treatment model).
+3. Take union of selected controls.
+4. Match schools via Mahalanobis distance with iterative caliper tuning.
+5. Validate common support and balance before analysis.
+6. Estimate the matched-pair DiD equation in paper notation with pair-level clustered standard errors.
+7. Use post-double-selection LASSO to select high-dimensional interaction controls for $X_{igsj}\times POST_t$.
+8. Report pair-clustered inference and adjusted p-values as in the paper's reporting framework.
+
+# Interpretation
+
+The contribution of this design is not a single estimator, but a **design pipeline**:
+
+- machine-learning-assisted covariate screening,
+- transparent pair construction with balance diagnostics,
+- and DiD estimation within matched school comparisons.
+
+This makes the counterfactual more credible than either naive DiD without pairing or naive matching without time differencing.
+
 
 
 ::: {#refs}

@@ -56,7 +56,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-621824942a01be5cbf2512f0d37b7298.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-80a345afc1c9f3da059abe3689c4514e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -85,6 +85,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta property="og:title" content="Empirical Application – Matching Methods">
 <meta property="og:description" content="The Pioneer Schools Program (PSP): Education Reform in Morocco">
@@ -218,8 +247,31 @@ div.csl-indent {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#study-design-overview" id="toc-study-design-overview" class="nav-link active" data-scroll-target="#study-design-overview">Study Design Overview</a></li>
+  <li><a href="#how-we-constructed-matched-school-pairs" id="toc-how-we-constructed-matched-school-pairs" class="nav-link" data-scroll-target="#how-we-constructed-matched-school-pairs">How We Constructed Matched School Pairs</a>
+  <ul class="collapse">
+  <li><a href="#step-1-build-the-school-level-candidate-database" id="toc-step-1-build-the-school-level-candidate-database" class="nav-link" data-scroll-target="#step-1-build-the-school-level-candidate-database">Step 1: Build the school-level candidate database</a></li>
+  <li><a href="#step-2-use-post-double-selection-lasso-pdslasso-for-variable-selection" id="toc-step-2-use-post-double-selection-lasso-pdslasso-for-variable-selection" class="nav-link" data-scroll-target="#step-2-use-post-double-selection-lasso-pdslasso-for-variable-selection">Step 2: Use post-double-selection LASSO (PDSLASSO) for variable selection</a></li>
+  <li><a href="#step-3-match-schools-using-calibrated-mahalanobis-distance" id="toc-step-3-match-schools-using-calibrated-mahalanobis-distance" class="nav-link" data-scroll-target="#step-3-match-schools-using-calibrated-mahalanobis-distance">Step 3: Match schools using calibrated Mahalanobis distance</a></li>
+  </ul></li>
+  <li><a href="#difference-in-differences-estimation-on-matched-pairs" id="toc-difference-in-differences-estimation-on-matched-pairs" class="nav-link" data-scroll-target="#difference-in-differences-estimation-on-matched-pairs">Difference-in-Differences Estimation on Matched Pairs</a>
+  <ul class="collapse">
+  <li><a href="#estimating-equation-paper-notation" id="toc-estimating-equation-paper-notation" class="nav-link" data-scroll-target="#estimating-equation-paper-notation">Estimating Equation (paper notation)</a></li>
+  <li><a href="#why-this-helps-identification" id="toc-why-this-helps-identification" class="nav-link" data-scroll-target="#why-this-helps-identification">Why this helps identification</a></li>
+  </ul></li>
+  <li><a href="#lasso-inside-the-did-specification" id="toc-lasso-inside-the-did-specification" class="nav-link" data-scroll-target="#lasso-inside-the-did-specification">LASSO Inside the DiD Specification</a>
+  <ul class="collapse">
+  <li><a href="#controls-used-in-selection" id="toc-controls-used-in-selection" class="nav-link" data-scroll-target="#controls-used-in-selection">Controls Used in Selection</a></li>
+  </ul></li>
+  <li><a href="#practical-replication-workflow" id="toc-practical-replication-workflow" class="nav-link" data-scroll-target="#practical-replication-workflow">Practical Replication Workflow</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -244,11 +296,138 @@ div.csl-indent {
 </header>
 
 
+<section id="study-design-overview" class="level1">
+<h1>Study Design Overview</h1>
+<p>Our empirical strategy uses a <strong>matched-pair difference-in-differences (DiD)</strong> design to estimate the intent-to-treat effect of the Pioneer Schools Program (PSP).</p>
+<p>Conceptually:</p>
+<ol type="1">
+<li>Build a credible school-level counterfactual with matching.</li>
+<li>Track baseline-to-endline changes in PSP and comparison schools.</li>
+<li>Estimate treatment effects from within-pair differences over time.</li>
+</ol>
+<p>This design was implemented on two program waves (Cohort 1 and Cohort 2), with school pairs formed before impact estimation.</p>
+</section>
+<section id="how-we-constructed-matched-school-pairs" class="level1">
+<h1>How We Constructed Matched School Pairs</h1>
+<section id="step-1-build-the-school-level-candidate-database" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-build-the-school-level-candidate-database">Step 1: Build the school-level candidate database</h2>
+<p>We start from an administrative school-level dataset covering public primary schools (8,034 schools), with a high-dimensional set of candidate predictors (248 variables).</p>
+</section>
+<section id="step-2-use-post-double-selection-lasso-pdslasso-for-variable-selection" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-use-post-double-selection-lasso-pdslasso-for-variable-selection">Step 2: Use post-double-selection LASSO (PDSLASSO) for variable selection</h2>
+<p>To avoid arbitrary manual covariate selection, we run two LASSO models at the school level:</p>
+<ol type="1">
+<li><strong>Outcome-selection equation</strong>:</li>
+</ol>
+<ul>
+<li>Baseline outcome as dependent variable.</li>
+<li>All candidate school predictors as controls.</li>
+</ul>
+<ol start="2" type="1">
+<li><strong>Treatment-selection equation</strong>:</li>
+</ol>
+<ul>
+<li>PSP treatment indicator as dependent variable.</li>
+<li>Same set of candidate predictors as controls.</li>
+</ul>
+<p>The final matching covariate set is the <strong>union</strong> of variables selected by these two LASSO models. In our implementation, this procedure selected 16 variables from the original 248 candidates.</p>
+</section>
+<section id="step-3-match-schools-using-calibrated-mahalanobis-distance" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-match-schools-using-calibrated-mahalanobis-distance">Step 3: Match schools using calibrated Mahalanobis distance</h2>
+<p>Using the LASSO-selected variables, we match non-PSP schools to PSP schools with an iterative, calibrated Mahalanobis-distance procedure.</p>
+<p>The calibration loop:</p>
+<ol type="1">
+<li>Run matching with a candidate caliper.</li>
+<li>Check post-match diagnostics:</li>
+</ol>
+<ul>
+<li>Common support.</li>
+<li>Covariate balance (e.g., standardized differences).</li>
+<li>Distributional similarity between treated and comparison schools.</li>
+</ul>
+<ol start="3" type="1">
+<li>Tighten calipers iteratively (descending sequence) until acceptable balance is achieved.</li>
+</ol>
+<p>This produced matched school pairs that were closer and more comparable than the initial uncalibrated match attempts.</p>
+</section>
+</section>
+<section id="difference-in-differences-estimation-on-matched-pairs" class="level1">
+<h1>Difference-in-Differences Estimation on Matched Pairs</h1>
+<p>After pair formation, treatment effects are estimated with a student-level matched-pair DiD specification.</p>
+<section id="estimating-equation-paper-notation" class="level2">
+<h2 class="anchored" data-anchor-id="estimating-equation-paper-notation">Estimating Equation (paper notation)</h2>
+<p>Using paper notation, the regression is:</p>
+<p><span class="math display">\[
+Y_{igsjt} = \beta\,(TREAT_{sj}\times POST_t)
++ \gamma\,(X_{igsj}\times POST_t)
++ \phi\,(\zeta_j\times \vartheta_g\times POST_t)
++ \alpha_{igsj} + \varepsilon_{igsjt}
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(Y_{igsjt}\)</span> is outcome <span class="math inline">\(Y\)</span> for student <span class="math inline">\(i\)</span>, grade <span class="math inline">\(g\)</span>, school <span class="math inline">\(s\)</span>, matched pair <span class="math inline">\(j\)</span>, period <span class="math inline">\(t\)</span>.</li>
+<li><span class="math inline">\(TREAT_{sj}\)</span> indicates PSP assignment for school <span class="math inline">\(s\)</span> in pair <span class="math inline">\(j\)</span>.</li>
+<li><span class="math inline">\(POST_t\)</span> indicates endline period.</li>
+<li><span class="math inline">\(X_{igsj}\)</span> are baseline student and school controls.</li>
+<li><span class="math inline">\(\zeta_j\times\vartheta_g\times POST_t\)</span> are grade-by-matched-pair-by-post interactions.</li>
+<li><span class="math inline">\(\beta\)</span> is the intent-to-treat effect of PSP.</li>
+</ul>
+<p>Standard errors are clustered at the matched-pair level, consistent with the pairing-based assignment structure.</p>
+</section>
+<section id="why-this-helps-identification" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-helps-identification">Why this helps identification</h2>
+<ul>
+<li><strong>Matching</strong> improves pre-treatment comparability (selection on observables).</li>
+<li><strong>DiD</strong> differences out pair-invariant unobservables and common shocks.</li>
+<li><strong>Pair-by-grade-by-post structure</strong> allows flexible local trends within matched pair contexts.</li>
+</ul>
+</section>
+</section>
+<section id="lasso-inside-the-did-specification" class="level1">
+<h1>LASSO Inside the DiD Specification</h1>
+<p>The DiD model includes many candidate interaction controls. To avoid overfitting while keeping relevant heterogeneity, we implement post-double-selection LASSO in the analysis stage.</p>
+<p>Paper-aligned implementation steps:</p>
+<ol type="1">
+<li>For each student, compute baseline-to-endline test score change.</li>
+<li>Residualize this change by subtracting the comparison group grade-by-matched-pair mean.</li>
+<li>Run PDSLASSO on the residualized outcome with the candidate control set.</li>
+<li>Include selected <span class="math inline">\(X_{igsj}\times POST_t\)</span> interactions in the final DiD equation.</li>
+</ol>
+<p>This mirrors the paper’s approach: machine-learning selection is used to discipline a high-dimensional control space, while treatment effects are estimated in the final matched-pair DiD regression.</p>
+<section id="controls-used-in-selection" class="level2">
+<h2 class="anchored" data-anchor-id="controls-used-in-selection">Controls Used in Selection</h2>
+<p>The candidate set includes baseline student-level variables (e.g., demographics, baseline score measures, social safety net status) and baseline school-level variables (e.g., school average test scores, region, average class size, student-teacher ratio), plus interactions as specified in the paper’s high-dimensional design.</p>
+</section>
+</section>
+<section id="practical-replication-workflow" class="level1">
+<h1>Practical Replication Workflow</h1>
+<p>For readers reproducing the PSP approach:</p>
+<ol type="1">
+<li>Prepare baseline school-level data and treatment flag.</li>
+<li>Run PDSLASSO (outcome model + treatment model).</li>
+<li>Take union of selected controls.</li>
+<li>Match schools via Mahalanobis distance with iterative caliper tuning.</li>
+<li>Validate common support and balance before analysis.</li>
+<li>Estimate the matched-pair DiD equation in paper notation with pair-level clustered standard errors.</li>
+<li>Use post-double-selection LASSO to select high-dimensional interaction controls for <span class="math inline">\(X_{igsj}\times POST_t\)</span>.</li>
+<li>Report pair-clustered inference and adjusted p-values as in the paper’s reporting framework.</li>
+</ol>
+</section>
+<section id="interpretation" class="level1">
+<h1>Interpretation</h1>
+<p>The contribution of this design is not a single estimator, but a <strong>design pipeline</strong>:</p>
+<ul>
+<li>machine-learning-assisted covariate screening,</li>
+<li>transparent pair construction with balance diagnostics,</li>
+<li>and DiD estimation within matched school comparisons.</li>
+</ul>
+<p>This makes the counterfactual more credible than either naive DiD without pairing or naive matching without time differencing.</p>
 <div id="refs" role="list">
 
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
