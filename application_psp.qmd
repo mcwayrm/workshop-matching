@@ -113,7 +113,7 @@ For readers reproducing the PSP approach:
 7. Use post-double-selection LASSO to select high-dimensional interaction controls for $X_{igsj}\times POST_t$.
 8. Report pair-clustered inference and adjusted p-values as in the paper's reporting framework.
 
-# Interpretation
+# Contribution
 
 The contribution of this design is not a single estimator, but a **design pipeline**:
 

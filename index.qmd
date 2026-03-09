@@ -5,44 +5,61 @@ bibliography: references.bib
 
 # Motivation 
 
-Start with settings. Why matching may be a useful application with limited ability to randomize treatment (contact of RCT gold standard)
-\item The Effect https://theeffectbook.net/ch-Matching.html
-\item Kennedy Book 
-\item Hansen 
-\item Harmless Econometrics 
-\item Guide to Data Analysis: https://bookdown.org/mike/data_analysis/sec-matching-methods.html
-\item https://www.stata.com/meeting/uk10/UKSUG10.Sianesi.pdf
-\item https://sites.google.com/site/econometricsacademy/econometrics-models/propensity-score-matching?authuser=0
-\item https://kosukeimai.github.io/MatchIt/articles/matching-methods.html
+While randomized controlled trials (RCTs) remain the gold standard for causal inference, many research settings make randomization infeasible or unethical. In these observational settings, matching methods offer a powerful quasi-experimental approach to estimate causal treatment effects.
 
+Matching represents an intuitive method for addressing causal questions, primarily because it pushes the analyst to confront both the process of treatment assignment and the limitations of available data. By constructing comparable treatment and control groups based on observed characteristics, matching attempts to replicate the balance we would expect from randomization.
 
-Matching represents an intuitive (perhaps too much so) method for addressing causal
-question, primarily because it pushes the analyst to confront the process of causal
-exposure as well as the limitations of available data.
+As @Stuart2010 notes:
 
-"When estimating causal effects using observational data, it is desirable to replicate a randomized experiment as closely as possible by obtaining treated and control groups with similar covariate distributions. This goal can often be achieved by choosing well-matched samples of the original treated and control groups, thereby reducing bias due to the covariates. Since the 1970’s, work on matching methods has examined how to best choose treated and control subjects for comparison." [@Stuart2010]
+> "When estimating causal effects using observational data, it is desirable to replicate a randomized experiment as closely as possible by obtaining treated and control groups with similar covariate distributions. This goal can often be achieved by choosing well-matched samples of the original treated and control groups, thereby reducing bias due to the covariates. Since the 1970's, work on matching methods has examined how to best choose treated and control subjects for comparison."
 
 # Overview 
 
 Matching is usually introduced in one of two ways:
+
 1. As a method to form quasi-experimental contrasts by sampling comparable treatment and control cases from among two larger pools of such cases
-2. As a nonparametric method of adjustment for treatment assignment patterns when it is feared that ostensibly simple parametric regression estimators cannot be trusted.
+2. As a nonparametric method of adjustment for treatment assignment patterns when parametric regression estimators may not be trusted
 
-To implement a matching method, you will follow a simple four step procedure: 
+## Core Workflow
 
-1. Defining “closeness”: the distance measure used to determine whether an individual is a good match for another,
-2. Implementing a matching method, given that measure of closeness,
-3. Assessing the quality of the resulting matched samples, and perhaps iterating with Steps (1) and (2) until well-matched samples result, and
-4. Analysis of the outcome and estimation of the treatment effect, given the matching done in Step (3).
+To implement a matching method, you will follow a four-step procedure: 
+
+1. **Defining closeness**: Select a distance measure to determine whether an individual is a good match for another
+2. **Implementing the match**: Apply a matching algorithm given your distance measure
+3. **Assessing match quality**: Evaluate the balance of the resulting matched samples, iterating Steps 1 and 2 as needed
+4. **Estimating the effect**: Analyze outcomes and estimate the treatment effect given the matched sample
+
+# Workshop Outline
+
+This workshop is organized into the following modules:
+
+## Foundations
+
+- **The Concept**: Introduction to matching fundamentals and the intuition behind matching estimators
+- **Distance Measures**: Metrics for measuring similarity between units (Euclidean, Mahalanobis, propensity scores)
+
+## Matching Methods
+
+- **Propensity Score Matching**: Using predicted treatment probabilities to match units
+- **Covariate Matching**: Direct matching on observed characteristics
+- **LASSO Matching**: High-dimensional variable selection with penalized propensity scores
+- **Doubly Robust Estimation**: Combining propensity weighting with outcome regression for robustness
+
+## Validation & Application
+
+- **Sensitivity Analysis**: Testing the robustness of your findings to unobserved confounding
+- **Coding Practice**: Hands-on exercises with real data in R, Python, and Stata
+- **The PSP Program**: Empirical application using LASSO matching and matched-pair difference-in-differences
+
+## Additional Resources
+
+- Recommended readings, software packages, and further learning materials
 
 # Video Review 
 
-This workshop was graciously recorded by the MEL J-PAL staff. I have taken this recording and provided this as a publicly avaliable video reviewing the material to accompany this website training. 
+This workshop was graciously recorded by the MEL J-PAL staff and is provided as a publicly available video to accompany the written materials. 
 
-You can view the recording at the following link: 
-
-
-[...](...)
+*Video link to be added.*
 
 ::: {#refs}
 :::

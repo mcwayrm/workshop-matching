@@ -57,7 +57,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-80a345afc1c9f3da059abe3689c4514e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-62b0eb114e730aa8195df543e259a535.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -196,18 +196,18 @@ div.csl-indent {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./practice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Coding Practice</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./application_psp.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">The PSP Program</span></a>
   </div>
 </li>
       </ul>
   </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./practice.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Practice</span></a>
-  </div>
-</li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./resources.html" class="sidebar-item-text sidebar-link">
@@ -225,7 +225,17 @@ div.csl-indent {
    
   <ul>
   <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a></li>
-  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a>
+  <ul class="collapse">
+  <li><a href="#core-workflow" id="toc-core-workflow" class="nav-link" data-scroll-target="#core-workflow">Core Workflow</a></li>
+  </ul></li>
+  <li><a href="#workshop-outline" id="toc-workshop-outline" class="nav-link" data-scroll-target="#workshop-outline">Workshop Outline</a>
+  <ul class="collapse">
+  <li><a href="#foundations" id="toc-foundations" class="nav-link" data-scroll-target="#foundations">Foundations</a></li>
+  <li><a href="#matching-methods" id="toc-matching-methods" class="nav-link" data-scroll-target="#matching-methods">Matching Methods</a></li>
+  <li><a href="#validation-application" id="toc-validation-application" class="nav-link" data-scroll-target="#validation-application">Validation &amp; Application</a></li>
+  <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources">Additional Resources</a></li>
+  </ul></li>
   <li><a href="#video-review" id="toc-video-review" class="nav-link" data-scroll-target="#video-review">Video Review</a></li>
   </ul>
 </nav>
@@ -254,34 +264,69 @@ div.csl-indent {
 
 <section id="motivation" class="level1">
 <h1>Motivation</h1>
-Start with settings. Why matching may be a useful application with limited ability to randomize treatment (contact of RCT gold standard)
-The Effect https://theeffectbook.net/ch-Matching.html
-Kennedy Book
-Hansen
-Harmless Econometrics
-Guide to Data Analysis: https://bookdown.org/mike/data_analysis/sec-matching-methods.html
-https://www.stata.com/meeting/uk10/UKSUG10.Sianesi.pdf
-https://sites.google.com/site/econometricsacademy/econometrics-models/propensity-score-matching?authuser=0
-<p>https://kosukeimai.github.io/MatchIt/articles/matching-methods.html</p>
-<p>Matching represents an intuitive (perhaps too much so) method for addressing causal question, primarily because it pushes the analyst to confront the process of causal exposure as well as the limitations of available data.</p>
-<p>“When estimating causal effects using observational data, it is desirable to replicate a randomized experiment as closely as possible by obtaining treated and control groups with similar covariate distributions. This goal can often be achieved by choosing well-matched samples of the original treated and control groups, thereby reducing bias due to the covariates. Since the 1970’s, work on matching methods has examined how to best choose treated and control subjects for comparison.” <span class="citation" data-cites="Stuart2010">(<a href="#ref-Stuart2010" role="doc-biblioref">Stuart 2010</a>)</span></p>
+<p>While randomized controlled trials (RCTs) remain the gold standard for causal inference, many research settings make randomization infeasible or unethical. In these observational settings, matching methods offer a powerful quasi-experimental approach to estimate causal treatment effects.</p>
+<p>Matching represents an intuitive method for addressing causal questions, primarily because it pushes the analyst to confront both the process of treatment assignment and the limitations of available data. By constructing comparable treatment and control groups based on observed characteristics, matching attempts to replicate the balance we would expect from randomization.</p>
+<p>As <span class="citation" data-cites="Stuart2010">Stuart (<a href="#ref-Stuart2010" role="doc-biblioref">2010</a>)</span> notes:</p>
+<blockquote class="blockquote">
+<p>“When estimating causal effects using observational data, it is desirable to replicate a randomized experiment as closely as possible by obtaining treated and control groups with similar covariate distributions. This goal can often be achieved by choosing well-matched samples of the original treated and control groups, thereby reducing bias due to the covariates. Since the 1970’s, work on matching methods has examined how to best choose treated and control subjects for comparison.”</p>
+</blockquote>
 </section>
 <section id="overview" class="level1">
 <h1>Overview</h1>
-<p>Matching is usually introduced in one of two ways: 1. As a method to form quasi-experimental contrasts by sampling comparable treatment and control cases from among two larger pools of such cases 2. As a nonparametric method of adjustment for treatment assignment patterns when it is feared that ostensibly simple parametric regression estimators cannot be trusted.</p>
-<p>To implement a matching method, you will follow a simple four step procedure:</p>
+<p>Matching is usually introduced in one of two ways:</p>
 <ol type="1">
-<li>Defining “closeness”: the distance measure used to determine whether an individual is a good match for another,</li>
-<li>Implementing a matching method, given that measure of closeness,</li>
-<li>Assessing the quality of the resulting matched samples, and perhaps iterating with Steps (1) and (2) until well-matched samples result, and</li>
-<li>Analysis of the outcome and estimation of the treatment effect, given the matching done in Step (3).</li>
+<li>As a method to form quasi-experimental contrasts by sampling comparable treatment and control cases from among two larger pools of such cases</li>
+<li>As a nonparametric method of adjustment for treatment assignment patterns when parametric regression estimators may not be trusted</li>
 </ol>
+<section id="core-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="core-workflow">Core Workflow</h2>
+<p>To implement a matching method, you will follow a four-step procedure:</p>
+<ol type="1">
+<li><strong>Defining closeness</strong>: Select a distance measure to determine whether an individual is a good match for another</li>
+<li><strong>Implementing the match</strong>: Apply a matching algorithm given your distance measure</li>
+<li><strong>Assessing match quality</strong>: Evaluate the balance of the resulting matched samples, iterating Steps 1 and 2 as needed</li>
+<li><strong>Estimating the effect</strong>: Analyze outcomes and estimate the treatment effect given the matched sample</li>
+</ol>
+</section>
+</section>
+<section id="workshop-outline" class="level1">
+<h1>Workshop Outline</h1>
+<p>This workshop is organized into the following modules:</p>
+<section id="foundations" class="level2">
+<h2 class="anchored" data-anchor-id="foundations">Foundations</h2>
+<ul>
+<li><strong>The Concept</strong>: Introduction to matching fundamentals and the intuition behind matching estimators</li>
+<li><strong>Distance Measures</strong>: Metrics for measuring similarity between units (Euclidean, Mahalanobis, propensity scores)</li>
+</ul>
+</section>
+<section id="matching-methods" class="level2">
+<h2 class="anchored" data-anchor-id="matching-methods">Matching Methods</h2>
+<ul>
+<li><strong>Propensity Score Matching</strong>: Using predicted treatment probabilities to match units</li>
+<li><strong>Covariate Matching</strong>: Direct matching on observed characteristics</li>
+<li><strong>LASSO Matching</strong>: High-dimensional variable selection with penalized propensity scores</li>
+<li><strong>Doubly Robust Estimation</strong>: Combining propensity weighting with outcome regression for robustness</li>
+</ul>
+</section>
+<section id="validation-application" class="level2">
+<h2 class="anchored" data-anchor-id="validation-application">Validation &amp; Application</h2>
+<ul>
+<li><strong>Sensitivity Analysis</strong>: Testing the robustness of your findings to unobserved confounding</li>
+<li><strong>Coding Practice</strong>: Hands-on exercises with real data in R, Python, and Stata</li>
+<li><strong>The PSP Program</strong>: Empirical application using LASSO matching and matched-pair difference-in-differences</li>
+</ul>
+</section>
+<section id="additional-resources" class="level2">
+<h2 class="anchored" data-anchor-id="additional-resources">Additional Resources</h2>
+<ul>
+<li>Recommended readings, software packages, and further learning materials</li>
+</ul>
+</section>
 </section>
 <section id="video-review" class="level1">
 <h1>Video Review</h1>
-<p>This workshop was graciously recorded by the MEL J-PAL staff. I have taken this recording and provided this as a publicly avaliable video reviewing the material to accompany this website training.</p>
-<p>You can view the recording at the following link:</p>
-<p><a href="...">…</a></p>
+<p>This workshop was graciously recorded by the MEL J-PAL staff and is provided as a publicly available video to accompany the written materials.</p>
+<p><em>Video link to be added.</em></p>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-Stuart2010" class="csl-entry" role="listitem">
 Stuart, Elizabeth A. 2010. <span>“Matching Methods for Causal Inference: A Review and a Look Forward.”</span> <em>Statistical Science</em> 25 (1): 1–21. <a href="https://doi.org/10.1214/09-STS313">https://doi.org/10.1214/09-STS313</a>.

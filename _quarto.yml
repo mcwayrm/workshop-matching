@@ -43,10 +43,10 @@ website:
         text: Sensitivity Analysis
       - section: Empirical Application
         contents:
+          - href: practice.qmd
+            text: Coding Practice
           - href: application_psp.qmd
             text: The PSP Program
-      - href: practice.qmd
-        text: Coding Practice
       - href: resources.qmd
         text: Additional Resources
 
