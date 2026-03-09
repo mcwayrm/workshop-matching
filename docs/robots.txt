@@ -1,1 +1,1 @@
-Sitemap: d/sitemap.xml
+Sitemap: https://mcwayrm.github.io/matching_methods/sitemap.xml

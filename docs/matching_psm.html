@@ -20,10 +20,45 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -56,7 +91,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c2c6a774d0aa08ed60d2e739c075b19b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-621824942a01be5cbf2512f0d37b7298.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -85,6 +120,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta property="og:title" content="Matching Methods">
 <meta property="og:description" content="Propensity Score Matching">
@@ -207,13 +271,50 @@ div.csl-indent {
  <span class="menu-text">Coding Practice</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Additional Resources</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#the-balancing-property" id="toc-the-balancing-property" class="nav-link" data-scroll-target="#the-balancing-property">The Balancing Property</a></li>
+  </ul></li>
+  <li><a href="#estimating-the-propensity-score" id="toc-estimating-the-propensity-score" class="nav-link" data-scroll-target="#estimating-the-propensity-score">Estimating the Propensity Score</a>
+  <ul class="collapse">
+  <li><a href="#logistic-regression" id="toc-logistic-regression" class="nav-link" data-scroll-target="#logistic-regression">Logistic Regression</a></li>
+  <li><a href="#alternative-methods" id="toc-alternative-methods" class="nav-link" data-scroll-target="#alternative-methods">Alternative Methods</a></li>
+  </ul></li>
+  <li><a href="#matching-algorithms" id="toc-matching-algorithms" class="nav-link" data-scroll-target="#matching-algorithms">Matching Algorithms</a>
+  <ul class="collapse">
+  <li><a href="#nearest-neighbor-matching" id="toc-nearest-neighbor-matching" class="nav-link" data-scroll-target="#nearest-neighbor-matching">1. Nearest Neighbor Matching</a></li>
+  <li><a href="#caliper-matching" id="toc-caliper-matching" class="nav-link" data-scroll-target="#caliper-matching">2. Caliper Matching</a></li>
+  <li><a href="#kernel-matching" id="toc-kernel-matching" class="nav-link" data-scroll-target="#kernel-matching">3. Kernel Matching</a></li>
+  </ul></li>
+  <li><a href="#implementation-in-r" id="toc-implementation-in-r" class="nav-link" data-scroll-target="#implementation-in-r">Implementation in R</a></li>
+  <li><a href="#implementation-in-python" id="toc-implementation-in-python" class="nav-link" data-scroll-target="#implementation-in-python">Implementation in Python</a></li>
+  <li><a href="#implementation-in-stata" id="toc-implementation-in-stata" class="nav-link" data-scroll-target="#implementation-in-stata">Implementation in Stata</a></li>
+  <li><a href="#why-psm-is-no-longer-recommended" id="toc-why-psm-is-no-longer-recommended" class="nav-link" data-scroll-target="#why-psm-is-no-longer-recommended">Why PSM Is No Longer Recommended</a>
+  <ul class="collapse">
+  <li><a href="#key-problems" id="toc-key-problems" class="nav-link" data-scroll-target="#key-problems">Key Problems</a></li>
+  <li><a href="#better-alternatives" id="toc-better-alternatives" class="nav-link" data-scroll-target="#better-alternatives">Better Alternatives</a></li>
+  </ul></li>
+  <li><a href="#when-psm-may-still-be-useful" id="toc-when-psm-may-still-be-useful" class="nav-link" data-scroll-target="#when-psm-may-still-be-useful">When PSM May Still Be Useful</a></li>
+  <li><a href="#common-pitfalls" id="toc-common-pitfalls" class="nav-link" data-scroll-target="#common-pitfalls">Common Pitfalls</a></li>
+  <li><a href="#recommended-workflow" id="toc-recommended-workflow" class="nav-link" data-scroll-target="#recommended-workflow">Recommended Workflow</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -238,11 +339,228 @@ div.csl-indent {
 </header>
 
 
-<div id="refs" role="list">
-
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>The <strong>propensity score</strong> is defined as the conditional probability of receiving treatment given observed covariates <span class="citation" data-cites="rosenbaum1983central">(<a href="#ref-rosenbaum1983central" role="doc-biblioref">Rosenbaum and Rubin 1983</a>)</span>:</p>
+<p><span class="math display">\[
+e(X) = P(T = 1 | X)
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(T \in \{0, 1\}\)</span> is the binary treatment indicator</li>
+<li><span class="math inline">\(X\)</span> is a vector of pre-treatment covariates</li>
+</ul>
+<section id="the-balancing-property" class="level2">
+<h2 class="anchored" data-anchor-id="the-balancing-property">The Balancing Property</h2>
+<p>Rosenbaum and Rubin (1983) proved that conditioning on the propensity score is sufficient to remove bias from observed confounders:</p>
+<p><span class="math display">\[
+(Y^1, Y^0) \perp T | e(X)
+\]</span></p>
+<p>This remarkable result reduces the dimensionality of the matching problem: instead of matching on all <span class="math inline">\(p\)</span> covariates in <span class="math inline">\(X\)</span>, we can match on the single scalar <span class="math inline">\(e(X)\)</span>.</p>
+<p><strong>Why this works:</strong></p>
+<p>The propensity score is a <strong>balancing score</strong>: At each value <span class="math inline">\(e(X) = e_0\)</span>, the distribution of covariates <span class="math inline">\(X\)</span> is the same in the treated and control groups.</p>
+<p>Formally: <span class="math display">\[
+X \perp T | e(X)
+\]</span></p>
+</section>
+</section>
+<section id="estimating-the-propensity-score" class="level1">
+<h1>Estimating the Propensity Score</h1>
+<section id="logistic-regression" class="level2">
+<h2 class="anchored" data-anchor-id="logistic-regression">Logistic Regression</h2>
+<p>The most common approach estimates <span class="math inline">\(e(X)\)</span> using logistic regression:</p>
+<p><span class="math display">\[
+\log \left( \frac{e(X)}{1 - e(X)} \right) = X^\top \beta
+\]</span></p>
+<p>This yields: <span class="math display">\[
+\hat{e}(X_i) = \frac{1}{1 + \exp(-X_i^\top \hat{\beta})}
+\]</span></p>
+</section>
+<section id="alternative-methods" class="level2">
+<h2 class="anchored" data-anchor-id="alternative-methods">Alternative Methods</h2>
+<p>For more flexible functional forms:</p>
+<ul>
+<li><strong>Generalized boosted models (GBM)</strong> - adaptive nonparametric estimation</li>
+<li><strong>Random forests</strong> - ensemble tree-based methods</li>
+<li><strong>LASSO/Ridge</strong> - regularized regression for high-dimensional <span class="math inline">\(X\)</span></li>
+<li><strong>Neural networks</strong> - deep learning approaches</li>
+</ul>
+</section>
+</section>
+<section id="matching-algorithms" class="level1">
+<h1>Matching Algorithms</h1>
+<section id="nearest-neighbor-matching" class="level2">
+<h2 class="anchored" data-anchor-id="nearest-neighbor-matching">1. Nearest Neighbor Matching</h2>
+<p>Match each treated unit to the <span class="math inline">\(k\)</span> closest control units based on propensity score distance:</p>
+<p><span class="math display">\[
+d(i, j) = |e(X_i) - e(X_j)|
+\]</span></p>
+<p><strong>With replacement:</strong> Control units can be matched multiple times<br>
+<strong>Without replacement:</strong> Each control used at most once</p>
+</section>
+<section id="caliper-matching" class="level2">
+<h2 class="anchored" data-anchor-id="caliper-matching">2. Caliper Matching</h2>
+<p>Impose a maximum distance threshold <span class="math inline">\(c &gt; 0\)</span> (the caliper). Only match if:</p>
+<p><span class="math display">\[
+|e(X_i) - e(X_j)| &lt; c
+\]</span></p>
+<p>Common choice: <span class="math inline">\(c = 0.25 \times \text{SD}(\text{logit}(e(X)))\)</span></p>
+</section>
+<section id="kernel-matching" class="level2">
+<h2 class="anchored" data-anchor-id="kernel-matching">3. Kernel Matching</h2>
+<p>Weighted average of all controls, with weights inversely proportional to distance:</p>
+<p><span class="math display">\[
+\hat{Y}_i^0 = \frac{\sum_{j:T_j=0} K\left(\frac{e(X_i) - e(X_j)}{h}\right) Y_j}{\sum_{j:T_j=0} K\left(\frac{e(X_i) - e(X_j)}{h}\right)}
+\]</span></p>
+<p>where <span class="math inline">\(K(\cdot)\)</span> is a kernel function and <span class="math inline">\(h\)</span> is the bandwidth.</p>
+</section>
+</section>
+<section id="implementation-in-r" class="level1">
+<h1>Implementation in R</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MatchIt)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate propensity scores and match</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> married <span class="sc">+</span> nodegree <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"nearest"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">distance =</span> <span class="st">"glm"</span>,  <span class="co"># logistic regression</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">ratio =</span> <span class="dv">1</span>,         <span class="co"># 1:1 matching</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">caliper =</span> <span class="fl">0.25</span>,    <span class="co"># caliper in standard deviations</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">replace =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Check balance</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m.out, <span class="at">un =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize overlap</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m.out, <span class="at">type =</span> <span class="st">"jitter"</span>, <span class="at">interactive =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract matched data</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>matched_data <span class="ot">&lt;-</span> <span class="fu">match.data</span>(m.out)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate treatment effect</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sandwich)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(outcome <span class="sc">~</span> treat <span class="sc">+</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>          <span class="at">data =</span> matched_data,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>          <span class="at">weights =</span> weights)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Robust standard errors</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fit, <span class="at">vcov =</span> vcovCL, <span class="at">cluster =</span> <span class="sc">~</span>subclass)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="implementation-in-python" class="level1">
+<h1>Implementation in Python</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> causalinference <span class="im">import</span> CausalModel</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> data[<span class="st">'outcome'</span>].values</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> data[<span class="st">'treat'</span>].values  </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> data[[<span class="st">'age'</span>, <span class="st">'educ'</span>, <span class="st">'married'</span>, <span class="st">'re74'</span>, <span class="st">'re75'</span>]].values</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit model</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>causal <span class="op">=</span> CausalModel(Y, D, X)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate propensity scores</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>causal.est_propensity_s()</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Match with caliper</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>causal.est_via_matching(matches<span class="op">=</span><span class="dv">1</span>, bias_adj<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Results</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(causal.estimates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="implementation-in-stata" class="level1">
+<h1>Implementation in Stata</h1>
+<div class="sourceCode" id="cb3"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>* Estimate propensity <span class="kw">score</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">logit</span> treat age educ <span class="bn">black</span> hispanic married nodegree re74 re75</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>* Predict propensity scores</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> pscore, pr</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>* Nearest neighbor matching with caliper</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>psmatch2 treat, pscore(pscore) outcome(re78) caliper(0.25) ate</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>* Check balance</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>pstest age educ <span class="bn">black</span> hispanic married nodegree re74 re75, <span class="co">///</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>       treated(treat) pscore(pscore)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="why-psm-is-no-longer-recommended" class="level1">
+<h1>Why PSM Is No Longer Recommended</h1>
+<p>Despite its intuitive appeal, <span class="citation" data-cites="king2019propensity">King and Nielsen (<a href="#ref-king2019propensity" role="doc-biblioref">2019</a>)</span> show that propensity score matching often <strong>fails to achieve adequate covariate balance</strong> and can even <strong>increase imbalance</strong> compared to simpler methods.</p>
+<section id="key-problems" class="level2">
+<h2 class="anchored" data-anchor-id="key-problems">Key Problems</h2>
+<ol type="1">
+<li><strong>Paradox of PSM:</strong> Equal propensity scores do not guarantee similar covariates</li>
+</ol>
+<p><span class="math display">\[
+e(X_i) = e(X_j) \not\Rightarrow X_i = X_j
+\]</span></p>
+<p>But: <span class="math display">\[
+X_i = X_j \Rightarrow e(X_i) = e(X_j)
+\]</span></p>
+<ol start="2" type="1">
+<li><p><strong>Model dependence:</strong> Small changes in propensity score specification can dramatically change matches</p></li>
+<li><p><strong>Inefficiency:</strong> Discarding unmatched units reduces sample size unnecessarily</p></li>
+<li><p><strong>Approximation stochasticity:</strong> The quality of matches varies randomly based on the specific sample</p></li>
+</ol>
+</section>
+<section id="better-alternatives" class="level2">
+<h2 class="anchored" data-anchor-id="better-alternatives">Better Alternatives</h2>
+<ul>
+<li><strong>Covariate matching</strong> (Mahalanobis distance, CEM)</li>
+<li><strong>Inverse probability weighting</strong> (IPTW)</li>
+<li><strong>Doubly robust estimators</strong></li>
+<li><strong>Entropy balancing</strong></li>
+</ul>
+</section>
+</section>
+<section id="when-psm-may-still-be-useful" class="level1">
+<h1>When PSM May Still Be Useful</h1>
+<ul>
+<li><strong>Diagnostic tool</strong> for assessing overlap</li>
+<li><strong>Combined with other methods</strong> (e.g., within propensity score strata, use Mahalanobis matching)</li>
+<li><strong>Sensitivity analysis</strong></li>
+</ul>
+</section>
+<section id="common-pitfalls" class="level1">
+<h1>Common Pitfalls</h1>
+<ol type="1">
+<li><strong>Including post-treatment variables</strong> in propensity score model</li>
+<li><strong>Ignoring lack of common support</strong></li>
+<li><strong>Using p-values to assess balance</strong> (conflates sample size with balance)</li>
+<li><strong>Not checking covariate balance</strong> after matching</li>
+<li><strong>Treating estimated propensity scores as known</strong></li>
+</ol>
+</section>
+<section id="recommended-workflow" class="level1">
+<h1>Recommended Workflow</h1>
+<ol type="1">
+<li>Specify covariates based on domain knowledge (include all confounders)</li>
+<li>Estimate propensity scores</li>
+<li><strong>Check overlap</strong> (common support)</li>
+<li>Perform matching</li>
+<li><strong>Assess balance</strong> (standardized mean differences, variance ratios)</li>
+<li>If imbalance remains: refine model or try different matching method</li>
+<li>Estimate treatment effect on matched sample</li>
+<li><strong>Sensitivity analysis</strong> for hidden bias</li>
+</ol>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-king2019propensity" class="csl-entry" role="listitem">
+King, Gary, and Richard Nielsen. 2019. <span>“Why Propensity Scores Should Not Be Used for Matching.”</span> <em>Political Analysis</em> 27 (4): 435–54. <a href="https://doi.org/10.1017/pan.2019.11">https://doi.org/10.1017/pan.2019.11</a>.
+</div>
+<div id="ref-rosenbaum1983central" class="csl-entry" role="listitem">
+Rosenbaum, Paul R., and Donald B. Rubin. 1983. <span>“The Central Role of the Propensity Score in Observational Studies for Causal Effects.”</span> <em>Biometrika</em> 70 (1): 41–55. <a href="https://doi.org/10.1093/biomet/70.1.41">https://doi.org/10.1093/biomet/70.1.41</a>.
+</div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -335,7 +653,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("d");
+      var filterRegex = new RegExp("https:\/\/mcwayrm\.github\.io\/matching_methods\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

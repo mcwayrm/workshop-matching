@@ -56,7 +56,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c2c6a774d0aa08ed60d2e739c075b19b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-621824942a01be5cbf2512f0d37b7298.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -85,6 +85,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta property="og:title" content="Distance Measures – Matching Methods">
 <meta property="og:description" content="How to Determine Matching?">
@@ -207,6 +236,12 @@ div.csl-indent {
  <span class="menu-text">Coding Practice</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Additional Resources</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -217,10 +252,37 @@ div.csl-indent {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#exact-matching" id="toc-exact-matching" class="nav-link active" data-scroll-target="#exact-matching">Exact Matching</a></li>
-  <li><a href="#mahalanobis" id="toc-mahalanobis" class="nav-link" data-scroll-target="#mahalanobis">Mahalanobis</a></li>
-  <li><a href="#propensity-score" id="toc-propensity-score" class="nav-link" data-scroll-target="#propensity-score">Propensity Score</a></li>
-  <li><a href="#linear-probability-score" id="toc-linear-probability-score" class="nav-link" data-scroll-target="#linear-probability-score">Linear Probability Score</a></li>
+  <li><a href="#variable-selection-guidelines" id="toc-variable-selection-guidelines" class="nav-link active" data-scroll-target="#variable-selection-guidelines">Variable Selection Guidelines</a></li>
+  <li><a href="#exact-matching" id="toc-exact-matching" class="nav-link" data-scroll-target="#exact-matching">Exact Matching</a>
+  <ul class="collapse">
+  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
+  <li><a href="#when-it-works" id="toc-when-it-works" class="nav-link" data-scroll-target="#when-it-works">When It Works</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
+  </ul></li>
+  <li><a href="#mahalanobis-distance" id="toc-mahalanobis-distance" class="nav-link" data-scroll-target="#mahalanobis-distance">Mahalanobis Distance</a>
+  <ul class="collapse">
+  <li><a href="#definition-1" id="toc-definition-1" class="nav-link" data-scroll-target="#definition-1">Definition</a></li>
+  <li><a href="#which-covariance-matrix" id="toc-which-covariance-matrix" class="nav-link" data-scroll-target="#which-covariance-matrix">Which Covariance Matrix?</a></li>
+  <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">Properties</a></li>
+  <li><a href="#advantages" id="toc-advantages" class="nav-link" data-scroll-target="#advantages">Advantages</a></li>
+  <li><a href="#limitations-1" id="toc-limitations-1" class="nav-link" data-scroll-target="#limitations-1">Limitations</a></li>
+  </ul></li>
+  <li><a href="#propensity-score-distance" id="toc-propensity-score-distance" class="nav-link" data-scroll-target="#propensity-score-distance">Propensity Score Distance</a>
+  <ul class="collapse">
+  <li><a href="#definition-2" id="toc-definition-2" class="nav-link" data-scroll-target="#definition-2">Definition</a></li>
+  <li><a href="#the-balancing-property" id="toc-the-balancing-property" class="nav-link" data-scroll-target="#the-balancing-property">The Balancing Property</a></li>
+  <li><a href="#estimation" id="toc-estimation" class="nav-link" data-scroll-target="#estimation">Estimation</a>
+  <ul class="collapse">
+  <li><a href="#logistic-regression" id="toc-logistic-regression" class="nav-link" data-scroll-target="#logistic-regression">Logistic Regression</a></li>
+  <li><a href="#machine-learning-methods" id="toc-machine-learning-methods" class="nav-link" data-scroll-target="#machine-learning-methods">Machine Learning Methods</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#logit-propensity-score-distance" id="toc-logit-propensity-score-distance" class="nav-link" data-scroll-target="#logit-propensity-score-distance">Logit Propensity Score Distance</a>
+  <ul class="collapse">
+  <li><a href="#definition-3" id="toc-definition-3" class="nav-link" data-scroll-target="#definition-3">Definition</a></li>
+  <li><a href="#why-use-logit-scale" id="toc-why-use-logit-scale" class="nav-link" data-scroll-target="#why-use-logit-scale">Why Use Logit Scale?</a></li>
+  </ul></li>
+  <li><a href="#comparison-of-distance-measures" id="toc-comparison-of-distance-measures" class="nav-link" data-scroll-target="#comparison-of-distance-measures">Comparison of Distance Measures</a></li>
   </ul>
 </nav>
     </div>
@@ -247,28 +309,206 @@ div.csl-indent {
 </header>
 
 
-<p>How you select ‘similarity’ between two observations is critical to the matching design. Once you have established a proability score of treatment, there are four generally accepted distance measures to detect the difference between any to observations on this measure. The objective of the researcher is to minimize this distance and in doing so only compare observations that are similar in likelihood of being in the same treatment status.</p>
+<p>Defining “closeness” between units is the foundation of matching. The choice of distance metric determines which treated and control units are considered similar enough to compare.</p>
+<section id="variable-selection-guidelines" class="level1">
+<h1>Variable Selection Guidelines</h1>
+<p>Before selecting a distance measure, determine which covariates to include:</p>
+<p><strong>Include:</strong></p>
+<ul>
+<li>All variables related to <strong>both</strong> treatment assignment <strong>and</strong> outcomes (confounders)</li>
+<li>Pre-treatment characteristics only</li>
+<li>As many relevant covariates as feasible</li>
+</ul>
+<p><strong>Exclude:</strong></p>
+<ul>
+<li><strong>Post-treatment variables</strong> (mediators, colliders)</li>
+<li>Variables affected by treatment</li>
+<li>Pure instrumental variables (increases variance without reducing bias)</li>
+</ul>
+</section>
 <section id="exact-matching" class="level1">
 <h1>Exact Matching</h1>
-<p>𝐷𝑖⁢𝑗={0if𝑋𝑖=𝑋𝑗∞if𝑋𝑖≠𝑋𝑗,</p>
+<section id="definition" class="level2">
+<h2 class="anchored" data-anchor-id="definition">Definition</h2>
+<p>Two units match exactly if all their covariate values are identical:</p>
+<p><span class="math display">\[
+D_{ij} = \begin{cases}
+0 &amp; \text{if } X_i = X_j \\
+\infty &amp; \text{if } X_i \neq X_j
+\end{cases}
+\]</span></p>
 </section>
-<section id="mahalanobis" class="level1">
-<h1>Mahalanobis</h1>
-<p>𝐷𝑖⁢𝑗=(𝑋𝑖−𝑋𝑗)′⁢∑−1(𝑋𝑖−𝑋𝑗).</p>
-<p>If interest is in the ATT, Σ is the variance covariance matrix of X in the full control group; if interest is in the ATE then Σ is the variance covariance matrix of X in the pooled treatment and full control groups. If X contains categorical variables they should be converted to a series of binary indicators, although the distance works best with continuous variables.</p>
+<section id="when-it-works" class="level2">
+<h2 class="anchored" data-anchor-id="when-it-works">When It Works</h2>
+<ul>
+<li><strong>Few discrete covariates</strong> (e.g., race, gender, region)</li>
+<li><strong>Large sample</strong> with sufficient overlap</li>
+<li><strong>All covariates categorical</strong> or can be meaningfully discretized</li>
+</ul>
 </section>
-<section id="propensity-score" class="level1">
-<h1>Propensity Score</h1>
-<p>An estimated propensity score is the estimated probability of taking the treatment as a function of variables that predict treatment assignment. Within a perfect stratification, the true propensity score is nothing other than the within-stratum probability of receiving the treatment, or Pr(D = 1jS), which you will recall is such that Pr(D = 1jS) = Pr(S = 1;D = 1) Pr(S = 1) by Bayes’ rule.</p>
-<p>We can recover that conditional probability by applying Bayes’ rule using the marginal distributions of D and S, such that Pr[S = 1jD = 1] = Pr(D = 1jS = 1)Pr(S = 1) Pr(D = 1)</p>
-<p>The (true) propensity scores encode all of the necessary information about the joint dependence of S and D needed to estimate treatment effects</p>
-<p>Because such sparseness is conditionally random, strata with identical propensity scores can be combined into more coarse strata. Over repeated samples from the same population, zero cells would emerge with equal frequency across all strata within these coarse propensity-score-defined strata. Because sparseness emerges in this predictable fashion, stratifying on the propensity score itself rather than more finely on all values of the variables in S solves the sparseness problem because the propensity score can be treated as a single stratifying variable.</p>
-<p>𝐷𝑖⁢𝑗=∣𝑒𝑖−𝑒𝑗∣,</p>
-<p>where ek is the propensity score for individual k, defined in detail below.</p>
+<section id="limitations" class="level2">
+<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
+<ul>
+<li><strong>Curse of dimensionality</strong>: With <span class="math inline">\(p\)</span> covariates each having <span class="math inline">\(k\)</span> levels, there are <span class="math inline">\(k^p\)</span> possible cells</li>
+<li><strong>Sparsity</strong>: Many cells will be empty or have only treated or only control units</li>
+<li><strong>Inefficiency</strong>: Discards many observations</li>
+</ul>
 </section>
-<section id="linear-probability-score" class="level1">
-<h1>Linear Probability Score</h1>
-<p>𝐷𝑖⁢𝑗=∣logit⁡(𝑒𝑖)−logit⁡(𝑒𝑗)∣.</p>
+</section>
+<section id="mahalanobis-distance" class="level1">
+<h1>Mahalanobis Distance</h1>
+<section id="definition-1" class="level2">
+<h2 class="anchored" data-anchor-id="definition-1">Definition</h2>
+<p>The Mahalanobis distance accounts for scale and correlation among covariates:</p>
+<p><span class="math display">\[
+D_{M}(X_i, X_j) = \sqrt{(X_i - X_j)^\top \Sigma^{-1} (X_i - X_j)}
+\]</span></p>
+<p>where <span class="math inline">\(\Sigma\)</span> is the covariance matrix of <span class="math inline">\(X\)</span>.</p>
+</section>
+<section id="which-covariance-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="which-covariance-matrix">Which Covariance Matrix?</h2>
+<p><strong>For ATT (Average Treatment Effect on the Treated):</strong></p>
+<p><span class="math display">\[
+\Sigma = \text{Cov}(X | T = 0)
+\]</span></p>
+<p>Use covariance from the <strong>control group</strong> only.</p>
+<p><strong>For ATE (Average Treatment Effect):</strong></p>
+<p><span class="math display">\[
+\Sigma = \text{Cov}(X | T = 0, T = 1)
+\]</span></p>
+<p>Use <strong>pooled</strong> covariance from treated and control groups.</p>
+</section>
+<section id="properties" class="level2">
+<h2 class="anchored" data-anchor-id="properties">Properties</h2>
+<ol type="1">
+<li><strong>Scale-invariant</strong>: Variables in different units (age in years, income in dollars) are comparable</li>
+<li><strong>Correlation-adjusted</strong>: Accounts for relationships among covariates</li>
+<li><strong>Geometric interpretation</strong>: Measures statistical distance in standardized space</li>
+</ol>
+</section>
+<section id="advantages" class="level2">
+<h2 class="anchored" data-anchor-id="advantages">Advantages</h2>
+<ul>
+<li>Works with <strong>continuous and categorical</strong> variables</li>
+<li><strong>Robust</strong> to adding irrelevant variables</li>
+<li>No parametric model required</li>
+</ul>
+</section>
+<section id="limitations-1" class="level2">
+<h2 class="anchored" data-anchor-id="limitations-1">Limitations</h2>
+<ul>
+<li><strong>Assumes multivariate normality</strong> (implicitly)</li>
+<li><strong>Sensitive to dimensionality</strong>: Performance degrades with many covariates</li>
+<li><strong>Collinearity issues</strong>: If <span class="math inline">\(\Sigma\)</span> is singular, inverse does not exist</li>
+</ul>
+</section>
+</section>
+<section id="propensity-score-distance" class="level1">
+<h1>Propensity Score Distance</h1>
+<section id="definition-2" class="level2">
+<h2 class="anchored" data-anchor-id="definition-2">Definition</h2>
+<p>The <strong>propensity score</strong> is the conditional probability of treatment:</p>
+<p><span class="math display">\[
+e(X) = P(T = 1 | X)
+\]</span></p>
+<p>Distance based on propensity scores:</p>
+<p><span class="math display">\[
+D_{PS}(X_i, X_j) = |e(X_i) - e(X_j)|
+\]</span></p>
+</section>
+<section id="the-balancing-property" class="level2">
+<h2 class="anchored" data-anchor-id="the-balancing-property">The Balancing Property</h2>
+<p><strong>Rosenbaum &amp; Rubin (1983)</strong> proved that conditioning on <span class="math inline">\(e(X)\)</span> is equivalent to conditioning on <span class="math inline">\(X\)</span>:</p>
+<p><span class="math display">\[
+X \perp T | e(X)
+\]</span></p>
+<p>This means: <strong>At each propensity score value, the distribution of <span class="math inline">\(X\)</span> is the same in treated and control groups</strong>.</p>
+</section>
+<section id="estimation" class="level2">
+<h2 class="anchored" data-anchor-id="estimation">Estimation</h2>
+<section id="logistic-regression" class="level3">
+<h3 class="anchored" data-anchor-id="logistic-regression">Logistic Regression</h3>
+<p><span class="math display">\[
+\log \left( \frac{e(X)}{1 - e(X)} \right) = X^\top \beta
+\]</span></p>
+</section>
+<section id="machine-learning-methods" class="level3">
+<h3 class="anchored" data-anchor-id="machine-learning-methods">Machine Learning Methods</h3>
+<ul>
+<li>Generalized Boosted Models (GBM)</li>
+<li>Random Forests</li>
+<li>LASSO regularization</li>
+<li>Neural networks</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="logit-propensity-score-distance" class="level1">
+<h1>Logit Propensity Score Distance</h1>
+<section id="definition-3" class="level2">
+<h2 class="anchored" data-anchor-id="definition-3">Definition</h2>
+<p>Transform propensity scores to logit scale:</p>
+<p><span class="math display">\[
+D_{\text{logit}}(X_i, X_j) = |\text{logit}(e(X_i)) - \text{logit}(e(X_j))|
+\]</span></p>
+<p>where:</p>
+<p><span class="math display">\[
+\text{logit}(e) = \log \left( \frac{e}{1 - e} \right)
+\]</span></p>
+</section>
+<section id="why-use-logit-scale" class="level2">
+<h2 class="anchored" data-anchor-id="why-use-logit-scale">Why Use Logit Scale?</h2>
+<ol type="1">
+<li><strong>Unbounded</strong>: Maps <span class="math inline">\((0, 1) \rightarrow (-\infty, \infty)\)</span></li>
+<li><strong>More stable in tails</strong>: Small differences near 0 or 1 are magnified</li>
+<li><strong>Symmetric</strong>: Equal weighting to low and high propensity scores</li>
+</ol>
+</section>
+</section>
+<section id="comparison-of-distance-measures" class="level1">
+<h1>Comparison of Distance Measures</h1>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 28%">
+<col style="width: 22%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Method</strong></th>
+<th><strong>Formula</strong></th>
+<th><strong>Pros</strong></th>
+<th><strong>Cons</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Exact</td>
+<td><span class="math inline">\(X_i = X_j\)</span></td>
+<td>Perfect balance</td>
+<td>Only for discrete <span class="math inline">\(X\)</span>, sparse</td>
+</tr>
+<tr class="even">
+<td>Mahalanobis</td>
+<td><span class="math inline">\((X_i - X_j)^\top \Sigma^{-1} (X_i - X_j)\)</span></td>
+<td>Scale-invariant, multivariate</td>
+<td>High-dimensional issues</td>
+</tr>
+<tr class="odd">
+<td>Propensity Score</td>
+<td><span class="math inline">\(\|e(X_i) - e(X_j)\|\)</span></td>
+<td>Dimension reduction</td>
+<td>Model-dependent</td>
+</tr>
+<tr class="even">
+<td>Logit PS</td>
+<td><span class="math inline">\(\|\text{logit}(e(X_i)) - \text{logit}(e(X_j))\|\)</span></td>
+<td>Better tail behavior</td>
+<td>Still model-dependent</td>
+</tr>
+</tbody>
+</table>
 <div id="refs" role="list">
 
 </div>
@@ -367,7 +607,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("d");
+      var filterRegex = new RegExp("https:\/\/mcwayrm\.github\.io\/matching_methods\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

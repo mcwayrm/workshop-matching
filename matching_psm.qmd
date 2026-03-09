@@ -4,5 +4,230 @@ subtitle: "Propensity Score Matching"
 bibliography: references.bib
 ---
 
+# Introduction
+
+The **propensity score** is defined as the conditional probability of receiving treatment given observed covariates [@rosenbaum1983central]:
+
+$$
+e(X) = P(T = 1 | X)
+$$
+
+where:
+
+- $T \in \{0, 1\}$ is the binary treatment indicator
+- $X$ is a vector of pre-treatment covariates
+
+## The Balancing Property
+
+Rosenbaum and Rubin (1983) proved that conditioning on the propensity score is sufficient to remove bias from observed confounders:
+
+$$
+(Y^1, Y^0) \perp T | e(X)
+$$
+
+This remarkable result reduces the dimensionality of the matching problem: instead of matching on all $p$ covariates in $X$, we can match on the single scalar $e(X)$.
+
+**Why this works:**
+
+The propensity score is a **balancing score**: At each value $e(X) = e_0$, the distribution of covariates $X$ is the same in the treated and control groups.
+
+Formally:
+$$
+X \perp T | e(X)
+$$
+
+# Estimating the Propensity Score
+
+## Logistic Regression
+
+The most common approach estimates $e(X)$ using logistic regression:
+
+$$
+\log \left( \frac{e(X)}{1 - e(X)} \right) = X^\top \beta
+$$
+
+This yields:
+$$
+\hat{e}(X_i) = \frac{1}{1 + \exp(-X_i^\top \hat{\beta})}
+$$
+
+## Alternative Methods
+
+For more flexible functional forms:
+
+- **Generalized boosted models (GBM)** - adaptive nonparametric estimation
+- **Random forests** - ensemble tree-based methods
+- **LASSO/Ridge** - regularized regression for high-dimensional $X$
+- **Neural networks** - deep learning approaches
+
+# Matching Algorithms
+
+## 1. Nearest Neighbor Matching
+
+Match each treated unit to the $k$ closest control units based on propensity score distance:
+
+$$
+d(i, j) = |e(X_i) - e(X_j)|
+$$
+
+**With replacement:** Control units can be matched multiple times  
+**Without replacement:** Each control used at most once
+
+## 2. Caliper Matching
+
+Impose a maximum distance threshold $c > 0$ (the caliper). Only match if:
+
+$$
+|e(X_i) - e(X_j)| < c
+$$
+
+Common choice: $c = 0.25 \times \text{SD}(\text{logit}(e(X)))$
+
+## 3. Kernel Matching
+
+Weighted average of all controls, with weights inversely proportional to distance:
+
+$$
+\hat{Y}_i^0 = \frac{\sum_{j:T_j=0} K\left(\frac{e(X_i) - e(X_j)}{h}\right) Y_j}{\sum_{j:T_j=0} K\left(\frac{e(X_i) - e(X_j)}{h}\right)}
+$$
+
+where $K(\cdot)$ is a kernel function and $h$ is the bandwidth.
+
+# Implementation in R
+
+```{r}
+#| eval: false
+
+library(MatchIt)
+
+# Estimate propensity scores and match
+m.out <- matchit(
+  treat ~ age + educ + race + married + nodegree + re74 + re75,
+  data = mydata,
+  method = "nearest",
+  distance = "glm",  # logistic regression
+  ratio = 1,         # 1:1 matching
+  caliper = 0.25,    # caliper in standard deviations
+  replace = FALSE
+)
+
+# Check balance
+summary(m.out, un = FALSE)
+
+# Visualize overlap
+plot(m.out, type = "jitter", interactive = FALSE)
+
+# Extract matched data
+matched_data <- match.data(m.out)
+
+# Estimate treatment effect
+library(lmtest)
+library(sandwich)
+
+fit <- lm(outcome ~ treat + age + educ + race + re74 + re75,
+          data = matched_data,
+          weights = weights)
+
+# Robust standard errors
+coeftest(fit, vcov = vcovCL, cluster = ~subclass)
+```
+
+# Implementation in Python
+
+```{python}
+#| eval: false
+
+from causalinference import CausalModel
+
+# Prepare data
+Y = data['outcome'].values
+D = data['treat'].values  
+X = data[['age', 'educ', 'married', 're74', 're75']].values
+
+# Fit model
+causal = CausalModel(Y, D, X)
+
+# Estimate propensity scores
+causal.est_propensity_s()
+
+# Match with caliper
+causal.est_via_matching(matches=1, bias_adj=True)
+
+# Results
+print(causal.estimates)
+```
+
+# Implementation in Stata
+
+```stata
+* Estimate propensity score
+logit treat age educ black hispanic married nodegree re74 re75
+
+* Predict propensity scores
+predict pscore, pr
+
+* Nearest neighbor matching with caliper
+psmatch2 treat, pscore(pscore) outcome(re78) caliper(0.25) ate
+
+* Check balance
+pstest age educ black hispanic married nodegree re74 re75, ///
+       treated(treat) pscore(pscore)
+```
+
+# Why PSM Is No Longer Recommended
+
+Despite its intuitive appeal, @king2019propensity show that propensity score matching often **fails to achieve adequate covariate balance** and can even **increase imbalance** compared to simpler methods.
+
+## Key Problems
+
+1. **Paradox of PSM:** Equal propensity scores do not guarantee similar covariates
+
+$$
+e(X_i) = e(X_j) \not\Rightarrow X_i = X_j
+$$
+
+But:
+$$
+X_i = X_j \Rightarrow e(X_i) = e(X_j)
+$$
+
+2. **Model dependence:** Small changes in propensity score specification can dramatically change matches
+
+3. **Inefficiency:** Discarding unmatched units reduces sample size unnecessarily
+
+4. **Approximation stochasticity:** The quality of matches varies randomly based on the specific sample
+
+## Better Alternatives
+
+- **Covariate matching** (Mahalanobis distance, CEM)
+- **Inverse probability weighting** (IPTW)
+- **Doubly robust estimators**
+- **Entropy balancing**
+
+# When PSM May Still Be Useful
+
+- **Diagnostic tool** for assessing overlap
+- **Combined with other methods** (e.g., within propensity score strata, use Mahalanobis matching)
+- **Sensitivity analysis**
+
+# Common Pitfalls
+
+1. **Including post-treatment variables** in propensity score model
+2. **Ignoring lack of common support**
+3. **Using p-values to assess balance** (conflates sample size with balance)
+4. **Not checking covariate balance** after matching
+5. **Treating estimated propensity scores as known**
+
+# Recommended Workflow
+
+1. Specify covariates based on domain knowledge (include all confounders)
+2. Estimate propensity scores
+3. **Check overlap** (common support)
+4. Perform matching
+5. **Assess balance** (standardized mean differences, variance ratios)
+6. If imbalance remains: refine model or try different matching method
+7. Estimate treatment effect on matched sample
+8. **Sensitivity analysis** for hidden bias
+
 ::: {#refs}
 :::

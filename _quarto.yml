@@ -8,14 +8,14 @@ website:
   bread-crumbs: false
   title: Matching Methods
   description: Matching Method Estimation Strategies
-  site-url: d
+  site-url: https://mcwayrm.github.io/matching_methods/
     
   page-footer: 
     right: "<div style='text-align:right;'>&copy; Copyright 2026, Ryan McWay. This site is built with <a href='https://quarto.org/' style='color:#1f4d4a;font-weight:bold;'>Quarto</a></div>"
-    background: "#bfe9e3"
+    background: "#c09925"
 
   sidebar:
-    background: "#bfe9e3"
+    background: "#c09925"
     # logo: "assets/apec8213_nonparametric_icon.png"
     pinned: true
     align: center
@@ -53,6 +53,8 @@ website:
             text: The PSP Program
       - href: practice.qmd
         text: Coding Practice
+      - href: resources.qmd
+        text: Additional Resources
 
 bibliography: references.bib
 

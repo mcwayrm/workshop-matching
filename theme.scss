@@ -8,8 +8,8 @@ $font-family: "Atkinson Hyperlegible", sans-serif;
 
 $body-bg: #fff;
 $body-color: #222;
-$sidebar-bg: #7a0019;
-$sidebar-fg: #c09925;
+$sidebar-bg: #c09925;
+$sidebar-fg: #7a0019;
 $link-color: #7a0019;
 
 img.sidebar-logo {
@@ -41,19 +41,19 @@ a:hover, a:focus {
 
 /* Sidebar link color */
 .sidebar-link {
-  color: #ffcc33 !important;
+  color: #7a0019 !important;
 }
 
 /* Sidebar link hover/focus */
 .sidebar-link:hover,
 .sidebar-link:focus {
-  color: #ffde7a !important;
+  color: #7a0019 !important;
 }
 
 /* Sidebar link for current/active page */
 .sidebar-link.active,
 .sidebar-link[aria-current="page"] {
-  color: #ffcc33 !important;
+  color: #7a0019 !important;
   font-style: italic;
 }
 

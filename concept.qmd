@@ -87,9 +87,67 @@ When there are large numbers of control individuals, it is sometimes possible to
 
 Another key issue is whether controls can be used as matches for more than one treated individual; whether the matching should be done “with replacement” or “without replacement.” Matching with replacement can often decrease bias because controls that look similar to many treated individuals can be used multiple times. This is particularly helpful in settings where there are few control individuals comparable to the treated individuals (e.g., Dehejia and Wahba, 1999). Additionally, when matching with replacement the order in which the treated individuals are matched does not matter. However, inference becomes more complex when matching with replacement, because the matched controls are no longer independent–some are in the matched sample more than once and this needs to be accounted for in the outcome analysis, for example by using frequency weights. When matching with replacement it is also possible that the treatment effect estimate will be based on just a small number of controls; the number of times each control is matched should be monitored.
 
-# Identifying Assumption
+# Identifying Assumptions
 
-Strong Ignorability 
+## Strong Ignorability (Unconfoundedness)
+
+The cornerstone assumption of matching is **strong ignorability** or **conditional independence** [@rosenbaum1983central]. This requires two components:
+
+### 1. Unconfoundedness
+
+Treatment assignment is independent of potential outcomes, conditional on covariates $X$:
+
+$$
+(Y^1, Y^0) \perp T | X
+$$
+
+This means that, after controlling for observed covariates $X$, treatment is "as good as randomly assigned." All variables that jointly affect treatment assignment and outcomes must be observed and included in $X$.
+
+### 2. Common Support (Overlap/Positivity)
+
+For every covariate profile, there must be a positive probability of receiving both treatment and control:
+
+$$
+0 < P(T = 1 | X = x) < 1 \quad \forall x \in \mathcal{X}
+$$
+
+**Implications:**
+
+- Without overlap, some comparisons require extrapolation beyond the empirical support
+- Matching naturally enforces common support by discarding units outside the region of overlap
+- This "pruning" improves internal validity but may reduce external validity
+
+### 3. Stable Unit Treatment Value Assumption (SUTVA)
+
+The potential outcomes for any unit do not depend on the treatment assignment of other units:
+
+$$
+Y_i(T_i, T_{-i}) = Y_i(T_i) \quad \text{for all } i
+$$
+
+This rules out:
+
+- **Interference**: Unit $i$'s outcome depends on unit $j$'s treatment
+- **Multiple versions of treatment**: The treatment is well-defined and homogeneous
+
+**Violations occur in:**
+
+- Education (peer effects)
+- Epidemiology (disease transmission)  
+- Marketing (network influence)
+
+## Selection on Observables vs. Unobservables
+
+Matching methods address **selection on observables**—systematic differences between treated and control groups that can be measured and controlled. However, they cannot resolve **selection on unobservables** (hidden bias).
+
+When unobserved confounders exist, sensitivity analyses such as:
+
+- **Rosenbaum bounds** (quantify robustness to hidden bias)
+- **Relative correlation restrictions** (bound effects under assumptions)
+- **Coefficient stability tests** (assess impact of additional controls)
+
+help assess how strong unmeasured confounding would need to be to overturn the findings.
+
 
 
 ::: {#refs}

@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -56,7 +90,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c2c6a774d0aa08ed60d2e739c075b19b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-621824942a01be5cbf2512f0d37b7298.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -85,6 +119,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta property="og:title" content="Matching Methods">
 <meta property="og:description" content="Covariate Matching">
@@ -207,13 +270,62 @@ div.csl-indent {
  <span class="menu-text">Coding Practice</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Additional Resources</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#advantages-over-propensity-score-matching" id="toc-advantages-over-propensity-score-matching" class="nav-link" data-scroll-target="#advantages-over-propensity-score-matching">Advantages Over Propensity Score Matching</a></li>
+  </ul></li>
+  <li><a href="#mahalanobis-distance-matching" id="toc-mahalanobis-distance-matching" class="nav-link" data-scroll-target="#mahalanobis-distance-matching">Mahalanobis Distance Matching</a>
+  <ul class="collapse">
+  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
+  <li><a href="#why-not-euclidean-distance" id="toc-why-not-euclidean-distance" class="nav-link" data-scroll-target="#why-not-euclidean-distance">Why Not Euclidean Distance?</a></li>
+  <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">Properties</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
+  <li><a href="#implementation-in-r" id="toc-implementation-in-r" class="nav-link" data-scroll-target="#implementation-in-r">Implementation in R</a></li>
+  <li><a href="#implementation-in-python" id="toc-implementation-in-python" class="nav-link" data-scroll-target="#implementation-in-python">Implementation in Python</a></li>
+  <li><a href="#implementation-in-stata" id="toc-implementation-in-stata" class="nav-link" data-scroll-target="#implementation-in-stata">Implementation in Stata</a></li>
+  </ul></li>
+  <li><a href="#coarsened-exact-matching-cem" id="toc-coarsened-exact-matching-cem" class="nav-link" data-scroll-target="#coarsened-exact-matching-cem">Coarsened Exact Matching (CEM)</a>
+  <ul class="collapse">
+  <li><a href="#concept" id="toc-concept" class="nav-link" data-scroll-target="#concept">Concept</a></li>
+  <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm">Algorithm</a></li>
+  <li><a href="#monotonic-imbalance-bounding" id="toc-monotonic-imbalance-bounding" class="nav-link" data-scroll-target="#monotonic-imbalance-bounding">Monotonic Imbalance Bounding</a></li>
+  <li><a href="#implementation-in-r-1" id="toc-implementation-in-r-1" class="nav-link" data-scroll-target="#implementation-in-r-1">Implementation in R</a></li>
+  <li><a href="#implementation-in-python-1" id="toc-implementation-in-python-1" class="nav-link" data-scroll-target="#implementation-in-python-1">Implementation in Python</a></li>
+  <li><a href="#implementation-in-stata-1" id="toc-implementation-in-stata-1" class="nav-link" data-scroll-target="#implementation-in-stata-1">Implementation in Stata</a></li>
+  </ul></li>
+  <li><a href="#genetic-matching" id="toc-genetic-matching" class="nav-link" data-scroll-target="#genetic-matching">Genetic Matching</a>
+  <ul class="collapse">
+  <li><a href="#concept-1" id="toc-concept-1" class="nav-link" data-scroll-target="#concept-1">Concept</a></li>
+  <li><a href="#genetic-algorithm" id="toc-genetic-algorithm" class="nav-link" data-scroll-target="#genetic-algorithm">Genetic Algorithm</a></li>
+  <li><a href="#balance-criteria" id="toc-balance-criteria" class="nav-link" data-scroll-target="#balance-criteria">Balance Criteria</a></li>
+  <li><a href="#implementation-in-r-2" id="toc-implementation-in-r-2" class="nav-link" data-scroll-target="#implementation-in-r-2">Implementation in R</a></li>
+  </ul></li>
+  <li><a href="#entropy-balancing" id="toc-entropy-balancing" class="nav-link" data-scroll-target="#entropy-balancing">Entropy Balancing</a>
+  <ul class="collapse">
+  <li><a href="#concept-2" id="toc-concept-2" class="nav-link" data-scroll-target="#concept-2">Concept</a></li>
+  <li><a href="#optimization-problem" id="toc-optimization-problem" class="nav-link" data-scroll-target="#optimization-problem">Optimization Problem</a></li>
+  <li><a href="#advantages" id="toc-advantages" class="nav-link" data-scroll-target="#advantages">Advantages</a></li>
+  <li><a href="#implementation-in-r-3" id="toc-implementation-in-r-3" class="nav-link" data-scroll-target="#implementation-in-r-3">Implementation in R</a></li>
+  </ul></li>
+  <li><a href="#comparison-of-methods" id="toc-comparison-of-methods" class="nav-link" data-scroll-target="#comparison-of-methods">Comparison of Methods</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -238,11 +350,393 @@ div.csl-indent {
 </header>
 
 
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Covariate matching methods directly match units based on the similarity of their observed characteristics, rather than reducing them to a single propensity score. These methods preserve the <strong>multivariate structure</strong> of covariates and can achieve better balance.</p>
+<section id="advantages-over-propensity-score-matching" class="level2">
+<h2 class="anchored" data-anchor-id="advantages-over-propensity-score-matching">Advantages Over Propensity Score Matching</h2>
+<ol type="1">
+<li><strong>No information loss</strong>: Matching on full covariate space preserves all information</li>
+<li><strong>Better balance</strong>: Can achieve exact or near-exact balance on all covariates</li>
+<li><strong>Transparency</strong>: Easier to inspect and understand matches</li>
+<li><strong>Robustness</strong>: Not sensitive to propensity score model specification</li>
+</ol>
+</section>
+</section>
+<section id="mahalanobis-distance-matching" class="level1">
+<h1>Mahalanobis Distance Matching</h1>
+<section id="definition" class="level2">
+<h2 class="anchored" data-anchor-id="definition">Definition</h2>
+<p>The Mahalanobis distance between units <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> is:</p>
+<p><span class="math display">\[
+D_M(X_i, X_j) = \sqrt{(X_i - X_j)^\top S^{-1} (X_i - X_j)}
+\]</span></p>
+<p>where <span class="math inline">\(S\)</span> is the sample covariance matrix of covariates.</p>
+</section>
+<section id="why-not-euclidean-distance" class="level2">
+<h2 class="anchored" data-anchor-id="why-not-euclidean-distance">Why Not Euclidean Distance?</h2>
+<p>Euclidean distance treats all variables equally:</p>
+<p><span class="math display">\[
+D_E(X_i, X_j) = \sqrt{(X_i - X_j)^\top (X_i - X_j)}
+\]</span></p>
+<p><strong>Problems:</strong></p>
+<ul>
+<li>Variables with larger scales dominate the distance</li>
+<li>Ignores correlation structure among covariates</li>
+</ul>
+<p>Mahalanobis distance <strong>standardizes</strong> by <span class="math inline">\(S^{-1}\)</span>, making it:</p>
+<ul>
+<li><strong>Scale-invariant</strong>: Variables measured in different units are comparable</li>
+<li><strong>Correlation-adjusted</strong>: Accounts for dependencies among covariates</li>
+</ul>
+</section>
+<section id="properties" class="level2">
+<h2 class="anchored" data-anchor-id="properties">Properties</h2>
+<ol type="1">
+<li><strong>Invariant under affine transformations</strong>: Distance unchanged if covariates are linearly transformed</li>
+<li><strong>Multivariate</strong>: Operates in full covariate space</li>
+<li><strong>Non-parametric</strong>: No model for treatment assignment required</li>
+</ol>
+</section>
+<section id="limitations" class="level2">
+<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
+<ul>
+<li><strong>Curse of dimensionality</strong>: Performance degrades with many covariates</li>
+<li><strong>Sensitive to outliers</strong>: Extreme values can distort <span class="math inline">\(S\)</span></li>
+<li><strong>Assumes multivariate normality</strong> (implicitly)</li>
+</ul>
+</section>
+<section id="implementation-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-in-r">Implementation in R</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MatchIt)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Matching)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Mahalanobis distance matching</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> married <span class="sc">+</span> nodegree <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"nearest"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">distance =</span> <span class="st">"mahalanobis"</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># With caliper on propensity score</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>m.out2 <span class="ot">&lt;-</span> <span class="fu">matchit</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> married <span class="sc">+</span> nodegree <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"nearest"</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">distance =</span> <span class="st">"mahalanobis"</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">mahvars =</span> <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> re74 <span class="sc">+</span> re75,  <span class="co"># Variables for Mahal distance</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">caliper =</span> <span class="fl">0.25</span>,                         <span class="co"># Caliper on propensity score</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">std.caliper =</span> <span class="cn">TRUE</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Check balance</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m.out, <span class="at">un =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="implementation-in-python" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-in-python">Implementation in Python</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.spatial.distance <span class="im">import</span> mahalanobis</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.covariance <span class="im">import</span> EmpiricalCovariance</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute covariance matrix</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> data[[<span class="st">'age'</span>, <span class="st">'educ'</span>, <span class="st">'married'</span>, <span class="st">'re74'</span>, <span class="st">'re75'</span>]].values</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>cov <span class="op">=</span> EmpiricalCovariance().fit(X)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>S_inv <span class="op">=</span> np.linalg.inv(cov.covariance_)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distance between two units</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>dist <span class="op">=</span> mahalanobis(X[i], X[j], S_inv)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Using causalinference package</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> causalinference <span class="im">import</span> CausalModel</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> data[<span class="st">'outcome'</span>].values</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> data[<span class="st">'treat'</span>].values</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> data[[<span class="st">'age'</span>, <span class="st">'educ'</span>, <span class="st">'married'</span>, <span class="st">'re74'</span>, <span class="st">'re75'</span>]].values</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>causal <span class="op">=</span> CausalModel(Y, D, X)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>causal.est_via_matching(matches<span class="op">=</span><span class="dv">1</span>, bias_adj<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(causal.estimates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="implementation-in-stata" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-in-stata">Implementation in Stata</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>* Install mahapick <span class="kw">if</span> needed</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>* <span class="kw">ssc</span> install mahapick</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>mahapick treat age educ <span class="bn">black</span> hispanic married nodegree re74 re75, <span class="co">///</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>         idvar(id) nummatches(1) scorevar(mahal_dist) matchedvar(matched)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>* Keep matched observations</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">keep</span> <span class="kw">if</span> matched == 1</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>* Estimate treatment effect</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> outcome treat age educ <span class="bn">black</span> hispanic married nodegree re74 re75</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="coarsened-exact-matching-cem" class="level1">
+<h1>Coarsened Exact Matching (CEM)</h1>
+<section id="concept" class="level2">
+<h2 class="anchored" data-anchor-id="concept">Concept</h2>
+<p>CEM works by:</p>
+<ol type="1">
+<li><strong>Coarsening</strong> continuous variables into discrete bins</li>
+<li><strong>Exact matching</strong> on coarsened variables</li>
+<li><strong>Pruning</strong> strata with no treatment or control units</li>
+<li><strong>Analysis</strong> on original (uncoarsened) data</li>
+</ol>
+</section>
+<section id="algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="algorithm">Algorithm</h2>
+<p><strong>Input:</strong> Treatment <span class="math inline">\(T\)</span>, covariates <span class="math inline">\(X\)</span>, outcome <span class="math inline">\(Y\)</span></p>
+<ol type="1">
+<li>Define coarsening scheme <span class="math inline">\(C(X)\)</span> (e.g., age → age groups)</li>
+<li>Sort units into strata based on <span class="math inline">\(C(X)\)</span></li>
+<li>Discard strata containing only treated or only control units</li>
+<li>Compute stratum weights to create balance</li>
+<li>Estimate treatment effect using weighted data</li>
+</ol>
+</section>
+<section id="monotonic-imbalance-bounding" class="level2">
+<h2 class="anchored" data-anchor-id="monotonic-imbalance-bounding">Monotonic Imbalance Bounding</h2>
+<p>CEM guarantees that <strong>finer coarsening cannot increase imbalance</strong>.</p>
+<p>Let <span class="math inline">\(L(C(X))\)</span> measure imbalance under coarsening <span class="math inline">\(C\)</span>. If <span class="math inline">\(C_1 \preceq C_2\)</span> (finer), then:</p>
+<p><span class="math display">\[
+L(C_1(X)) \leq L(C_2(X))
+\]</span></p>
+<p>This provides <strong>ex ante control</strong> over balance.</p>
+</section>
+<section id="implementation-in-r-1" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-in-r-1">Implementation in R</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cem)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Automatic coarsening</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>mat <span class="ot">&lt;-</span> <span class="fu">cem</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">treatment =</span> <span class="st">"treat"</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">drop =</span> <span class="st">"outcome"</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">keep.all =</span> <span class="cn">TRUE</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Manual coarsening with custom bins</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>educut <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">6.5</span>, <span class="fl">8.5</span>, <span class="fl">12.5</span>, <span class="dv">17</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>mat2 <span class="ot">&lt;-</span> <span class="fu">cem</span>(</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">treatment =</span> <span class="st">"treat"</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">drop =</span> <span class="st">"outcome"</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">cutpoints =</span> <span class="fu">list</span>(<span class="at">education =</span> educut)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Check imbalance</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="fu">imbalance</span>(<span class="at">group =</span> mydata<span class="sc">$</span>treat, <span class="at">data =</span> mydata[covariates])</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate treatment effect with weights</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(outcome <span class="sc">~</span> treat <span class="sc">+</span> age <span class="sc">+</span> educ, <span class="at">data =</span> mydata, <span class="at">weights =</span> mat<span class="sc">$</span>w)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="implementation-in-python-1" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-in-python-1">Implementation in Python</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># CEM not natively available in Python</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Use rpy2 to call R's cem package</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> rpy2.robjects <span class="im">as</span> ro</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> rpy2.robjects <span class="im">import</span> pandas2ri</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>pandas2ri.activate()</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>ro.r(<span class="st">'library(cem)'</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert pandas df to R df</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>r_data <span class="op">=</span> pandas2ri.py2rpy(data)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Run CEM in R</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> ro.r.cem(<span class="st">'treat'</span>, data<span class="op">=</span>r_data, drop<span class="op">=</span><span class="st">'outcome'</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> ro.r(<span class="st">'result$w'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="implementation-in-stata-1" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-in-stata-1">Implementation in Stata</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>* Install cem</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>* <span class="kw">ssc</span> install cem</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>cem age (#3) educ (#4) <span class="bn">black</span> hispanic married, treatment(treat)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>* Check balance</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>imbalance age educ <span class="bn">black</span> hispanic married, <span class="kw">by</span>(treat)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>* Regression with CEM weights</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> outcome treat age educ <span class="bn">black</span> hispanic married [iw=cem_weights]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="genetic-matching" class="level1">
+<h1>Genetic Matching</h1>
+<section id="concept-1" class="level2">
+<h2 class="anchored" data-anchor-id="concept-1">Concept</h2>
+<p>Genetic matching <strong>optimizes the weight matrix</strong> <span class="math inline">\(W\)</span> in a generalized Mahalanobis distance to maximize covariate balance:</p>
+<p><span class="math display">\[
+D_{\text{gen}}(X_i, X_j) = \sqrt{(X_i - X_j)^\top W (X_i - X_j)}
+\]</span></p>
+<p>where <span class="math inline">\(W\)</span> is <strong>learned</strong> using a genetic algorithm.</p>
+</section>
+<section id="genetic-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="genetic-algorithm">Genetic Algorithm</h2>
+<ol type="1">
+<li><strong>Initialize</strong> population of weight matrices</li>
+<li><strong>Evaluate</strong> balance for each weight matrix</li>
+<li><strong>Select</strong> best-performing matrices (“fittest”)</li>
+<li><strong>Crossover</strong> and <strong>mutate</strong> to create new generation</li>
+<li><strong>Repeat</strong> until convergence</li>
+</ol>
+</section>
+<section id="balance-criteria" class="level2">
+<h2 class="anchored" data-anchor-id="balance-criteria">Balance Criteria</h2>
+<p>Minimize:</p>
+<p><span class="math display">\[
+B = \sum_{k=1}^p w_k b_k^2
+\]</span></p>
+<p>where <span class="math inline">\(b_k\)</span> is a balance metric (e.g., standardized mean difference, KS statistic) for covariate <span class="math inline">\(k\)</span>.</p>
+</section>
+<section id="implementation-in-r-2" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-in-r-2">Implementation in R</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Matching)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define covariates</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">cbind</span>(age, educ, black, hisp, married, nodegr, u74, u75, re75, re74)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Genetic matching to find optimal weights</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>genout <span class="ot">&lt;-</span> <span class="fu">GenMatch</span>(</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Tr =</span> treat,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">X =</span> X,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimand =</span> <span class="st">"ATT"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">M =</span> <span class="dv">1</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">pop.size =</span> <span class="dv">100</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">max.generations =</span> <span class="dv">25</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Match using optimized weights</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>mout <span class="ot">&lt;-</span> <span class="fu">Match</span>(</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">Y =</span> outcome,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">Tr =</span> treat,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">X =</span> X,</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimand =</span> <span class="st">"ATT"</span>,</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">Weight.matrix =</span> genout</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Results</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mout)</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Assess balance</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>mb <span class="ot">&lt;-</span> <span class="fu">MatchBalance</span>(</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>  treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> black <span class="sc">+</span> hisp <span class="sc">+</span> married <span class="sc">+</span> nodegr <span class="sc">+</span> u74 <span class="sc">+</span> u75 <span class="sc">+</span> re75 <span class="sc">+</span> re74,</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">match.out =</span> mout,</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">nboots =</span> <span class="dv">500</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="entropy-balancing" class="level1">
+<h1>Entropy Balancing</h1>
+<section id="concept-2" class="level2">
+<h2 class="anchored" data-anchor-id="concept-2">Concept</h2>
+<p>Entropy balancing <strong>reweights</strong> control units to exactly match treatment group moments while minimizing information loss (maximum entropy).</p>
+</section>
+<section id="optimization-problem" class="level2">
+<h2 class="anchored" data-anchor-id="optimization-problem">Optimization Problem</h2>
+<p>Find weights <span class="math inline">\(\{w_i\}_{i:T_i=0}\)</span> that:</p>
+<ol type="1">
+<li><p><strong>Balance constraints:</strong> <span class="math display">\[
+\sum_{i:T_i=0} w_i X_i = \bar{X}_T
+\]</span></p></li>
+<li><p><strong>Minimize KL divergence:</strong> <span class="math display">\[
+\min \sum_{i:T_i=0} w_i \log(w_i / w_i^{(0)})
+\]</span></p></li>
+</ol>
+<p>where <span class="math inline">\(w_i^{(0)} = 1/n_0\)</span> are uniform base weights.</p>
+</section>
+<section id="advantages" class="level2">
+<h2 class="anchored" data-anchor-id="advantages">Advantages</h2>
+<ul>
+<li><strong>Exact balance</strong> on specified moments (means, variances, etc.)</li>
+<li><strong>Unique solution</strong> via convex optimization</li>
+<li><strong>No iteration</strong> required</li>
+</ul>
+</section>
+<section id="implementation-in-r-3" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-in-r-3">Implementation in R</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ebal)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Entropy balancing</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>eb.out <span class="ot">&lt;-</span> <span class="fu">ebalance</span>(</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Treatment =</span> treat,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">X =</span> <span class="fu">cbind</span>(age, educ, black, married, re74, re75)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct weights</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>weights <span class="ot">&lt;-</span> <span class="fu">c</span>(eb.out<span class="sc">$</span>w, <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">sum</span>(treat)))</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate ATE</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(outcome <span class="sc">~</span> treat, <span class="at">weights =</span> weights)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="comparison-of-methods" class="level1">
+<h1>Comparison of Methods</h1>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 28%">
+<col style="width: 22%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Method</strong></th>
+<th><strong>Distance</strong></th>
+<th><strong>Pros</strong></th>
+<th><strong>Cons</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Mahalanobis</td>
+<td>Multivariate</td>
+<td>Scale-invariant, preserves structure</td>
+<td>High-dimensional issues</td>
+</tr>
+<tr class="even">
+<td>CEM</td>
+<td>Exact (discretized)</td>
+<td>Monotonic balance, interpretable</td>
+<td>Information loss from coarsening</td>
+</tr>
+<tr class="odd">
+<td>Genetic</td>
+<td>Optimized</td>
+<td>Data-adaptive, superior balance</td>
+<td>Computationally intensive</td>
+</tr>
+<tr class="even">
+<td>Entropy</td>
+<td>Reweighting</td>
+<td>Exact balance, efficient</td>
+<td>Requires all units, potential extreme weights</td>
+</tr>
+</tbody>
+</table>
 <div id="refs" role="list">
 
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -335,7 +829,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("d");
+      var filterRegex = new RegExp("https:\/\/mcwayrm\.github\.io\/matching_methods\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

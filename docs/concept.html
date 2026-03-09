@@ -24,6 +24,7 @@ ul.task-list li input[type="checkbox"] {
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -56,7 +57,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c2c6a774d0aa08ed60d2e739c075b19b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-621824942a01be5cbf2512f0d37b7298.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -85,6 +86,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta property="og:title" content="The Concept – Matching Methods">
 <meta property="og:description" content="Why use Matching Methods?">
@@ -207,6 +237,12 @@ div.csl-indent {
  <span class="menu-text">Coding Practice</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Additional Resources</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -228,7 +264,16 @@ div.csl-indent {
   <li><a href="#ratio-matching" id="toc-ratio-matching" class="nav-link" data-scroll-target="#ratio-matching">Ratio Matching</a></li>
   <li><a href="#with-or-without-replacement" id="toc-with-or-without-replacement" class="nav-link" data-scroll-target="#with-or-without-replacement">With or Without Replacement</a></li>
   </ul></li>
-  <li><a href="#identifying-assumption" id="toc-identifying-assumption" class="nav-link" data-scroll-target="#identifying-assumption">Identifying Assumption</a></li>
+  <li><a href="#identifying-assumptions" id="toc-identifying-assumptions" class="nav-link" data-scroll-target="#identifying-assumptions">Identifying Assumptions</a>
+  <ul class="collapse">
+  <li><a href="#strong-ignorability-unconfoundedness" id="toc-strong-ignorability-unconfoundedness" class="nav-link" data-scroll-target="#strong-ignorability-unconfoundedness">Strong Ignorability (Unconfoundedness)</a>
+  <ul class="collapse">
+  <li><a href="#unconfoundedness" id="toc-unconfoundedness" class="nav-link" data-scroll-target="#unconfoundedness">1. Unconfoundedness</a></li>
+  <li><a href="#common-support-overlappositivity" id="toc-common-support-overlappositivity" class="nav-link" data-scroll-target="#common-support-overlappositivity">2. Common Support (Overlap/Positivity)</a></li>
+  <li><a href="#stable-unit-treatment-value-assumption-sutva" id="toc-stable-unit-treatment-value-assumption-sutva" class="nav-link" data-scroll-target="#stable-unit-treatment-value-assumption-sutva">3. Stable Unit Treatment Value Assumption (SUTVA)</a></li>
+  </ul></li>
+  <li><a href="#selection-on-observables-vs.-unobservables" id="toc-selection-on-observables-vs.-unobservables" class="nav-link" data-scroll-target="#selection-on-observables-vs.-unobservables">Selection on Observables vs.&nbsp;Unobservables</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -310,14 +355,70 @@ div.csl-indent {
 <p>Another key issue is whether controls can be used as matches for more than one treated individual; whether the matching should be done “with replacement” or “without replacement.” Matching with replacement can often decrease bias because controls that look similar to many treated individuals can be used multiple times. This is particularly helpful in settings where there are few control individuals comparable to the treated individuals (e.g., Dehejia and Wahba, 1999). Additionally, when matching with replacement the order in which the treated individuals are matched does not matter. However, inference becomes more complex when matching with replacement, because the matched controls are no longer independent–some are in the matched sample more than once and this needs to be accounted for in the outcome analysis, for example by using frequency weights. When matching with replacement it is also possible that the treatment effect estimate will be based on just a small number of controls; the number of times each control is matched should be monitored.</p>
 </section>
 </section>
-<section id="identifying-assumption" class="level1">
-<h1>Identifying Assumption</h1>
-<p>Strong Ignorability</p>
-<div id="refs" role="list">
-
+<section id="identifying-assumptions" class="level1">
+<h1>Identifying Assumptions</h1>
+<section id="strong-ignorability-unconfoundedness" class="level2">
+<h2 class="anchored" data-anchor-id="strong-ignorability-unconfoundedness">Strong Ignorability (Unconfoundedness)</h2>
+<p>The cornerstone assumption of matching is <strong>strong ignorability</strong> or <strong>conditional independence</strong> <span class="citation" data-cites="rosenbaum1983central">(<a href="#ref-rosenbaum1983central" role="doc-biblioref">Rosenbaum and Rubin 1983</a>)</span>. This requires two components:</p>
+<section id="unconfoundedness" class="level3">
+<h3 class="anchored" data-anchor-id="unconfoundedness">1. Unconfoundedness</h3>
+<p>Treatment assignment is independent of potential outcomes, conditional on covariates <span class="math inline">\(X\)</span>:</p>
+<p><span class="math display">\[
+(Y^1, Y^0) \perp T | X
+\]</span></p>
+<p>This means that, after controlling for observed covariates <span class="math inline">\(X\)</span>, treatment is “as good as randomly assigned.” All variables that jointly affect treatment assignment and outcomes must be observed and included in <span class="math inline">\(X\)</span>.</p>
+</section>
+<section id="common-support-overlappositivity" class="level3">
+<h3 class="anchored" data-anchor-id="common-support-overlappositivity">2. Common Support (Overlap/Positivity)</h3>
+<p>For every covariate profile, there must be a positive probability of receiving both treatment and control:</p>
+<p><span class="math display">\[
+0 &lt; P(T = 1 | X = x) &lt; 1 \quad \forall x \in \mathcal{X}
+\]</span></p>
+<p><strong>Implications:</strong></p>
+<ul>
+<li>Without overlap, some comparisons require extrapolation beyond the empirical support</li>
+<li>Matching naturally enforces common support by discarding units outside the region of overlap</li>
+<li>This “pruning” improves internal validity but may reduce external validity</li>
+</ul>
+</section>
+<section id="stable-unit-treatment-value-assumption-sutva" class="level3">
+<h3 class="anchored" data-anchor-id="stable-unit-treatment-value-assumption-sutva">3. Stable Unit Treatment Value Assumption (SUTVA)</h3>
+<p>The potential outcomes for any unit do not depend on the treatment assignment of other units:</p>
+<p><span class="math display">\[
+Y_i(T_i, T_{-i}) = Y_i(T_i) \quad \text{for all } i
+\]</span></p>
+<p>This rules out:</p>
+<ul>
+<li><strong>Interference</strong>: Unit <span class="math inline">\(i\)</span>’s outcome depends on unit <span class="math inline">\(j\)</span>’s treatment</li>
+<li><strong>Multiple versions of treatment</strong>: The treatment is well-defined and homogeneous</li>
+</ul>
+<p><strong>Violations occur in:</strong></p>
+<ul>
+<li>Education (peer effects)</li>
+<li>Epidemiology (disease transmission)<br>
+</li>
+<li>Marketing (network influence)</li>
+</ul>
+</section>
+</section>
+<section id="selection-on-observables-vs.-unobservables" class="level2">
+<h2 class="anchored" data-anchor-id="selection-on-observables-vs.-unobservables">Selection on Observables vs.&nbsp;Unobservables</h2>
+<p>Matching methods address <strong>selection on observables</strong>—systematic differences between treated and control groups that can be measured and controlled. However, they cannot resolve <strong>selection on unobservables</strong> (hidden bias).</p>
+<p>When unobserved confounders exist, sensitivity analyses such as:</p>
+<ul>
+<li><strong>Rosenbaum bounds</strong> (quantify robustness to hidden bias)</li>
+<li><strong>Relative correlation restrictions</strong> (bound effects under assumptions)</li>
+<li><strong>Coefficient stability tests</strong> (assess impact of additional controls)</li>
+</ul>
+<p>help assess how strong unmeasured confounding would need to be to overturn the findings.</p>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-rosenbaum1983central" class="csl-entry" role="listitem">
+Rosenbaum, Paul R., and Donald B. Rubin. 1983. <span>“The Central Role of the Propensity Score in Observational Studies for Causal Effects.”</span> <em>Biometrika</em> 70 (1): 41–55. <a href="https://doi.org/10.1093/biomet/70.1.41">https://doi.org/10.1093/biomet/70.1.41</a>.
+</div>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -411,7 +512,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("d");
+      var filterRegex = new RegExp("https:\/\/mcwayrm\.github\.io\/matching_methods\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

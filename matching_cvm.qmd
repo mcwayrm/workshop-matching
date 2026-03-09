@@ -4,5 +4,364 @@ subtitle: "Covariate Matching"
 bibliography: references.bib
 ---
 
+# Introduction
+
+Covariate matching methods directly match units based on the similarity of their observed characteristics, rather than reducing them to a single propensity score. These methods preserve the **multivariate structure** of covariates and can achieve better balance.
+
+## Advantages Over Propensity Score Matching
+
+1. **No information loss**: Matching on full covariate space preserves all information
+2. **Better balance**: Can achieve exact or near-exact balance on all covariates
+3. **Transparency**: Easier to inspect and understand matches
+4. **Robustness**: Not sensitive to propensity score model specification
+
+# Mahalanobis Distance Matching
+
+## Definition
+
+The Mahalanobis distance between units $i$ and $j$ is:
+
+$$
+D_M(X_i, X_j) = \sqrt{(X_i - X_j)^\top S^{-1} (X_i - X_j)}
+$$
+
+where $S$ is the sample covariance matrix of covariates.
+
+## Why Not Euclidean Distance?
+
+Euclidean distance treats all variables equally:
+
+$$
+D_E(X_i, X_j) = \sqrt{(X_i - X_j)^\top (X_i - X_j)}
+$$
+
+**Problems:**
+
+- Variables with larger scales dominate the distance
+- Ignores correlation structure among covariates
+
+Mahalanobis distance **standardizes** by $S^{-1}$, making it:
+
+- **Scale-invariant**: Variables measured in different units are comparable
+- **Correlation-adjusted**: Accounts for dependencies among covariates
+
+## Properties
+
+1. **Invariant under affine transformations**: Distance unchanged if covariates are linearly transformed
+2. **Multivariate**: Operates in full covariate space
+3. **Non-parametric**: No model for treatment assignment required
+
+## Limitations
+
+- **Curse of dimensionality**: Performance degrades with many covariates
+- **Sensitive to outliers**: Extreme values can distort $S$
+- **Assumes multivariate normality** (implicitly)
+
+## Implementation in R
+
+```{r}
+#| eval: false
+
+library(MatchIt)
+library(Matching)
+
+# Mahalanobis distance matching
+m.out <- matchit(
+  treat ~ age + educ + race + married + nodegree + re74 + re75,
+  data = mydata,
+  method = "nearest",
+  distance = "mahalanobis"
+)
+
+# With caliper on propensity score
+m.out2 <- matchit(
+  treat ~ age + educ + race + married + nodegree + re74 + re75,
+  data = mydata,
+  method = "nearest",
+  distance = "mahalanobis",
+  mahvars = ~ age + educ + re74 + re75,  # Variables for Mahal distance
+  caliper = 0.25,                         # Caliper on propensity score
+  std.caliper = TRUE
+)
+
+# Check balance
+summary(m.out, un = FALSE)
+```
+
+## Implementation in Python
+
+```{python}
+#| eval: false
+
+import numpy as np
+from scipy.spatial.distance import mahalanobis
+from sklearn.covariance import EmpiricalCovariance
+
+# Compute covariance matrix
+X = data[['age', 'educ', 'married', 're74', 're75']].values
+cov = EmpiricalCovariance().fit(X)
+S_inv = np.linalg.inv(cov.covariance_)
+
+# Calculate distance between two units
+dist = mahalanobis(X[i], X[j], S_inv)
+
+# Using causalinference package
+from causalinference import CausalModel
+
+Y = data['outcome'].values
+D = data['treat'].values
+X = data[['age', 'educ', 'married', 're74', 're75']].values
+
+causal = CausalModel(Y, D, X)
+causal.est_via_matching(matches=1, bias_adj=True)
+print(causal.estimates)
+```
+
+## Implementation in Stata
+
+```stata
+* Install mahapick if needed
+* ssc install mahapick
+
+mahapick treat age educ black hispanic married nodegree re74 re75, ///
+         idvar(id) nummatches(1) scorevar(mahal_dist) matchedvar(matched)
+
+* Keep matched observations
+keep if matched == 1
+
+* Estimate treatment effect
+reg outcome treat age educ black hispanic married nodegree re74 re75
+```
+
+# Coarsened Exact Matching (CEM)
+
+## Concept
+
+CEM works by:
+
+1. **Coarsening** continuous variables into discrete bins
+2. **Exact matching** on coarsened variables
+3. **Pruning** strata with no treatment or control units
+4. **Analysis** on original (uncoarsened) data
+
+## Algorithm
+
+**Input:** Treatment $T$, covariates $X$, outcome $Y$
+
+1. Define coarsening scheme $C(X)$ (e.g., age → age groups)
+2. Sort units into strata based on $C(X)$
+3. Discard strata containing only treated or only control units
+4. Compute stratum weights to create balance
+5. Estimate treatment effect using weighted data
+
+## Monotonic Imbalance Bounding
+
+CEM guarantees that **finer coarsening cannot increase imbalance**.
+
+Let $L(C(X))$ measure imbalance under coarsening $C$. If $C_1 \preceq C_2$ (finer), then:
+
+$$
+L(C_1(X)) \leq L(C_2(X))
+$$
+
+This provides **ex ante control** over balance.
+
+## Implementation in R
+
+```{r}
+#| eval: false
+
+library(cem)
+
+# Automatic coarsening
+mat <- cem(
+  treatment = "treat",
+  data = mydata,
+  drop = "outcome",
+  keep.all = TRUE
+)
+
+# Manual coarsening with custom bins
+educut <- c(0, 6.5, 8.5, 12.5, 17)
+mat2 <- cem(
+  treatment = "treat",
+  data = mydata,
+  drop = "outcome",
+  cutpoints = list(education = educut)
+)
+
+# Check imbalance
+imbalance(group = mydata$treat, data = mydata[covariates])
+
+# Estimate treatment effect with weights
+fit <- lm(outcome ~ treat + age + educ, data = mydata, weights = mat$w)
+summary(fit)
+```
+
+## Implementation in Python
+
+```{python}
+#| eval: false
+
+# CEM not natively available in Python
+# Use rpy2 to call R's cem package
+
+import rpy2.robjects as ro
+from rpy2.robjects import pandas2ri
+pandas2ri.activate()
+
+ro.r('library(cem)')
+
+# Convert pandas df to R df
+r_data = pandas2ri.py2rpy(data)
+
+# Run CEM in R
+result = ro.r.cem('treat', data=r_data, drop='outcome')
+weights = ro.r('result$w')
+```
+
+## Implementation in Stata
+
+```stata
+* Install cem
+* ssc install cem
+
+cem age (#3) educ (#4) black hispanic married, treatment(treat)
+
+* Check balance
+imbalance age educ black hispanic married, by(treat)
+
+* Regression with CEM weights
+reg outcome treat age educ black hispanic married [iw=cem_weights]
+```
+
+# Genetic Matching
+
+## Concept
+
+Genetic matching **optimizes the weight matrix** $W$ in a generalized Mahalanobis distance to maximize covariate balance:
+
+$$
+D_{\text{gen}}(X_i, X_j) = \sqrt{(X_i - X_j)^\top W (X_i - X_j)}
+$$
+
+where $W$ is **learned** using a genetic algorithm.
+
+## Genetic Algorithm
+
+1. **Initialize** population of weight matrices
+2. **Evaluate** balance for each weight matrix
+3. **Select** best-performing matrices ("fittest")
+4. **Crossover** and **mutate** to create new generation
+5. **Repeat** until convergence
+
+## Balance Criteria
+
+Minimize:
+
+$$
+B = \sum_{k=1}^p w_k b_k^2
+$$
+
+where $b_k$ is a balance metric (e.g., standardized mean difference, KS statistic) for covariate $k$.
+
+## Implementation in R
+
+```{r}
+#| eval: false
+
+library(Matching)
+
+# Define covariates
+X <- cbind(age, educ, black, hisp, married, nodegr, u74, u75, re75, re74)
+
+# Genetic matching to find optimal weights
+genout <- GenMatch(
+  Tr = treat,
+  X = X,
+  estimand = "ATT",
+  M = 1,
+  pop.size = 100,
+  max.generations = 25
+)
+
+# Match using optimized weights
+mout <- Match(
+  Y = outcome,
+  Tr = treat,
+  X = X,
+  estimand = "ATT",
+  Weight.matrix = genout
+)
+
+# Results
+summary(mout)
+
+# Assess balance
+mb <- MatchBalance(
+  treat ~ age + educ + black + hisp + married + nodegr + u74 + u75 + re75 + re74,
+  match.out = mout,
+  nboots = 500
+)
+```
+
+# Entropy Balancing
+
+## Concept
+
+Entropy balancing **reweights** control units to exactly match treatment group moments while minimizing information loss (maximum entropy).
+
+## Optimization Problem
+
+Find weights $\{w_i\}_{i:T_i=0}$ that:
+
+1. **Balance constraints:**
+$$
+\sum_{i:T_i=0} w_i X_i = \bar{X}_T
+$$
+
+2. **Minimize KL divergence:**
+$$
+\min \sum_{i:T_i=0} w_i \log(w_i / w_i^{(0)})
+$$
+
+where $w_i^{(0)} = 1/n_0$ are uniform base weights.
+
+## Advantages
+
+- **Exact balance** on specified moments (means, variances, etc.)
+- **Unique solution** via convex optimization
+- **No iteration** required
+
+## Implementation in R
+
+```{r}
+#| eval: false
+
+library(ebal)
+
+# Entropy balancing
+eb.out <- ebalance(
+  Treatment = treat,
+  X = cbind(age, educ, black, married, re74, re75)
+)
+
+# Construct weights
+weights <- c(eb.out$w, rep(1, sum(treat)))
+
+# Estimate ATE
+fit <- lm(outcome ~ treat, weights = weights)
+summary(fit)
+```
+
+# Comparison of Methods
+
+| **Method** | **Distance** | **Pros** | **Cons** |
+|------------|-------------|----------|----------|
+| Mahalanobis | Multivariate | Scale-invariant, preserves structure | High-dimensional issues |
+| CEM | Exact (discretized) | Monotonic balance, interpretable | Information loss from coarsening |
+| Genetic | Optimized | Data-adaptive, superior balance | Computationally intensive |
+| Entropy | Reweighting | Exact balance, efficient | Requires all units, potential extreme weights |
+
 ::: {#refs}
 :::

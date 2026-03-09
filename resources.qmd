@@ -1,0 +1,15 @@
+---
+title: "Additional Resources"
+bibliography: references.bib
+---
+
+If you are seeking further content on matching designs, please refer to the following resources: 
+
+* Hansen, B.E. "Econometrics" [Link](http://home.ustc.edu.cn/~matheming/Econometrics.pdf)
+* Angrist, J.D. and Pischke, J. "Mostly Harmless Econometrics" [Link](https://www.mostlyharmlesseconometrics.com/book-contents/)
+* Huntington-Klien, N. "The Effect" *Chapter 14 - Matching* [Link](https://theeffectbook.net/ch-Matching.html) 
+* Nguyen, M. "A Guide to Data Analysis" *Chapter 35 - Matching Methods* [Link](https://bookdown.org/mike/data_analysis/sec-matching-methods.html)
+* Econmetrics Adademy. "Propensity Score Matching". [Link]{https://sites.google.com/site/econometricsacademy/econometrics-models/propensity-score-matching?authuser=0)
+* Siansei, B. "An Introduction to Matching Methods for Causal Inference and their Implementation in Stata" [Link](https://www.stata.com/meeting/uk10/UKSUG10.Sianesi.pdf)
+* Greifer, N. "MatchIt: Matching Methods" [Link](https://kosukeimai.github.io/MatchIt/articles/matching-methods.html)
+* Kennedy, P. "A Guide to Econometrics" [Link](https://www.amazon.com/Guide-Econometrics-Peter-Kennedy/dp/0262610809)

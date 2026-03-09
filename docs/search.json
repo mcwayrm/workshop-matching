@@ -4,9 +4,314 @@
     "href": "distance_measure.html",
     "title": "Distance Measures",
     "section": "",
-    "text": "How you select ‘similarity’ between two observations is critical to the matching design. Once you have established a proability score of treatment, there are four generally accepted distance measures to detect the difference between any to observations on this measure. The objective of the researcher is to minimize this distance and in doing so only compare observations that are similar in likelihood of being in the same treatment status.\n\nExact Matching\n𝐷𝑖⁢𝑗={0if𝑋𝑖=𝑋𝑗∞if𝑋𝑖≠𝑋𝑗,\n\n\nMahalanobis\n𝐷𝑖⁢𝑗=(𝑋𝑖−𝑋𝑗)′⁢∑−1(𝑋𝑖−𝑋𝑗).\nIf interest is in the ATT, Σ is the variance covariance matrix of X in the full control group; if interest is in the ATE then Σ is the variance covariance matrix of X in the pooled treatment and full control groups. If X contains categorical variables they should be converted to a series of binary indicators, although the distance works best with continuous variables.\n\n\nPropensity Score\nAn estimated propensity score is the estimated probability of taking the treatment as a function of variables that predict treatment assignment. Within a perfect stratification, the true propensity score is nothing other than the within-stratum probability of receiving the treatment, or Pr(D = 1jS), which you will recall is such that Pr(D = 1jS) = Pr(S = 1;D = 1) Pr(S = 1) by Bayes’ rule.\nWe can recover that conditional probability by applying Bayes’ rule using the marginal distributions of D and S, such that Pr[S = 1jD = 1] = Pr(D = 1jS = 1)Pr(S = 1) Pr(D = 1)\nThe (true) propensity scores encode all of the necessary information about the joint dependence of S and D needed to estimate treatment effects\nBecause such sparseness is conditionally random, strata with identical propensity scores can be combined into more coarse strata. Over repeated samples from the same population, zero cells would emerge with equal frequency across all strata within these coarse propensity-score-defined strata. Because sparseness emerges in this predictable fashion, stratifying on the propensity score itself rather than more finely on all values of the variables in S solves the sparseness problem because the propensity score can be treated as a single stratifying variable.\n𝐷𝑖⁢𝑗=∣𝑒𝑖−𝑒𝑗∣,\nwhere ek is the propensity score for individual k, defined in detail below.\n\n\nLinear Probability Score\n𝐷𝑖⁢𝑗=∣logit⁡(𝑒𝑖)−logit⁡(𝑒𝑗)∣.",
+    "text": "Defining “closeness” between units is the foundation of matching. The choice of distance metric determines which treated and control units are considered similar enough to compare.",
     "crumbs": [
       "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#definition",
+    "href": "distance_measure.html#definition",
+    "title": "Distance Measures",
+    "section": "Definition",
+    "text": "Definition\nTwo units match exactly if all their covariate values are identical:\n\\[\nD_{ij} = \\begin{cases}\n0 & \\text{if } X_i = X_j \\\\\n\\infty & \\text{if } X_i \\neq X_j\n\\end{cases}\n\\]",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#when-it-works",
+    "href": "distance_measure.html#when-it-works",
+    "title": "Distance Measures",
+    "section": "When It Works",
+    "text": "When It Works\n\nFew discrete covariates (e.g., race, gender, region)\nLarge sample with sufficient overlap\nAll covariates categorical or can be meaningfully discretized",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#limitations",
+    "href": "distance_measure.html#limitations",
+    "title": "Distance Measures",
+    "section": "Limitations",
+    "text": "Limitations\n\nCurse of dimensionality: With \\(p\\) covariates each having \\(k\\) levels, there are \\(k^p\\) possible cells\nSparsity: Many cells will be empty or have only treated or only control units\nInefficiency: Discards many observations",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#definition-1",
+    "href": "distance_measure.html#definition-1",
+    "title": "Distance Measures",
+    "section": "Definition",
+    "text": "Definition\nThe Mahalanobis distance accounts for scale and correlation among covariates:\n\\[\nD_{M}(X_i, X_j) = \\sqrt{(X_i - X_j)^\\top \\Sigma^{-1} (X_i - X_j)}\n\\]\nwhere \\(\\Sigma\\) is the covariance matrix of \\(X\\).",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#which-covariance-matrix",
+    "href": "distance_measure.html#which-covariance-matrix",
+    "title": "Distance Measures",
+    "section": "Which Covariance Matrix?",
+    "text": "Which Covariance Matrix?\nFor ATT (Average Treatment Effect on the Treated):\n\\[\n\\Sigma = \\text{Cov}(X | T = 0)\n\\]\nUse covariance from the control group only.\nFor ATE (Average Treatment Effect):\n\\[\n\\Sigma = \\text{Cov}(X | T = 0, T = 1)\n\\]\nUse pooled covariance from treated and control groups.",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#properties",
+    "href": "distance_measure.html#properties",
+    "title": "Distance Measures",
+    "section": "Properties",
+    "text": "Properties\n\nScale-invariant: Variables in different units (age in years, income in dollars) are comparable\nCorrelation-adjusted: Accounts for relationships among covariates\nGeometric interpretation: Measures statistical distance in standardized space",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#advantages",
+    "href": "distance_measure.html#advantages",
+    "title": "Distance Measures",
+    "section": "Advantages",
+    "text": "Advantages\n\nWorks with continuous and categorical variables\nRobust to adding irrelevant variables\nNo parametric model required",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#limitations-1",
+    "href": "distance_measure.html#limitations-1",
+    "title": "Distance Measures",
+    "section": "Limitations",
+    "text": "Limitations\n\nAssumes multivariate normality (implicitly)\nSensitive to dimensionality: Performance degrades with many covariates\nCollinearity issues: If \\(\\Sigma\\) is singular, inverse does not exist",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#definition-2",
+    "href": "distance_measure.html#definition-2",
+    "title": "Distance Measures",
+    "section": "Definition",
+    "text": "Definition\nThe propensity score is the conditional probability of treatment:\n\\[\ne(X) = P(T = 1 | X)\n\\]\nDistance based on propensity scores:\n\\[\nD_{PS}(X_i, X_j) = |e(X_i) - e(X_j)|\n\\]",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#the-balancing-property",
+    "href": "distance_measure.html#the-balancing-property",
+    "title": "Distance Measures",
+    "section": "The Balancing Property",
+    "text": "The Balancing Property\nRosenbaum & Rubin (1983) proved that conditioning on \\(e(X)\\) is equivalent to conditioning on \\(X\\):\n\\[\nX \\perp T | e(X)\n\\]\nThis means: At each propensity score value, the distribution of \\(X\\) is the same in treated and control groups.",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#estimation",
+    "href": "distance_measure.html#estimation",
+    "title": "Distance Measures",
+    "section": "Estimation",
+    "text": "Estimation\n\nLogistic Regression\n\\[\n\\log \\left( \\frac{e(X)}{1 - e(X)} \\right) = X^\\top \\beta\n\\]\n\n\nMachine Learning Methods\n\nGeneralized Boosted Models (GBM)\nRandom Forests\nLASSO regularization\nNeural networks",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#definition-3",
+    "href": "distance_measure.html#definition-3",
+    "title": "Distance Measures",
+    "section": "Definition",
+    "text": "Definition\nTransform propensity scores to logit scale:\n\\[\nD_{\\text{logit}}(X_i, X_j) = |\\text{logit}(e(X_i)) - \\text{logit}(e(X_j))|\n\\]\nwhere:\n\\[\n\\text{logit}(e) = \\log \\left( \\frac{e}{1 - e} \\right)\n\\]",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "distance_measure.html#why-use-logit-scale",
+    "href": "distance_measure.html#why-use-logit-scale",
+    "title": "Distance Measures",
+    "section": "Why Use Logit Scale?",
+    "text": "Why Use Logit Scale?\n\nUnbounded: Maps \\((0, 1) \\rightarrow (-\\infty, \\infty)\\)\nMore stable in tails: Small differences near 0 or 1 are magnified\nSymmetric: Equal weighting to low and high propensity scores",
+    "crumbs": [
+      "Distance Measures"
+    ]
+  },
+  {
+    "objectID": "resources.html",
+    "href": "resources.html",
+    "title": "Additional Resources",
+    "section": "",
+    "text": "If you are seeking further content on matching designs, please refer to the following resources:\n\nHansen, B.E. “Econometrics” Link\nAngrist, J.D. and Pischke, J. “Mostly Harmless Econometrics” Link\nHuntington-Klien, N. “The Effect” Chapter 14 - Matching Link\nNguyen, M. “A Guide to Data Analysis” Chapter 35 - Matching Methods Link\nEconmetrics Adademy. “Propensity Score Matching”. [Link]{https://sites.google.com/site/econometricsacademy/econometrics-models/propensity-score-matching?authuser=0)\nSiansei, B. “An Introduction to Matching Methods for Causal Inference and their Implementation in Stata” Link\nGreifer, N. “MatchIt: Matching Methods” Link\nKennedy, P. “A Guide to Econometrics” Link",
+    "crumbs": [
+      "Additional Resources"
+    ]
+  },
+  {
+    "objectID": "matching_psm.html",
+    "href": "matching_psm.html",
+    "title": "Matching Methods",
+    "section": "",
+    "text": "The propensity score is defined as the conditional probability of receiving treatment given observed covariates (Rosenbaum and Rubin 1983):\n\\[\ne(X) = P(T = 1 | X)\n\\]\nwhere:\n\n\\(T \\in \\{0, 1\\}\\) is the binary treatment indicator\n\\(X\\) is a vector of pre-treatment covariates\n\n\n\nRosenbaum and Rubin (1983) proved that conditioning on the propensity score is sufficient to remove bias from observed confounders:\n\\[\n(Y^1, Y^0) \\perp T | e(X)\n\\]\nThis remarkable result reduces the dimensionality of the matching problem: instead of matching on all \\(p\\) covariates in \\(X\\), we can match on the single scalar \\(e(X)\\).\nWhy this works:\nThe propensity score is a balancing score: At each value \\(e(X) = e_0\\), the distribution of covariates \\(X\\) is the same in the treated and control groups.\nFormally: \\[\nX \\perp T | e(X)\n\\]",
+    "crumbs": [
+      "Matching Methods",
+      "Propsensity Score Matching"
+    ]
+  },
+  {
+    "objectID": "matching_psm.html#the-balancing-property",
+    "href": "matching_psm.html#the-balancing-property",
+    "title": "Matching Methods",
+    "section": "",
+    "text": "Rosenbaum and Rubin (1983) proved that conditioning on the propensity score is sufficient to remove bias from observed confounders:\n\\[\n(Y^1, Y^0) \\perp T | e(X)\n\\]\nThis remarkable result reduces the dimensionality of the matching problem: instead of matching on all \\(p\\) covariates in \\(X\\), we can match on the single scalar \\(e(X)\\).\nWhy this works:\nThe propensity score is a balancing score: At each value \\(e(X) = e_0\\), the distribution of covariates \\(X\\) is the same in the treated and control groups.\nFormally: \\[\nX \\perp T | e(X)\n\\]",
+    "crumbs": [
+      "Matching Methods",
+      "Propsensity Score Matching"
+    ]
+  },
+  {
+    "objectID": "matching_psm.html#logistic-regression",
+    "href": "matching_psm.html#logistic-regression",
+    "title": "Matching Methods",
+    "section": "Logistic Regression",
+    "text": "Logistic Regression\nThe most common approach estimates \\(e(X)\\) using logistic regression:\n\\[\n\\log \\left( \\frac{e(X)}{1 - e(X)} \\right) = X^\\top \\beta\n\\]\nThis yields: \\[\n\\hat{e}(X_i) = \\frac{1}{1 + \\exp(-X_i^\\top \\hat{\\beta})}\n\\]",
+    "crumbs": [
+      "Matching Methods",
+      "Propsensity Score Matching"
+    ]
+  },
+  {
+    "objectID": "matching_psm.html#alternative-methods",
+    "href": "matching_psm.html#alternative-methods",
+    "title": "Matching Methods",
+    "section": "Alternative Methods",
+    "text": "Alternative Methods\nFor more flexible functional forms:\n\nGeneralized boosted models (GBM) - adaptive nonparametric estimation\nRandom forests - ensemble tree-based methods\nLASSO/Ridge - regularized regression for high-dimensional \\(X\\)\nNeural networks - deep learning approaches",
+    "crumbs": [
+      "Matching Methods",
+      "Propsensity Score Matching"
+    ]
+  },
+  {
+    "objectID": "matching_psm.html#nearest-neighbor-matching",
+    "href": "matching_psm.html#nearest-neighbor-matching",
+    "title": "Matching Methods",
+    "section": "1. Nearest Neighbor Matching",
+    "text": "1. Nearest Neighbor Matching\nMatch each treated unit to the \\(k\\) closest control units based on propensity score distance:\n\\[\nd(i, j) = |e(X_i) - e(X_j)|\n\\]\nWith replacement: Control units can be matched multiple times\nWithout replacement: Each control used at most once",
+    "crumbs": [
+      "Matching Methods",
+      "Propsensity Score Matching"
+    ]
+  },
+  {
+    "objectID": "matching_psm.html#caliper-matching",
+    "href": "matching_psm.html#caliper-matching",
+    "title": "Matching Methods",
+    "section": "2. Caliper Matching",
+    "text": "2. Caliper Matching\nImpose a maximum distance threshold \\(c &gt; 0\\) (the caliper). Only match if:\n\\[\n|e(X_i) - e(X_j)| &lt; c\n\\]\nCommon choice: \\(c = 0.25 \\times \\text{SD}(\\text{logit}(e(X)))\\)",
+    "crumbs": [
+      "Matching Methods",
+      "Propsensity Score Matching"
+    ]
+  },
+  {
+    "objectID": "matching_psm.html#kernel-matching",
+    "href": "matching_psm.html#kernel-matching",
+    "title": "Matching Methods",
+    "section": "3. Kernel Matching",
+    "text": "3. Kernel Matching\nWeighted average of all controls, with weights inversely proportional to distance:\n\\[\n\\hat{Y}_i^0 = \\frac{\\sum_{j:T_j=0} K\\left(\\frac{e(X_i) - e(X_j)}{h}\\right) Y_j}{\\sum_{j:T_j=0} K\\left(\\frac{e(X_i) - e(X_j)}{h}\\right)}\n\\]\nwhere \\(K(\\cdot)\\) is a kernel function and \\(h\\) is the bandwidth.",
+    "crumbs": [
+      "Matching Methods",
+      "Propsensity Score Matching"
+    ]
+  },
+  {
+    "objectID": "matching_psm.html#key-problems",
+    "href": "matching_psm.html#key-problems",
+    "title": "Matching Methods",
+    "section": "Key Problems",
+    "text": "Key Problems\n\nParadox of PSM: Equal propensity scores do not guarantee similar covariates\n\n\\[\ne(X_i) = e(X_j) \\not\\Rightarrow X_i = X_j\n\\]\nBut: \\[\nX_i = X_j \\Rightarrow e(X_i) = e(X_j)\n\\]\n\nModel dependence: Small changes in propensity score specification can dramatically change matches\nInefficiency: Discarding unmatched units reduces sample size unnecessarily\nApproximation stochasticity: The quality of matches varies randomly based on the specific sample",
+    "crumbs": [
+      "Matching Methods",
+      "Propsensity Score Matching"
+    ]
+  },
+  {
+    "objectID": "matching_psm.html#better-alternatives",
+    "href": "matching_psm.html#better-alternatives",
+    "title": "Matching Methods",
+    "section": "Better Alternatives",
+    "text": "Better Alternatives\n\nCovariate matching (Mahalanobis distance, CEM)\nInverse probability weighting (IPTW)\nDoubly robust estimators\nEntropy balancing",
+    "crumbs": [
+      "Matching Methods",
+      "Propsensity Score Matching"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "All references cited throughout this website are listed below."
+  },
+  {
+    "objectID": "references.html#bibliography",
+    "href": "references.html#bibliography",
+    "title": "References",
+    "section": "",
+    "text": "All references cited throughout this website are listed below."
+  },
+  {
+    "objectID": "CITATION_GUIDE.html",
+    "href": "CITATION_GUIDE.html",
+    "title": "Citation Guide",
+    "section": "",
+    "text": "This website uses a centralized bibliography system. All references are stored in references.bib and can be cited in any .qmd file.\n\n\nAdd new entries to references.bib in BibTeX format. Common entry types:\n\n\n@article{authorYear,\n  title={Article Title},\n  author={Last, First and Last, First},\n  journal={Journal Name},\n  volume={10},\n  number={2},\n  pages={123--145},\n  year={2024}\n}\n\n\n\n@book{authorYear,\n  title={Book Title},\n  author={Last, First},\n  year={2023},\n  publisher={Publisher Name}\n}\n\n\n\n\nUse the @ symbol followed by the citation key:\n\nIn-text citation: @authorYear renders as: Author (Year)\nParenthetical: [@authorYear] renders as: (Author, Year)\nMultiple citations: [@author2024; @other2023]\nWith page numbers: [@authorYear, pp. 42-43]\nSuppress author: [-@authorYear] renders as: (Year)\n\n\n\n\nAccording to @example2024, this is important. \nOther research supports this claim [@examplebook2023; @exampleconf2025].\n\n\n\nThe website uses APA style by default (configured in _quarto.yml). You can change this by:\n\nDownload a different .csl file from the Zotero Style Repository\nSave it in your project directory\nUpdate the csl: field in _quarto.yml\n\nCommon styles: apa.csl, chicago.csl, ieee.csl, nature.csl\n\n\n\nAll cited references automatically appear on the References page."
+  },
+  {
+    "objectID": "CITATION_GUIDE.html#how-to-add-references",
+    "href": "CITATION_GUIDE.html#how-to-add-references",
+    "title": "Citation Guide",
+    "section": "",
+    "text": "Add new entries to references.bib in BibTeX format. Common entry types:\n\n\n@article{authorYear,\n  title={Article Title},\n  author={Last, First and Last, First},\n  journal={Journal Name},\n  volume={10},\n  number={2},\n  pages={123--145},\n  year={2024}\n}\n\n\n\n@book{authorYear,\n  title={Book Title},\n  author={Last, First},\n  year={2023},\n  publisher={Publisher Name}\n}"
+  },
+  {
+    "objectID": "CITATION_GUIDE.html#how-to-cite-in-.qmd-files",
+    "href": "CITATION_GUIDE.html#how-to-cite-in-.qmd-files",
+    "title": "Citation Guide",
+    "section": "",
+    "text": "Use the @ symbol followed by the citation key:\n\nIn-text citation: @authorYear renders as: Author (Year)\nParenthetical: [@authorYear] renders as: (Author, Year)\nMultiple citations: [@author2024; @other2023]\nWith page numbers: [@authorYear, pp. 42-43]\nSuppress author: [-@authorYear] renders as: (Year)"
+  },
+  {
+    "objectID": "CITATION_GUIDE.html#example",
+    "href": "CITATION_GUIDE.html#example",
+    "title": "Citation Guide",
+    "section": "",
+    "text": "According to @example2024, this is important. \nOther research supports this claim [@examplebook2023; @exampleconf2025]."
+  },
+  {
+    "objectID": "CITATION_GUIDE.html#citation-style",
+    "href": "CITATION_GUIDE.html#citation-style",
+    "title": "Citation Guide",
+    "section": "",
+    "text": "The website uses APA style by default (configured in _quarto.yml). You can change this by:\n\nDownload a different .csl file from the Zotero Style Repository\nSave it in your project directory\nUpdate the csl: field in _quarto.yml\n\nCommon styles: apa.csl, chicago.csl, ieee.csl, nature.csl"
+  },
+  {
+    "objectID": "CITATION_GUIDE.html#references-page",
+    "href": "CITATION_GUIDE.html#references-page",
+    "title": "Citation Guide",
+    "section": "",
+    "text": "All cited references automatically appear on the References page."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Workshop: Matching Estimation Strategies",
+    "section": "",
+    "text": "Motivation\nStart with settings. Why matching may be a useful application with limited ability to randomize treatment (contact of RCT gold standard)\nThe Effect https://theeffectbook.net/ch-Matching.html\nKennedy Book\nHansen\nHarmless Econometrics\nGuide to Data Analysis: https://bookdown.org/mike/data_analysis/sec-matching-methods.html\nhttps://www.stata.com/meeting/uk10/UKSUG10.Sianesi.pdf\nhttps://sites.google.com/site/econometricsacademy/econometrics-models/propensity-score-matching?authuser=0\nhttps://kosukeimai.github.io/MatchIt/articles/matching-methods.html\nMatching represents an intuitive (perhaps too much so) method for addressing causal question, primarily because it pushes the analyst to confront the process of causal exposure as well as the limitations of available data.\n“When estimating causal effects using observational data, it is desirable to replicate a randomized experiment as closely as possible by obtaining treated and control groups with similar covariate distributions. This goal can often be achieved by choosing well-matched samples of the original treated and control groups, thereby reducing bias due to the covariates. Since the 1970’s, work on matching methods has examined how to best choose treated and control subjects for comparison.” (Stuart 2010)\n\n\nOverview\nMatching is usually introduced in one of two ways: 1. As a method to form quasi-experimental contrasts by sampling comparable treatment and control cases from among two larger pools of such cases 2. As a nonparametric method of adjustment for treatment assignment patterns when it is feared that ostensibly simple parametric regression estimators cannot be trusted.\nTo implement a matching method, you will follow a simple four step procedure:\n\nDefining “closeness”: the distance measure used to determine whether an individual is a good match for another,\nImplementing a matching method, given that measure of closeness,\nAssessing the quality of the resulting matched samples, and perhaps iterating with Steps (1) and (2) until well-matched samples result, and\nAnalysis of the outcome and estimation of the treatment effect, given the matching done in Step (3).\n\n\n\nVideo Review\nThis workshop was graciously recorded by the MEL J-PAL staff. I have taken this recording and provided this as a publicly avaliable video reviewing the material to accompany this website training.\nYou can view the recording at the following link:\n…\n\n\nStuart, Elizabeth A. 2010. “Matching Methods for Causal Inference: A Review and a Look Forward.” Statistical Science 25 (1): 1–21. https://doi.org/10.1214/09-STS313.",
+    "crumbs": [
+      "Overview"
     ]
   },
   {
@@ -60,79 +365,276 @@
     ]
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Workshop: Matching Estimation Strategies",
-    "section": "",
-    "text": "Motivation\nStart with settings. Why matching may be a useful application with limited ability to randomize treatment (contact of RCT gold standard)\nThe Effect https://theeffectbook.net/ch-Matching.html\nKennedy Book\nHansen\nHarmless Econometrics\nGuide to Data Analysis: https://bookdown.org/mike/data_analysis/sec-matching-methods.html\nhttps://www.stata.com/meeting/uk10/UKSUG10.Sianesi.pdf\nhttps://sites.google.com/site/econometricsacademy/econometrics-models/propensity-score-matching?authuser=0\nhttps://kosukeimai.github.io/MatchIt/articles/matching-methods.html\nMatching represents an intuitive (perhaps too much so) method for addressing causal question, primarily because it pushes the analyst to confront the process of causal exposure as well as the limitations of available data.\n“When estimating causal effects using observational data, it is desirable to replicate a randomized experiment as closely as possible by obtaining treated and control groups with similar covariate distributions. This goal can often be achieved by choosing well-matched samples of the original treated and control groups, thereby reducing bias due to the covariates. Since the 1970’s, work on matching methods has examined how to best choose treated and control subjects for comparison.” (Stuart 2010)\n\n\nOverview\nMatching is usually introduced in one of two ways: 1. As a method to form quasi-experimental contrasts by sampling comparable treatment and control cases from among two larger pools of such cases 2. As a nonparametric method of adjustment for treatment assignment patterns when it is feared that ostensibly simple parametric regression estimators cannot be trusted.\nTo implement a matching method, you will follow a simple four step procedure:\n\nDefining “closeness”: the distance measure used to determine whether an individual is a good match for another,\nImplementing a matching method, given that measure of closeness,\nAssessing the quality of the resulting matched samples, and perhaps iterating with Steps (1) and (2) until well-matched samples result, and\nAnalysis of the outcome and estimation of the treatment effect, given the matching done in Step (3).\n\n\n\nVideo Review\nThis workshop was graciously recorded by the MEL J-PAL staff. I have taken this recording and provided this as a publicly avaliable video reviewing the material to accompany this website training.\nYou can view the recording at the following link:\n…\n\n\nStuart, Elizabeth A. 2010. “Matching Methods for Causal Inference: A Review and a Look Forward.” Statistical Science 25 (1): 1–21. https://doi.org/10.1214/09-STS313.",
+    "objectID": "concept.html#strong-ignorability-unconfoundedness",
+    "href": "concept.html#strong-ignorability-unconfoundedness",
+    "title": "The Concept",
+    "section": "Strong Ignorability (Unconfoundedness)",
+    "text": "Strong Ignorability (Unconfoundedness)\nThe cornerstone assumption of matching is strong ignorability or conditional independence (Rosenbaum and Rubin 1983). This requires two components:\n\n1. Unconfoundedness\nTreatment assignment is independent of potential outcomes, conditional on covariates \\(X\\):\n\\[\n(Y^1, Y^0) \\perp T | X\n\\]\nThis means that, after controlling for observed covariates \\(X\\), treatment is “as good as randomly assigned.” All variables that jointly affect treatment assignment and outcomes must be observed and included in \\(X\\).\n\n\n2. Common Support (Overlap/Positivity)\nFor every covariate profile, there must be a positive probability of receiving both treatment and control:\n\\[\n0 &lt; P(T = 1 | X = x) &lt; 1 \\quad \\forall x \\in \\mathcal{X}\n\\]\nImplications:\n\nWithout overlap, some comparisons require extrapolation beyond the empirical support\nMatching naturally enforces common support by discarding units outside the region of overlap\nThis “pruning” improves internal validity but may reduce external validity\n\n\n\n3. Stable Unit Treatment Value Assumption (SUTVA)\nThe potential outcomes for any unit do not depend on the treatment assignment of other units:\n\\[\nY_i(T_i, T_{-i}) = Y_i(T_i) \\quad \\text{for all } i\n\\]\nThis rules out:\n\nInterference: Unit \\(i\\)’s outcome depends on unit \\(j\\)’s treatment\nMultiple versions of treatment: The treatment is well-defined and homogeneous\n\nViolations occur in:\n\nEducation (peer effects)\nEpidemiology (disease transmission)\n\nMarketing (network influence)",
     "crumbs": [
-      "Overview"
+      "The Concept"
     ]
   },
   {
-    "objectID": "CITATION_GUIDE.html",
-    "href": "CITATION_GUIDE.html",
-    "title": "Citation Guide",
-    "section": "",
-    "text": "This website uses a centralized bibliography system. All references are stored in references.bib and can be cited in any .qmd file.\n\n\nAdd new entries to references.bib in BibTeX format. Common entry types:\n\n\n@article{authorYear,\n  title={Article Title},\n  author={Last, First and Last, First},\n  journal={Journal Name},\n  volume={10},\n  number={2},\n  pages={123--145},\n  year={2024}\n}\n\n\n\n@book{authorYear,\n  title={Book Title},\n  author={Last, First},\n  year={2023},\n  publisher={Publisher Name}\n}\n\n\n\n\nUse the @ symbol followed by the citation key:\n\nIn-text citation: @authorYear renders as: Author (Year)\nParenthetical: [@authorYear] renders as: (Author, Year)\nMultiple citations: [@author2024; @other2023]\nWith page numbers: [@authorYear, pp. 42-43]\nSuppress author: [-@authorYear] renders as: (Year)\n\n\n\n\nAccording to @example2024, this is important. \nOther research supports this claim [@examplebook2023; @exampleconf2025].\n\n\n\nThe website uses APA style by default (configured in _quarto.yml). You can change this by:\n\nDownload a different .csl file from the Zotero Style Repository\nSave it in your project directory\nUpdate the csl: field in _quarto.yml\n\nCommon styles: apa.csl, chicago.csl, ieee.csl, nature.csl\n\n\n\nAll cited references automatically appear on the References page."
-  },
-  {
-    "objectID": "CITATION_GUIDE.html#how-to-add-references",
-    "href": "CITATION_GUIDE.html#how-to-add-references",
-    "title": "Citation Guide",
-    "section": "",
-    "text": "Add new entries to references.bib in BibTeX format. Common entry types:\n\n\n@article{authorYear,\n  title={Article Title},\n  author={Last, First and Last, First},\n  journal={Journal Name},\n  volume={10},\n  number={2},\n  pages={123--145},\n  year={2024}\n}\n\n\n\n@book{authorYear,\n  title={Book Title},\n  author={Last, First},\n  year={2023},\n  publisher={Publisher Name}\n}"
-  },
-  {
-    "objectID": "CITATION_GUIDE.html#how-to-cite-in-.qmd-files",
-    "href": "CITATION_GUIDE.html#how-to-cite-in-.qmd-files",
-    "title": "Citation Guide",
-    "section": "",
-    "text": "Use the @ symbol followed by the citation key:\n\nIn-text citation: @authorYear renders as: Author (Year)\nParenthetical: [@authorYear] renders as: (Author, Year)\nMultiple citations: [@author2024; @other2023]\nWith page numbers: [@authorYear, pp. 42-43]\nSuppress author: [-@authorYear] renders as: (Year)"
-  },
-  {
-    "objectID": "CITATION_GUIDE.html#example",
-    "href": "CITATION_GUIDE.html#example",
-    "title": "Citation Guide",
-    "section": "",
-    "text": "According to @example2024, this is important. \nOther research supports this claim [@examplebook2023; @exampleconf2025]."
-  },
-  {
-    "objectID": "CITATION_GUIDE.html#citation-style",
-    "href": "CITATION_GUIDE.html#citation-style",
-    "title": "Citation Guide",
-    "section": "",
-    "text": "The website uses APA style by default (configured in _quarto.yml). You can change this by:\n\nDownload a different .csl file from the Zotero Style Repository\nSave it in your project directory\nUpdate the csl: field in _quarto.yml\n\nCommon styles: apa.csl, chicago.csl, ieee.csl, nature.csl"
-  },
-  {
-    "objectID": "CITATION_GUIDE.html#references-page",
-    "href": "CITATION_GUIDE.html#references-page",
-    "title": "Citation Guide",
-    "section": "",
-    "text": "All cited references automatically appear on the References page."
-  },
-  {
-    "objectID": "references.html",
-    "href": "references.html",
-    "title": "References",
-    "section": "",
-    "text": "All references cited throughout this website are listed below."
-  },
-  {
-    "objectID": "references.html#bibliography",
-    "href": "references.html#bibliography",
-    "title": "References",
-    "section": "",
-    "text": "All references cited throughout this website are listed below."
-  },
-  {
-    "objectID": "sensitivity.html",
-    "href": "sensitivity.html",
-    "title": "Sensitivity Analysis",
-    "section": "",
-    "text": "Assessing Common Support\nOne issue that comes up for all matching methods is that of “common support.” To this point, we have assumed that there is substantial overlap of the propensity score distributions in the two groups, but potentially density differences. However, in some situations there may not be complete overlap in the distributions. For example, many of the control individuals may be very different from all of the treatment group members, making them inappropriate as points of comparison when estimating the ATT (Austin and Mamdani, 2006). Nearest neighbor matching with calipers automatically only uses individuals in (or close to) the area of common support. In contrast, the subclassification and weighting methods generally use all individuals, regardless of the overlap of the distributions. When using those methods it may be beneficial to explicitly restrict the analysis to those individuals in the region of common support (as in Heckman et al., 1997; Dehejia and Wahba, 1999).\nMost analyses define common support using the propensity score, discarding individuals with propensity score values outside the range of the other group. A second method involves examining the “convex hull” of the covariates, identifying the multi-dimensional space that allows interpolation rather than extrapolation (King and Zeng, 2006). While these procedures can help identify who needs to be discarded, when many subjects are discarded it can help the interpretation of results if it is possible to define the discard rule using one or two covariates rather than the propensity score itself.\nIt is also important to consider the implications of common support for the estimand of interest. Examining the common support may indicate that it is not possible to reliably estimate the ATE. This could happen, for example, if there are controls outside the range of the treated individuals and thus no way to estimate Y (1) for the controls without extensive extrapolation. When estimating the ATT it may be fine (and in fact beneficial) to discard controls outside the range of the treated individuals, but discarding treated individuals may change the group for which the results apply (Crump et al., 2009).\n\n\nValidation Tests\nRubin (2001) presents three balance measures based on the theory in Rubin and Thomas (1996) that provide a comprehensive view of covariate balance:\n\nThe standardized difference of means of the propensity score\nThe ratio of the variances of the propensity score in the treated and control groups\nFor each covariate, the ratio of the variance of the residuals orthogonal to the propensity score in the treated and control groups.\n\n\n\nFalisfication Tests\n\n\nUntestable Limitations",
+    "objectID": "concept.html#selection-on-observables-vs.-unobservables",
+    "href": "concept.html#selection-on-observables-vs.-unobservables",
+    "title": "The Concept",
+    "section": "Selection on Observables vs. Unobservables",
+    "text": "Selection on Observables vs. Unobservables\nMatching methods address selection on observables—systematic differences between treated and control groups that can be measured and controlled. However, they cannot resolve selection on unobservables (hidden bias).\nWhen unobserved confounders exist, sensitivity analyses such as:\n\nRosenbaum bounds (quantify robustness to hidden bias)\nRelative correlation restrictions (bound effects under assumptions)\nCoefficient stability tests (assess impact of additional controls)\n\nhelp assess how strong unmeasured confounding would need to be to overturn the findings.\n\n\nRosenbaum, Paul R., and Donald B. Rubin. 1983. “The Central Role of the Propensity Score in Observational Studies for Causal Effects.” Biometrika 70 (1): 41–55. https://doi.org/10.1093/biomet/70.1.41.",
     "crumbs": [
-      "Sensitivity Analysis"
+      "The Concept"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html",
+    "href": "matching_cvm.html",
+    "title": "Matching Methods",
+    "section": "",
+    "text": "Covariate matching methods directly match units based on the similarity of their observed characteristics, rather than reducing them to a single propensity score. These methods preserve the multivariate structure of covariates and can achieve better balance.\n\n\n\nNo information loss: Matching on full covariate space preserves all information\nBetter balance: Can achieve exact or near-exact balance on all covariates\nTransparency: Easier to inspect and understand matches\nRobustness: Not sensitive to propensity score model specification",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#advantages-over-propensity-score-matching",
+    "href": "matching_cvm.html#advantages-over-propensity-score-matching",
+    "title": "Matching Methods",
+    "section": "",
+    "text": "No information loss: Matching on full covariate space preserves all information\nBetter balance: Can achieve exact or near-exact balance on all covariates\nTransparency: Easier to inspect and understand matches\nRobustness: Not sensitive to propensity score model specification",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#definition",
+    "href": "matching_cvm.html#definition",
+    "title": "Matching Methods",
+    "section": "Definition",
+    "text": "Definition\nThe Mahalanobis distance between units \\(i\\) and \\(j\\) is:\n\\[\nD_M(X_i, X_j) = \\sqrt{(X_i - X_j)^\\top S^{-1} (X_i - X_j)}\n\\]\nwhere \\(S\\) is the sample covariance matrix of covariates.",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#why-not-euclidean-distance",
+    "href": "matching_cvm.html#why-not-euclidean-distance",
+    "title": "Matching Methods",
+    "section": "Why Not Euclidean Distance?",
+    "text": "Why Not Euclidean Distance?\nEuclidean distance treats all variables equally:\n\\[\nD_E(X_i, X_j) = \\sqrt{(X_i - X_j)^\\top (X_i - X_j)}\n\\]\nProblems:\n\nVariables with larger scales dominate the distance\nIgnores correlation structure among covariates\n\nMahalanobis distance standardizes by \\(S^{-1}\\), making it:\n\nScale-invariant: Variables measured in different units are comparable\nCorrelation-adjusted: Accounts for dependencies among covariates",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#properties",
+    "href": "matching_cvm.html#properties",
+    "title": "Matching Methods",
+    "section": "Properties",
+    "text": "Properties\n\nInvariant under affine transformations: Distance unchanged if covariates are linearly transformed\nMultivariate: Operates in full covariate space\nNon-parametric: No model for treatment assignment required",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#limitations",
+    "href": "matching_cvm.html#limitations",
+    "title": "Matching Methods",
+    "section": "Limitations",
+    "text": "Limitations\n\nCurse of dimensionality: Performance degrades with many covariates\nSensitive to outliers: Extreme values can distort \\(S\\)\nAssumes multivariate normality (implicitly)",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#implementation-in-r",
+    "href": "matching_cvm.html#implementation-in-r",
+    "title": "Matching Methods",
+    "section": "Implementation in R",
+    "text": "Implementation in R\n\nlibrary(MatchIt)\nlibrary(Matching)\n\n# Mahalanobis distance matching\nm.out &lt;- matchit(\n  treat ~ age + educ + race + married + nodegree + re74 + re75,\n  data = mydata,\n  method = \"nearest\",\n  distance = \"mahalanobis\"\n)\n\n# With caliper on propensity score\nm.out2 &lt;- matchit(\n  treat ~ age + educ + race + married + nodegree + re74 + re75,\n  data = mydata,\n  method = \"nearest\",\n  distance = \"mahalanobis\",\n  mahvars = ~ age + educ + re74 + re75,  # Variables for Mahal distance\n  caliper = 0.25,                         # Caliper on propensity score\n  std.caliper = TRUE\n)\n\n# Check balance\nsummary(m.out, un = FALSE)",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#implementation-in-python",
+    "href": "matching_cvm.html#implementation-in-python",
+    "title": "Matching Methods",
+    "section": "Implementation in Python",
+    "text": "Implementation in Python\n\nimport numpy as np\nfrom scipy.spatial.distance import mahalanobis\nfrom sklearn.covariance import EmpiricalCovariance\n\n# Compute covariance matrix\nX = data[['age', 'educ', 'married', 're74', 're75']].values\ncov = EmpiricalCovariance().fit(X)\nS_inv = np.linalg.inv(cov.covariance_)\n\n# Calculate distance between two units\ndist = mahalanobis(X[i], X[j], S_inv)\n\n# Using causalinference package\nfrom causalinference import CausalModel\n\nY = data['outcome'].values\nD = data['treat'].values\nX = data[['age', 'educ', 'married', 're74', 're75']].values\n\ncausal = CausalModel(Y, D, X)\ncausal.est_via_matching(matches=1, bias_adj=True)\nprint(causal.estimates)",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#implementation-in-stata",
+    "href": "matching_cvm.html#implementation-in-stata",
+    "title": "Matching Methods",
+    "section": "Implementation in Stata",
+    "text": "Implementation in Stata\n* Install mahapick if needed\n* ssc install mahapick\n\nmahapick treat age educ black hispanic married nodegree re74 re75, ///\n         idvar(id) nummatches(1) scorevar(mahal_dist) matchedvar(matched)\n\n* Keep matched observations\nkeep if matched == 1\n\n* Estimate treatment effect\nreg outcome treat age educ black hispanic married nodegree re74 re75",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#concept",
+    "href": "matching_cvm.html#concept",
+    "title": "Matching Methods",
+    "section": "Concept",
+    "text": "Concept\nCEM works by:\n\nCoarsening continuous variables into discrete bins\nExact matching on coarsened variables\nPruning strata with no treatment or control units\nAnalysis on original (uncoarsened) data",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#algorithm",
+    "href": "matching_cvm.html#algorithm",
+    "title": "Matching Methods",
+    "section": "Algorithm",
+    "text": "Algorithm\nInput: Treatment \\(T\\), covariates \\(X\\), outcome \\(Y\\)\n\nDefine coarsening scheme \\(C(X)\\) (e.g., age → age groups)\nSort units into strata based on \\(C(X)\\)\nDiscard strata containing only treated or only control units\nCompute stratum weights to create balance\nEstimate treatment effect using weighted data",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#monotonic-imbalance-bounding",
+    "href": "matching_cvm.html#monotonic-imbalance-bounding",
+    "title": "Matching Methods",
+    "section": "Monotonic Imbalance Bounding",
+    "text": "Monotonic Imbalance Bounding\nCEM guarantees that finer coarsening cannot increase imbalance.\nLet \\(L(C(X))\\) measure imbalance under coarsening \\(C\\). If \\(C_1 \\preceq C_2\\) (finer), then:\n\\[\nL(C_1(X)) \\leq L(C_2(X))\n\\]\nThis provides ex ante control over balance.",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#implementation-in-r-1",
+    "href": "matching_cvm.html#implementation-in-r-1",
+    "title": "Matching Methods",
+    "section": "Implementation in R",
+    "text": "Implementation in R\n\nlibrary(cem)\n\n# Automatic coarsening\nmat &lt;- cem(\n  treatment = \"treat\",\n  data = mydata,\n  drop = \"outcome\",\n  keep.all = TRUE\n)\n\n# Manual coarsening with custom bins\neducut &lt;- c(0, 6.5, 8.5, 12.5, 17)\nmat2 &lt;- cem(\n  treatment = \"treat\",\n  data = mydata,\n  drop = \"outcome\",\n  cutpoints = list(education = educut)\n)\n\n# Check imbalance\nimbalance(group = mydata$treat, data = mydata[covariates])\n\n# Estimate treatment effect with weights\nfit &lt;- lm(outcome ~ treat + age + educ, data = mydata, weights = mat$w)\nsummary(fit)",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#implementation-in-python-1",
+    "href": "matching_cvm.html#implementation-in-python-1",
+    "title": "Matching Methods",
+    "section": "Implementation in Python",
+    "text": "Implementation in Python\n\n# CEM not natively available in Python\n# Use rpy2 to call R's cem package\n\nimport rpy2.robjects as ro\nfrom rpy2.robjects import pandas2ri\npandas2ri.activate()\n\nro.r('library(cem)')\n\n# Convert pandas df to R df\nr_data = pandas2ri.py2rpy(data)\n\n# Run CEM in R\nresult = ro.r.cem('treat', data=r_data, drop='outcome')\nweights = ro.r('result$w')",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#implementation-in-stata-1",
+    "href": "matching_cvm.html#implementation-in-stata-1",
+    "title": "Matching Methods",
+    "section": "Implementation in Stata",
+    "text": "Implementation in Stata\n* Install cem\n* ssc install cem\n\ncem age (#3) educ (#4) black hispanic married, treatment(treat)\n\n* Check balance\nimbalance age educ black hispanic married, by(treat)\n\n* Regression with CEM weights\nreg outcome treat age educ black hispanic married [iw=cem_weights]",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#concept-1",
+    "href": "matching_cvm.html#concept-1",
+    "title": "Matching Methods",
+    "section": "Concept",
+    "text": "Concept\nGenetic matching optimizes the weight matrix \\(W\\) in a generalized Mahalanobis distance to maximize covariate balance:\n\\[\nD_{\\text{gen}}(X_i, X_j) = \\sqrt{(X_i - X_j)^\\top W (X_i - X_j)}\n\\]\nwhere \\(W\\) is learned using a genetic algorithm.",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#genetic-algorithm",
+    "href": "matching_cvm.html#genetic-algorithm",
+    "title": "Matching Methods",
+    "section": "Genetic Algorithm",
+    "text": "Genetic Algorithm\n\nInitialize population of weight matrices\nEvaluate balance for each weight matrix\nSelect best-performing matrices (“fittest”)\nCrossover and mutate to create new generation\nRepeat until convergence",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#balance-criteria",
+    "href": "matching_cvm.html#balance-criteria",
+    "title": "Matching Methods",
+    "section": "Balance Criteria",
+    "text": "Balance Criteria\nMinimize:\n\\[\nB = \\sum_{k=1}^p w_k b_k^2\n\\]\nwhere \\(b_k\\) is a balance metric (e.g., standardized mean difference, KS statistic) for covariate \\(k\\).",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#implementation-in-r-2",
+    "href": "matching_cvm.html#implementation-in-r-2",
+    "title": "Matching Methods",
+    "section": "Implementation in R",
+    "text": "Implementation in R\n\nlibrary(Matching)\n\n# Define covariates\nX &lt;- cbind(age, educ, black, hisp, married, nodegr, u74, u75, re75, re74)\n\n# Genetic matching to find optimal weights\ngenout &lt;- GenMatch(\n  Tr = treat,\n  X = X,\n  estimand = \"ATT\",\n  M = 1,\n  pop.size = 100,\n  max.generations = 25\n)\n\n# Match using optimized weights\nmout &lt;- Match(\n  Y = outcome,\n  Tr = treat,\n  X = X,\n  estimand = \"ATT\",\n  Weight.matrix = genout\n)\n\n# Results\nsummary(mout)\n\n# Assess balance\nmb &lt;- MatchBalance(\n  treat ~ age + educ + black + hisp + married + nodegr + u74 + u75 + re75 + re74,\n  match.out = mout,\n  nboots = 500\n)",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#concept-2",
+    "href": "matching_cvm.html#concept-2",
+    "title": "Matching Methods",
+    "section": "Concept",
+    "text": "Concept\nEntropy balancing reweights control units to exactly match treatment group moments while minimizing information loss (maximum entropy).",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#optimization-problem",
+    "href": "matching_cvm.html#optimization-problem",
+    "title": "Matching Methods",
+    "section": "Optimization Problem",
+    "text": "Optimization Problem\nFind weights \\(\\{w_i\\}_{i:T_i=0}\\) that:\n\nBalance constraints: \\[\n\\sum_{i:T_i=0} w_i X_i = \\bar{X}_T\n\\]\nMinimize KL divergence: \\[\n\\min \\sum_{i:T_i=0} w_i \\log(w_i / w_i^{(0)})\n\\]\n\nwhere \\(w_i^{(0)} = 1/n_0\\) are uniform base weights.",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#advantages",
+    "href": "matching_cvm.html#advantages",
+    "title": "Matching Methods",
+    "section": "Advantages",
+    "text": "Advantages\n\nExact balance on specified moments (means, variances, etc.)\nUnique solution via convex optimization\nNo iteration required",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
+    ]
+  },
+  {
+    "objectID": "matching_cvm.html#implementation-in-r-3",
+    "href": "matching_cvm.html#implementation-in-r-3",
+    "title": "Matching Methods",
+    "section": "Implementation in R",
+    "text": "Implementation in R\n\nlibrary(ebal)\n\n# Entropy balancing\neb.out &lt;- ebalance(\n  Treatment = treat,\n  X = cbind(age, educ, black, married, re74, re75)\n)\n\n# Construct weights\nweights &lt;- c(eb.out$w, rep(1, sum(treat)))\n\n# Estimate ATE\nfit &lt;- lm(outcome ~ treat, weights = weights)\nsummary(fit)",
+    "crumbs": [
+      "Matching Methods",
+      "Covariate Matching"
     ]
   },
   {
@@ -154,6 +656,246 @@
     "crumbs": [
       "Matching Methods",
       "Doubly Robust Estimation"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html",
+    "href": "sensitivity.html",
+    "title": "Sensitivity Analysis",
+    "section": "",
+    "text": "Matching estimates are only valid if the ignorability assumption holds—that all confounders are observed. Since this assumption is untestable, sensitivity analyses assess how robust the results are to potential violations.",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#definition",
+    "href": "sensitivity.html#definition",
+    "title": "Sensitivity Analysis",
+    "section": "Definition",
+    "text": "Definition\nCommon support (or overlap) requires that for every covariate value, there is a positive probability of receiving both treatment and control:\n\\[\n0 &lt; P(T = 1 | X = x) &lt; 1 \\quad \\forall x\n\\]\nWithout overlap, comparisons require extrapolation beyond the empirical data, making causal inference unreliable.",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#diagnosing-lack-of-overlap",
+    "href": "sensitivity.html#diagnosing-lack-of-overlap",
+    "title": "Sensitivity Analysis",
+    "section": "Diagnosing Lack of Overlap",
+    "text": "Diagnosing Lack of Overlap\n\n1. Propensity Score Histograms\n\nlibrary(ggplot2)\n\n# Visualize propensity score distributions\nggplot(data, aes(x = pscore, fill = factor(treat))) +\n  geom_histogram(alpha = 0.5, position = \"identity\", bins = 30) +\n  labs(x = \"Propensity Score\", y = \"Count\", fill = \"Treatment\") +\n  theme_minimal()\n\nLook for:\n\nNon-overlapping regions at extreme values\nTreatment group with no control counterparts (or vice versa)\n\n\n\n2. Convex Hull Method\nThe convex hull identifies the multidimensional space where interpolation (not extrapolation) is possible (King and Zeng 2006).\n\nDiscard units outside the convex hull of the opposite group\nMore restrictive than propensity score trimming\n\n\n\n3. Discarding Units Outside Common Support\nBy propensity score:\n\n# Define range\nps_min &lt;- max(min(data$pscore[data$treat == 1]), \n              min(data$pscore[data$treat == 0]))\nps_max &lt;- min(max(data$pscore[data$treat == 1]), \n              max(data$pscore[data$treat == 0]))\n\n# Keep only units in common support\ndata_trimmed &lt;- data %&gt;%\n  filter(pscore &gt;= ps_min & pscore &lt;= ps_max)",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#implications-for-estimands",
+    "href": "sensitivity.html#implications-for-estimands",
+    "title": "Sensitivity Analysis",
+    "section": "Implications for Estimands",
+    "text": "Implications for Estimands\n\nATT: It may be acceptable to discard control units outside the treated range\nATE: Discarding any units changes the target population and reduces external validity",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#standardized-mean-differences",
+    "href": "sensitivity.html#standardized-mean-differences",
+    "title": "Sensitivity Analysis",
+    "section": "Standardized Mean Differences",
+    "text": "Standardized Mean Differences\nThe standardized mean difference (SMD) for covariate \\(X\\) is:\n\\[\n\\text{SMD} = \\frac{\\bar{X}_T - \\bar{X}_C}{\\sqrt{\\frac{s_T^2 + s_C^2}{2}}}\n\\]\nwhere \\(\\bar{X}_T, \\bar{X}_C\\) are means and \\(s_T^2, s_C^2\\) are variances in treated and control groups.\nBenchmark: SMD \\(&lt; 0.1\\) indicates good balance (Rubin 2001)",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#variance-ratios",
+    "href": "sensitivity.html#variance-ratios",
+    "title": "Sensitivity Analysis",
+    "section": "Variance Ratios",
+    "text": "Variance Ratios\nCompare variances of continuous covariates:\n\\[\n\\text{VR} = \\frac{s_T^2}{s_C^2}\n\\]\nBenchmark: \\(0.5 &lt; \\text{VR} &lt; 2.0\\) (Rubin 2001)",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#propensity-score-balance",
+    "href": "sensitivity.html#propensity-score-balance",
+    "title": "Sensitivity Analysis",
+    "section": "Propensity Score Balance",
+    "text": "Propensity Score Balance\nStandardized difference of propensity score means: Should be \\(&lt; 0.25\\)\nVariance ratio of propensity scores: Should be between 0.5 and 2.0",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#graphical-diagnostics",
+    "href": "sensitivity.html#graphical-diagnostics",
+    "title": "Sensitivity Analysis",
+    "section": "Graphical Diagnostics",
+    "text": "Graphical Diagnostics\n\nLove Plots\nDisplay standardized mean differences before and after matching:\n\nlibrary(cobalt)\n\nbal.plot(m.out, var.name = \"distance\", which = \"both\")\n\nlove.plot(m.out, threshold = 0.1, \n          abs = TRUE, \n          var.order = \"unadjusted\")\n\n\n\nQQ Plots\nCompare empirical distributions of covariates:\n\nplot(m.out, type = \"qq\", which.xs = c(\"age\", \"educ\", \"re74\"))\n\n\n\nEmpirical CDFs\n\nplot(m.out, type = \"ecdf\")",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#avoid-using-p-values",
+    "href": "sensitivity.html#avoid-using-p-values",
+    "title": "Sensitivity Analysis",
+    "section": "Avoid Using P-values",
+    "text": "Avoid Using P-values\nDo not use t-tests or other hypothesis tests to assess balance:\n\nP-values conflate effect size with sample size\nLarge samples will show “significant” differences even for trivial imbalances\nBalance is a design property, not a hypothesis test",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#motivation",
+    "href": "sensitivity.html#motivation",
+    "title": "Sensitivity Analysis",
+    "section": "Motivation",
+    "text": "Motivation\nEven after matching, hidden bias from unobserved confounders \\(U\\) may remain. Rosenbaum bounds quantify how strong this bias must be to overturn the findings.",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#setup",
+    "href": "sensitivity.html#setup",
+    "title": "Sensitivity Analysis",
+    "section": "Setup",
+    "text": "Setup\nLet \\(\\pi_i = P(T_i = 1)\\) be the true probability of treatment for unit \\(i\\). Define the odds of treatment:\n\\[\n\\text{Odds}_i = \\frac{\\pi_i}{1 - \\pi_i}\n\\]\nFor two matched units \\(i\\) and \\(j\\), the odds ratio is bounded by \\(\\Gamma\\):\n\\[\n\\frac{1}{\\Gamma} \\leq \\frac{\\text{Odds}_i}{\\text{Odds}_j} \\leq \\Gamma\n\\]",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#interpretation",
+    "href": "sensitivity.html#interpretation",
+    "title": "Sensitivity Analysis",
+    "section": "Interpretation",
+    "text": "Interpretation\n\n\\(\\Gamma = 1\\): No hidden bias (treatment is “as good as randomly assigned” conditional on \\(X\\))\n\\(\\Gamma = 2\\): One unit could be twice as likely to receive treatment due to an unobserved confounder\n\\(\\Gamma = 3\\): Three times as likely",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#procedure",
+    "href": "sensitivity.html#procedure",
+    "title": "Sensitivity Analysis",
+    "section": "Procedure",
+    "text": "Procedure\n\nChoose a range of \\(\\Gamma\\) values (e.g., 1.0, 1.1, 1.2, …, 3.0)\nFor each \\(\\Gamma\\), compute bounds on the p-value or treatment effect estimate\nReport the critical \\(\\Gamma\\) at which the effect becomes insignificant",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#implementation-in-r",
+    "href": "sensitivity.html#implementation-in-r",
+    "title": "Sensitivity Analysis",
+    "section": "Implementation in R",
+    "text": "Implementation in R\n\nlibrary(rbounds)\nlibrary(MatchIt)\n\n# Perform matching\nm.out &lt;- matchit(treat ~ age + educ, data = mydata, method = \"nearest\")\nmatched_data &lt;- match.data(m.out)\n\n# Split into groups\ntreat_y &lt;- matched_data$outcome[matched_data$treat == 1]\ncontrol_y &lt;- matched_data$outcome[matched_data$treat == 0]\n\n# P-value sensitivity\npsens(treat_y, control_y, Gamma = 3, GammaInc = 0.1)\n\n# Hodges-Lehmann point estimate sensitivity\nhlsens(treat_y, control_y, Gamma = 3, GammaInc = 0.1)\n\nOutput:\n\nTables showing p-values and confidence intervals at different \\(\\Gamma\\) levels\nIdentify \\(\\Gamma\\) where effect loses significance",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#interpretation-1",
+    "href": "sensitivity.html#interpretation-1",
+    "title": "Sensitivity Analysis",
+    "section": "Interpretation",
+    "text": "Interpretation\nIf the critical \\(\\Gamma\\) is:\n\n&lt; 1.5: Results are very sensitive to hidden bias\n1.5 - 2.5: Moderately robust\n&gt; 2.5: Highly robust—unobserved confounder would need to be very strong",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#stata-implementation",
+    "href": "sensitivity.html#stata-implementation",
+    "title": "Sensitivity Analysis",
+    "section": "Stata Implementation",
+    "text": "Stata Implementation\n* After matching, save matched sample\nssc install rbounds\n\n* Sensitivity analysis\nrbounds outcome, gamma(1(0.1)3)",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#python-implementation",
+    "href": "sensitivity.html#python-implementation",
+    "title": "Sensitivity Analysis",
+    "section": "Python Implementation",
+    "text": "Python Implementation\n\n# No direct Rosenbaum bounds in Python\n# Use R via rpy2 or implement manually using Wilcoxon signed-rank test\nimport rpy2.robjects as ro\nro.r('library(rbounds)')\nresult = ro.r('psens(treat_y, control_y, Gamma=2)')",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#framework",
+    "href": "sensitivity.html#framework",
+    "title": "Sensitivity Analysis",
+    "section": "Framework",
+    "text": "Framework\nAssume:\n\\[\n\\text{Cov}(T, \\epsilon) = \\lambda \\cdot \\text{Cov}(T, X^\\top \\gamma)\n\\]\nwhere:\n\n\\(\\epsilon\\) contains unobserved confounders\n\\(\\lambda\\) is the relative selection ratio",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#interpretation-2",
+    "href": "sensitivity.html#interpretation-2",
+    "title": "Sensitivity Analysis",
+    "section": "Interpretation",
+    "text": "Interpretation\n\n\\(\\lambda = 0\\): No selection on unobservables (standard OLS)\n\\(\\lambda = 1\\): Selection on unobservables is equal to selection on observables\n\\(\\lambda &gt; 1\\): Unobservables are more important than observables\n\nCritical value \\(\\lambda^*\\): The value at which the treatment effect reaches zero",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#implementation",
+    "href": "sensitivity.html#implementation",
+    "title": "Sensitivity Analysis",
+    "section": "Implementation",
+    "text": "Implementation\n\nlibrary(rcrbounds)\n\n# Estimate bounds\nrcr_result &lt;- rcr(\n  formula = outcome ~ treat | age + educ + married,\n  data = mydata,\n  rc_range = c(0, 10)\n)\n\nsummary(rcr_result)\nplot(rcr_result)",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#key-metrics",
+    "href": "sensitivity.html#key-metrics",
+    "title": "Sensitivity Analysis",
+    "section": "Key Metrics",
+    "text": "Key Metrics\n\nBias-adjusted coefficient beta_star(delta, Rmax^2)\nBreakdown point delta_star: Value of delta at which beta_star = 0\n\nInterpretation:\n\ndelta_star &gt; 1: Unobservables would need to be more selective than observables to eliminate the effect\ndelta_star &lt; 1: Results fragile to hidden confounding",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#implementation-1",
+    "href": "sensitivity.html#implementation-1",
+    "title": "Sensitivity Analysis",
+    "section": "Implementation",
+    "text": "Implementation\n\nlibrary(robomit)\n\n# Compute delta*\ndelta_result &lt;- o_delta(\n  y = \"outcome\",\n  x = \"treat\",\n  con = \"age + educ + married + re74 + re75\",\n  beta = 0,\n  R2max = 1.3 * summary(lm_model)$r.squared,\n  type = \"lm\",\n  data = mydata\n)\n\n# Visualize\no_delta_rsq_viz(\n  y = \"outcome\", x = \"treat\",\n  con = \"age + educ + married + re74 + re75\",\n  beta = 0,\n  data = mydata\n)",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#placebo-outcomes",
+    "href": "sensitivity.html#placebo-outcomes",
+    "title": "Sensitivity Analysis",
+    "section": "Placebo Outcomes",
+    "text": "Placebo Outcomes\nTest whether the treatment “affects” outcomes it should not affect (e.g., pre-treatment variables, irrelevant outcomes).\n\n# Match as usual\nm.out &lt;- matchit(treat ~ covariates, data = mydata)\n\n# Test on placebo outcome\nplacebo_model &lt;- lm(pre_treatment_outcome ~ treat, \n                    data = match.data(m.out),\n                    weights = weights)\n\n# Should find no effect\nsummary(placebo_model)",
+    "crumbs": [
+      "Sensitivity Analysis"
+    ]
+  },
+  {
+    "objectID": "sensitivity.html#permutation-tests",
+    "href": "sensitivity.html#permutation-tests",
+    "title": "Sensitivity Analysis",
+    "section": "Permutation Tests",
+    "text": "Permutation Tests\nRandomly reassign treatment status and re-estimate the effect. The true effect should be an outlier in the permutation distribution.",
+    "crumbs": [
+      "Sensitivity Analysis"
     ]
   }
 ]

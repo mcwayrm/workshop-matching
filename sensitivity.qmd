@@ -3,24 +3,359 @@ title: "Sensitivity Analysis"
 bibliography: references.bib
 ---
 
-# Assessing Common Support 
+Matching estimates are only valid if the **ignorability assumption** holds—that all confounders are observed. Since this assumption is untestable, sensitivity analyses assess how robust the results are to potential violations.
 
-One issue that comes up for all matching methods is that of “common support.” To this point, we have assumed that there is substantial overlap of the propensity score distributions in the two groups, but potentially density differences. However, in some situations there may not be complete overlap in the distributions. For example, many of the control individuals may be very different from all of the treatment group members, making them inappropriate as points of comparison when estimating the ATT (Austin and Mamdani, 2006). Nearest neighbor matching with calipers automatically only uses individuals in (or close to) the area of common support. In contrast, the subclassification and weighting methods generally use all individuals, regardless of the overlap of the distributions. When using those methods it may be beneficial to explicitly restrict the analysis to those individuals in the region of common support (as in Heckman et al., 1997; Dehejia and Wahba, 1999).
+# Assessing Common Support
 
-Most analyses define common support using the propensity score, discarding individuals with propensity score values outside the range of the other group. A second method involves examining the “convex hull” of the covariates, identifying the multi-dimensional space that allows interpolation rather than extrapolation (King and Zeng, 2006). While these procedures can help identify who needs to be discarded, when many subjects are discarded it can help the interpretation of results if it is possible to define the discard rule using one or two covariates rather than the propensity score itself.
+## Definition
 
-It is also important to consider the implications of common support for the estimand of interest. Examining the common support may indicate that it is not possible to reliably estimate the ATE. This could happen, for example, if there are controls outside the range of the treated individuals and thus no way to estimate Y (1) for the controls without extensive extrapolation. When estimating the ATT it may be fine (and in fact beneficial) to discard controls outside the range of the treated individuals, but discarding treated individuals may change the group for which the results apply (Crump et al., 2009).
+**Common support** (or overlap) requires that for every covariate value, there is a positive probability of receiving both treatment and control:
 
-# Validation Tests
+$$
+0 < P(T = 1 | X = x) < 1 \quad \forall x
+$$
 
-Rubin (2001) presents three balance measures based on the theory in Rubin and Thomas (1996) that provide a comprehensive view of covariate balance:
+Without overlap, comparisons require **extrapolation** beyond the empirical data, making causal inference unreliable.
 
-1. The standardized difference of means of the propensity score
-2. The ratio of the variances of the propensity score in the treated and control groups
-3. For each covariate, the ratio of the variance of the residuals orthogonal to the propensity score in the treated and control groups.
+## Diagnosing Lack of Overlap
 
+### 1. Propensity Score Histograms
 
-# Falisfication Tests 
+```{r}
+#| eval: false
+
+library(ggplot2)
+
+# Visualize propensity score distributions
+ggplot(data, aes(x = pscore, fill = factor(treat))) +
+  geom_histogram(alpha = 0.5, position = "identity", bins = 30) +
+  labs(x = "Propensity Score", y = "Count", fill = "Treatment") +
+  theme_minimal()
+```
+
+**Look for:**
+
+- Non-overlapping regions at extreme values
+- Treatment group with no control counterparts (or vice versa)
+
+### 2. Convex Hull Method
+
+The **convex hull** identifies the multidimensional space where interpolation (not extrapolation) is possible [@king2006dangers].
+
+- Discard units outside the convex hull of the opposite group
+- More restrictive than propensity score trimming
+
+### 3. Discarding Units Outside Common Support
+
+**By propensity score:**
+
+```{r}
+#| eval: false
+
+# Define range
+ps_min <- max(min(data$pscore[data$treat == 1]), 
+              min(data$pscore[data$treat == 0]))
+ps_max <- min(max(data$pscore[data$treat == 1]), 
+              max(data$pscore[data$treat == 0]))
+
+# Keep only units in common support
+data_trimmed <- data %>%
+  filter(pscore >= ps_min & pscore <= ps_max)
+```
+
+## Implications for Estimands
+
+- **ATT**: It may be acceptable to discard control units outside the treated range
+- **ATE**: Discarding **any** units changes the target population and reduces external validity
+
+# Balance Diagnostics
+
+After matching, verify that covariates are balanced between treated and control groups.
+
+## Standardized Mean Differences
+
+The **standardized mean difference** (SMD) for covariate $X$ is:
+
+$$
+\text{SMD} = \frac{\bar{X}_T - \bar{X}_C}{\sqrt{\frac{s_T^2 + s_C^2}{2}}}
+$$
+
+where $\bar{X}_T, \bar{X}_C$ are means and $s_T^2, s_C^2$ are variances in treated and control groups.
+
+**Benchmark:** SMD $< 0.1$ indicates good balance [@rubin2001using]
+
+## Variance Ratios
+
+Compare variances of continuous covariates:
+
+$$
+\text{VR} = \frac{s_T^2}{s_C^2}
+$$
+
+**Benchmark:** $0.5 < \text{VR} < 2.0$ [@rubin2001using]
+
+## Propensity Score Balance
+
+**Standardized difference** of propensity score means: Should be $< 0.25$  
+**Variance ratio** of propensity scores: Should be between 0.5 and 2.0
+
+## Graphical Diagnostics
+
+### Love Plots
+
+Display standardized mean differences before and after matching:
+
+```{r}
+#| eval: false
+
+library(cobalt)
+
+bal.plot(m.out, var.name = "distance", which = "both")
+
+love.plot(m.out, threshold = 0.1, 
+          abs = TRUE, 
+          var.order = "unadjusted")
+```
+
+### QQ Plots
+
+Compare empirical distributions of covariates:
+
+```{r}
+#| eval: false
+
+plot(m.out, type = "qq", which.xs = c("age", "educ", "re74"))
+```
+
+### Empirical CDFs
+
+```{r}
+#| eval: false
+
+plot(m.out, type = "ecdf")
+```
+
+## Avoid Using P-values
+
+**Do not** use t-tests or other hypothesis tests to assess balance:
+
+- P-values conflate **effect size** with **sample size**
+- Large samples will show "significant" differences even for trivial imbalances
+- Balance is a **design** property, not a hypothesis test
+
+# Rosenbaum Sensitivity Analysis
+
+## Motivation
+
+Even after matching, **hidden bias** from unobserved confounders $U$ may remain. Rosenbaum bounds quantify how strong this bias must be to overturn the findings.
+
+## Setup
+
+Let $\pi_i = P(T_i = 1)$ be the true probability of treatment for unit $i$. Define the **odds** of treatment:
+
+$$
+\text{Odds}_i = \frac{\pi_i}{1 - \pi_i}
+$$
+
+For two matched units $i$ and $j$, the **odds ratio** is bounded by $\Gamma$:
+
+$$
+\frac{1}{\Gamma} \leq \frac{\text{Odds}_i}{\text{Odds}_j} \leq \Gamma
+$$
+
+## Interpretation
+
+- $\Gamma = 1$: No hidden bias (treatment is "as good as randomly assigned" conditional on $X$)
+- $\Gamma = 2$: One unit could be **twice as likely** to receive treatment due to an unobserved confounder
+- $\Gamma = 3$: Three times as likely
+
+## Procedure
+
+1. Choose a range of $\Gamma$ values (e.g., 1.0, 1.1, 1.2, ..., 3.0)
+2. For each $\Gamma$, compute **bounds** on the p-value or treatment effect estimate
+3. Report the **critical $\Gamma$** at which the effect becomes insignificant
+
+## Implementation in R
+
+```{r}
+#| eval: false
+
+library(rbounds)
+library(MatchIt)
+
+# Perform matching
+m.out <- matchit(treat ~ age + educ, data = mydata, method = "nearest")
+matched_data <- match.data(m.out)
+
+# Split into groups
+treat_y <- matched_data$outcome[matched_data$treat == 1]
+control_y <- matched_data$outcome[matched_data$treat == 0]
+
+# P-value sensitivity
+psens(treat_y, control_y, Gamma = 3, GammaInc = 0.1)
+
+# Hodges-Lehmann point estimate sensitivity
+hlsens(treat_y, control_y, Gamma = 3, GammaInc = 0.1)
+```
+
+**Output:**
+
+- Tables showing p-values and confidence intervals at different $\Gamma$ levels
+- Identify $\Gamma$ where effect loses significance
+
+## Interpretation
+
+If the critical $\Gamma$ is:
+
+- **< 1.5**: Results are **very sensitive** to hidden bias
+- **1.5 - 2.5**: Moderately robust
+- **> 2.5**: Highly robust—unobserved confounder would need to be very strong
+
+## Stata Implementation
+
+```stata
+* After matching, save matched sample
+ssc install rbounds
+
+* Sensitivity analysis
+rbounds outcome, gamma(1(0.1)3)
+```
+
+## Python Implementation
+
+```{python}
+#| eval: false
+
+# No direct Rosenbaum bounds in Python
+# Use R via rpy2 or implement manually using Wilcoxon signed-rank test
+import rpy2.robjects as ro
+ro.r('library(rbounds)')
+result = ro.r('psens(treat_y, control_y, Gamma=2)')
+```
+
+# Relative Correlation Restrictions
+
+An alternative sensitivity approach bounds the treatment effect under assumptions about **selection on unobservables** relative to **selection on observables** [@altonji2005selection].
+
+## Framework
+
+Assume:
+
+$$
+\text{Cov}(T, \epsilon) = \lambda \cdot \text{Cov}(T, X^\top \gamma)
+$$
+
+where:
+
+- $\epsilon$ contains unobserved confounders
+- $\lambda$ is the **relative selection ratio**
+
+## Interpretation
+
+- $\lambda = 0$: No selection on unobservables (standard OLS)
+- $\lambda = 1$: Selection on unobservables is **equal** to selection on observables
+- $\lambda > 1$: Unobservables are **more important** than observables
+
+**Critical value $\lambda^*$**: The value at which the treatment effect reaches zero
+
+## Implementation
+
+```{r}
+#| eval: false
+
+library(rcrbounds)
+
+# Estimate bounds
+rcr_result <- rcr(
+  formula = outcome ~ treat | age + educ + married,
+  data = mydata,
+  rc_range = c(0, 10)
+)
+
+summary(rcr_result)
+plot(rcr_result)
+```
+
+# Coefficient Stability (Oster's delta)
+
+@oster2019unobservable proposes testing robustness by examining how coefficients change as controls are added.
+
+## Key Metrics
+
+1. **Bias-adjusted coefficient** beta_star(delta, Rmax^2)
+2. **Breakdown point** delta_star: Value of delta at which beta_star = 0
+
+**Interpretation:**
+
+- delta_star > 1: Unobservables would need to be **more selective** than observables to eliminate the effect
+- delta_star < 1: Results fragile to hidden confounding
+
+## Implementation
+
+```{r}
+#| eval: false
+
+library(robomit)
+
+# Compute delta*
+delta_result <- o_delta(
+  y = "outcome",
+  x = "treat",
+  con = "age + educ + married + re74 + re75",
+  beta = 0,
+  R2max = 1.3 * summary(lm_model)$r.squared,
+  type = "lm",
+  data = mydata
+)
+
+# Visualize
+o_delta_rsq_viz(
+  y = "outcome", x = "treat",
+  con = "age + educ + married + re74 + re75",
+  beta = 0,
+  data = mydata
+)
+```
+
+# Falsification Tests
+
+## Placebo Outcomes
+
+Test whether the treatment "affects" outcomes it **should not** affect (e.g., pre-treatment variables, irrelevant outcomes).
+
+```{r}
+#| eval: false
+
+# Match as usual
+m.out <- matchit(treat ~ covariates, data = mydata)
+
+# Test on placebo outcome
+placebo_model <- lm(pre_treatment_outcome ~ treat, 
+                    data = match.data(m.out),
+                    weights = weights)
+
+# Should find no effect
+summary(placebo_model)
+```
+
+## Permutation Tests
+
+Randomly reassign treatment status and re-estimate the effect. The true effect should be an outlier in the permutation distribution.
 
 # Untestable Limitations
 
+Some assumptions **cannot be tested** empirically:
+
+1. **Unconfoundedness**: We can never prove all confounders are observed
+2. **SUTVA**: Interference effects are hard to detect directly
+3. **Functional form**: Matching is somewhat robust, but outcome models still require assumptions
+
+**Strategies:**
+
+- **Domain knowledge**: Use theory to justify covariate selection
+- **Sensitivity analyses**: Quantify how robust conclusions are
+- **Robustness checks**: Try multiple matching methods and specifications
+- **Transparency**: Report all decisions and diagnostics
+
+::: {#refs}
+:::

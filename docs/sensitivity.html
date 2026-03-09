@@ -20,7 +20,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -37,7 +91,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c2c6a774d0aa08ed60d2e739c075b19b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-621824942a01be5cbf2512f0d37b7298.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -66,6 +120,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta property="og:title" content="Sensitivity Analysis – Matching Methods">
 <meta property="og:description" content="Matching Method Estimation Strategies">
@@ -188,6 +271,12 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Coding Practice</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Additional Resources</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -198,9 +287,57 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#assessing-common-support" id="toc-assessing-common-support" class="nav-link active" data-scroll-target="#assessing-common-support">Assessing Common Support</a></li>
-  <li><a href="#validation-tests" id="toc-validation-tests" class="nav-link" data-scroll-target="#validation-tests">Validation Tests</a></li>
-  <li><a href="#falisfication-tests" id="toc-falisfication-tests" class="nav-link" data-scroll-target="#falisfication-tests">Falisfication Tests</a></li>
+  <li><a href="#assessing-common-support" id="toc-assessing-common-support" class="nav-link active" data-scroll-target="#assessing-common-support">Assessing Common Support</a>
+  <ul class="collapse">
+  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
+  <li><a href="#diagnosing-lack-of-overlap" id="toc-diagnosing-lack-of-overlap" class="nav-link" data-scroll-target="#diagnosing-lack-of-overlap">Diagnosing Lack of Overlap</a>
+  <ul class="collapse">
+  <li><a href="#propensity-score-histograms" id="toc-propensity-score-histograms" class="nav-link" data-scroll-target="#propensity-score-histograms">1. Propensity Score Histograms</a></li>
+  <li><a href="#convex-hull-method" id="toc-convex-hull-method" class="nav-link" data-scroll-target="#convex-hull-method">2. Convex Hull Method</a></li>
+  <li><a href="#discarding-units-outside-common-support" id="toc-discarding-units-outside-common-support" class="nav-link" data-scroll-target="#discarding-units-outside-common-support">3. Discarding Units Outside Common Support</a></li>
+  </ul></li>
+  <li><a href="#implications-for-estimands" id="toc-implications-for-estimands" class="nav-link" data-scroll-target="#implications-for-estimands">Implications for Estimands</a></li>
+  </ul></li>
+  <li><a href="#balance-diagnostics" id="toc-balance-diagnostics" class="nav-link" data-scroll-target="#balance-diagnostics">Balance Diagnostics</a>
+  <ul class="collapse">
+  <li><a href="#standardized-mean-differences" id="toc-standardized-mean-differences" class="nav-link" data-scroll-target="#standardized-mean-differences">Standardized Mean Differences</a></li>
+  <li><a href="#variance-ratios" id="toc-variance-ratios" class="nav-link" data-scroll-target="#variance-ratios">Variance Ratios</a></li>
+  <li><a href="#propensity-score-balance" id="toc-propensity-score-balance" class="nav-link" data-scroll-target="#propensity-score-balance">Propensity Score Balance</a></li>
+  <li><a href="#graphical-diagnostics" id="toc-graphical-diagnostics" class="nav-link" data-scroll-target="#graphical-diagnostics">Graphical Diagnostics</a>
+  <ul class="collapse">
+  <li><a href="#love-plots" id="toc-love-plots" class="nav-link" data-scroll-target="#love-plots">Love Plots</a></li>
+  <li><a href="#qq-plots" id="toc-qq-plots" class="nav-link" data-scroll-target="#qq-plots">QQ Plots</a></li>
+  <li><a href="#empirical-cdfs" id="toc-empirical-cdfs" class="nav-link" data-scroll-target="#empirical-cdfs">Empirical CDFs</a></li>
+  </ul></li>
+  <li><a href="#avoid-using-p-values" id="toc-avoid-using-p-values" class="nav-link" data-scroll-target="#avoid-using-p-values">Avoid Using P-values</a></li>
+  </ul></li>
+  <li><a href="#rosenbaum-sensitivity-analysis" id="toc-rosenbaum-sensitivity-analysis" class="nav-link" data-scroll-target="#rosenbaum-sensitivity-analysis">Rosenbaum Sensitivity Analysis</a>
+  <ul class="collapse">
+  <li><a href="#motivation" id="toc-motivation" class="nav-link" data-scroll-target="#motivation">Motivation</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
+  <li><a href="#procedure" id="toc-procedure" class="nav-link" data-scroll-target="#procedure">Procedure</a></li>
+  <li><a href="#implementation-in-r" id="toc-implementation-in-r" class="nav-link" data-scroll-target="#implementation-in-r">Implementation in R</a></li>
+  <li><a href="#interpretation-1" id="toc-interpretation-1" class="nav-link" data-scroll-target="#interpretation-1">Interpretation</a></li>
+  <li><a href="#stata-implementation" id="toc-stata-implementation" class="nav-link" data-scroll-target="#stata-implementation">Stata Implementation</a></li>
+  <li><a href="#python-implementation" id="toc-python-implementation" class="nav-link" data-scroll-target="#python-implementation">Python Implementation</a></li>
+  </ul></li>
+  <li><a href="#relative-correlation-restrictions" id="toc-relative-correlation-restrictions" class="nav-link" data-scroll-target="#relative-correlation-restrictions">Relative Correlation Restrictions</a>
+  <ul class="collapse">
+  <li><a href="#framework" id="toc-framework" class="nav-link" data-scroll-target="#framework">Framework</a></li>
+  <li><a href="#interpretation-2" id="toc-interpretation-2" class="nav-link" data-scroll-target="#interpretation-2">Interpretation</a></li>
+  <li><a href="#implementation" id="toc-implementation" class="nav-link" data-scroll-target="#implementation">Implementation</a></li>
+  </ul></li>
+  <li><a href="#coefficient-stability-osters-delta" id="toc-coefficient-stability-osters-delta" class="nav-link" data-scroll-target="#coefficient-stability-osters-delta">Coefficient Stability (Oster’s delta)</a>
+  <ul class="collapse">
+  <li><a href="#key-metrics" id="toc-key-metrics" class="nav-link" data-scroll-target="#key-metrics">Key Metrics</a></li>
+  <li><a href="#implementation-1" id="toc-implementation-1" class="nav-link" data-scroll-target="#implementation-1">Implementation</a></li>
+  </ul></li>
+  <li><a href="#falsification-tests" id="toc-falsification-tests" class="nav-link" data-scroll-target="#falsification-tests">Falsification Tests</a>
+  <ul class="collapse">
+  <li><a href="#placebo-outcomes" id="toc-placebo-outcomes" class="nav-link" data-scroll-target="#placebo-outcomes">Placebo Outcomes</a></li>
+  <li><a href="#permutation-tests" id="toc-permutation-tests" class="nav-link" data-scroll-target="#permutation-tests">Permutation Tests</a></li>
+  </ul></li>
   <li><a href="#untestable-limitations" id="toc-untestable-limitations" class="nav-link" data-scroll-target="#untestable-limitations">Untestable Limitations</a></li>
   </ul>
 </nav>
@@ -227,26 +364,353 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p>Matching estimates are only valid if the <strong>ignorability assumption</strong> holds—that all confounders are observed. Since this assumption is untestable, sensitivity analyses assess how robust the results are to potential violations.</p>
 <section id="assessing-common-support" class="level1">
 <h1>Assessing Common Support</h1>
-<p>One issue that comes up for all matching methods is that of “common support.” To this point, we have assumed that there is substantial overlap of the propensity score distributions in the two groups, but potentially density differences. However, in some situations there may not be complete overlap in the distributions. For example, many of the control individuals may be very different from all of the treatment group members, making them inappropriate as points of comparison when estimating the ATT (Austin and Mamdani, 2006). Nearest neighbor matching with calipers automatically only uses individuals in (or close to) the area of common support. In contrast, the subclassification and weighting methods generally use all individuals, regardless of the overlap of the distributions. When using those methods it may be beneficial to explicitly restrict the analysis to those individuals in the region of common support (as in Heckman et al., 1997; Dehejia and Wahba, 1999).</p>
-<p>Most analyses define common support using the propensity score, discarding individuals with propensity score values outside the range of the other group. A second method involves examining the “convex hull” of the covariates, identifying the multi-dimensional space that allows interpolation rather than extrapolation (King and Zeng, 2006). While these procedures can help identify who needs to be discarded, when many subjects are discarded it can help the interpretation of results if it is possible to define the discard rule using one or two covariates rather than the propensity score itself.</p>
-<p>It is also important to consider the implications of common support for the estimand of interest. Examining the common support may indicate that it is not possible to reliably estimate the ATE. This could happen, for example, if there are controls outside the range of the treated individuals and thus no way to estimate Y (1) for the controls without extensive extrapolation. When estimating the ATT it may be fine (and in fact beneficial) to discard controls outside the range of the treated individuals, but discarding treated individuals may change the group for which the results apply (Crump et al., 2009).</p>
+<section id="definition" class="level2">
+<h2 class="anchored" data-anchor-id="definition">Definition</h2>
+<p><strong>Common support</strong> (or overlap) requires that for every covariate value, there is a positive probability of receiving both treatment and control:</p>
+<p><span class="math display">\[
+0 &lt; P(T = 1 | X = x) &lt; 1 \quad \forall x
+\]</span></p>
+<p>Without overlap, comparisons require <strong>extrapolation</strong> beyond the empirical data, making causal inference unreliable.</p>
 </section>
-<section id="validation-tests" class="level1">
-<h1>Validation Tests</h1>
-<p>Rubin (2001) presents three balance measures based on the theory in Rubin and Thomas (1996) that provide a comprehensive view of covariate balance:</p>
+<section id="diagnosing-lack-of-overlap" class="level2">
+<h2 class="anchored" data-anchor-id="diagnosing-lack-of-overlap">Diagnosing Lack of Overlap</h2>
+<section id="propensity-score-histograms" class="level3">
+<h3 class="anchored" data-anchor-id="propensity-score-histograms">1. Propensity Score Histograms</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize propensity score distributions</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> pscore, <span class="at">fill =</span> <span class="fu">factor</span>(treat))) <span class="sc">+</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">position =</span> <span class="st">"identity"</span>, <span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Propensity Score"</span>, <span class="at">y =</span> <span class="st">"Count"</span>, <span class="at">fill =</span> <span class="st">"Treatment"</span>) <span class="sc">+</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Look for:</strong></p>
+<ul>
+<li>Non-overlapping regions at extreme values</li>
+<li>Treatment group with no control counterparts (or vice versa)</li>
+</ul>
+</section>
+<section id="convex-hull-method" class="level3">
+<h3 class="anchored" data-anchor-id="convex-hull-method">2. Convex Hull Method</h3>
+<p>The <strong>convex hull</strong> identifies the multidimensional space where interpolation (not extrapolation) is possible <span class="citation" data-cites="king2006dangers">(<a href="#ref-king2006dangers" role="doc-biblioref">King and Zeng 2006</a>)</span>.</p>
+<ul>
+<li>Discard units outside the convex hull of the opposite group</li>
+<li>More restrictive than propensity score trimming</li>
+</ul>
+</section>
+<section id="discarding-units-outside-common-support" class="level3">
+<h3 class="anchored" data-anchor-id="discarding-units-outside-common-support">3. Discarding Units Outside Common Support</h3>
+<p><strong>By propensity score:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define range</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>ps_min <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">min</span>(data<span class="sc">$</span>pscore[data<span class="sc">$</span>treat <span class="sc">==</span> <span class="dv">1</span>]), </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>              <span class="fu">min</span>(data<span class="sc">$</span>pscore[data<span class="sc">$</span>treat <span class="sc">==</span> <span class="dv">0</span>]))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>ps_max <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">max</span>(data<span class="sc">$</span>pscore[data<span class="sc">$</span>treat <span class="sc">==</span> <span class="dv">1</span>]), </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">max</span>(data<span class="sc">$</span>pscore[data<span class="sc">$</span>treat <span class="sc">==</span> <span class="dv">0</span>]))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only units in common support</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>data_trimmed <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pscore <span class="sc">&gt;=</span> ps_min <span class="sc">&amp;</span> pscore <span class="sc">&lt;=</span> ps_max)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="implications-for-estimands" class="level2">
+<h2 class="anchored" data-anchor-id="implications-for-estimands">Implications for Estimands</h2>
+<ul>
+<li><strong>ATT</strong>: It may be acceptable to discard control units outside the treated range</li>
+<li><strong>ATE</strong>: Discarding <strong>any</strong> units changes the target population and reduces external validity</li>
+</ul>
+</section>
+</section>
+<section id="balance-diagnostics" class="level1">
+<h1>Balance Diagnostics</h1>
+<p>After matching, verify that covariates are balanced between treated and control groups.</p>
+<section id="standardized-mean-differences" class="level2">
+<h2 class="anchored" data-anchor-id="standardized-mean-differences">Standardized Mean Differences</h2>
+<p>The <strong>standardized mean difference</strong> (SMD) for covariate <span class="math inline">\(X\)</span> is:</p>
+<p><span class="math display">\[
+\text{SMD} = \frac{\bar{X}_T - \bar{X}_C}{\sqrt{\frac{s_T^2 + s_C^2}{2}}}
+\]</span></p>
+<p>where <span class="math inline">\(\bar{X}_T, \bar{X}_C\)</span> are means and <span class="math inline">\(s_T^2, s_C^2\)</span> are variances in treated and control groups.</p>
+<p><strong>Benchmark:</strong> SMD <span class="math inline">\(&lt; 0.1\)</span> indicates good balance <span class="citation" data-cites="rubin2001using">(<a href="#ref-rubin2001using" role="doc-biblioref">Rubin 2001</a>)</span></p>
+</section>
+<section id="variance-ratios" class="level2">
+<h2 class="anchored" data-anchor-id="variance-ratios">Variance Ratios</h2>
+<p>Compare variances of continuous covariates:</p>
+<p><span class="math display">\[
+\text{VR} = \frac{s_T^2}{s_C^2}
+\]</span></p>
+<p><strong>Benchmark:</strong> <span class="math inline">\(0.5 &lt; \text{VR} &lt; 2.0\)</span> <span class="citation" data-cites="rubin2001using">(<a href="#ref-rubin2001using" role="doc-biblioref">Rubin 2001</a>)</span></p>
+</section>
+<section id="propensity-score-balance" class="level2">
+<h2 class="anchored" data-anchor-id="propensity-score-balance">Propensity Score Balance</h2>
+<p><strong>Standardized difference</strong> of propensity score means: Should be <span class="math inline">\(&lt; 0.25\)</span><br>
+<strong>Variance ratio</strong> of propensity scores: Should be between 0.5 and 2.0</p>
+</section>
+<section id="graphical-diagnostics" class="level2">
+<h2 class="anchored" data-anchor-id="graphical-diagnostics">Graphical Diagnostics</h2>
+<section id="love-plots" class="level3">
+<h3 class="anchored" data-anchor-id="love-plots">Love Plots</h3>
+<p>Display standardized mean differences before and after matching:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cobalt)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bal.plot</span>(m.out, <span class="at">var.name =</span> <span class="st">"distance"</span>, <span class="at">which =</span> <span class="st">"both"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">love.plot</span>(m.out, <span class="at">threshold =</span> <span class="fl">0.1</span>, </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">abs =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">var.order =</span> <span class="st">"unadjusted"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="qq-plots" class="level3">
+<h3 class="anchored" data-anchor-id="qq-plots">QQ Plots</h3>
+<p>Compare empirical distributions of covariates:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m.out, <span class="at">type =</span> <span class="st">"qq"</span>, <span class="at">which.xs =</span> <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"educ"</span>, <span class="st">"re74"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="empirical-cdfs" class="level3">
+<h3 class="anchored" data-anchor-id="empirical-cdfs">Empirical CDFs</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m.out, <span class="at">type =</span> <span class="st">"ecdf"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="avoid-using-p-values" class="level2">
+<h2 class="anchored" data-anchor-id="avoid-using-p-values">Avoid Using P-values</h2>
+<p><strong>Do not</strong> use t-tests or other hypothesis tests to assess balance:</p>
+<ul>
+<li>P-values conflate <strong>effect size</strong> with <strong>sample size</strong></li>
+<li>Large samples will show “significant” differences even for trivial imbalances</li>
+<li>Balance is a <strong>design</strong> property, not a hypothesis test</li>
+</ul>
+</section>
+</section>
+<section id="rosenbaum-sensitivity-analysis" class="level1">
+<h1>Rosenbaum Sensitivity Analysis</h1>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<p>Even after matching, <strong>hidden bias</strong> from unobserved confounders <span class="math inline">\(U\)</span> may remain. Rosenbaum bounds quantify how strong this bias must be to overturn the findings.</p>
+</section>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>Let <span class="math inline">\(\pi_i = P(T_i = 1)\)</span> be the true probability of treatment for unit <span class="math inline">\(i\)</span>. Define the <strong>odds</strong> of treatment:</p>
+<p><span class="math display">\[
+\text{Odds}_i = \frac{\pi_i}{1 - \pi_i}
+\]</span></p>
+<p>For two matched units <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, the <strong>odds ratio</strong> is bounded by <span class="math inline">\(\Gamma\)</span>:</p>
+<p><span class="math display">\[
+\frac{1}{\Gamma} \leq \frac{\text{Odds}_i}{\text{Odds}_j} \leq \Gamma
+\]</span></p>
+</section>
+<section id="interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
+<ul>
+<li><span class="math inline">\(\Gamma = 1\)</span>: No hidden bias (treatment is “as good as randomly assigned” conditional on <span class="math inline">\(X\)</span>)</li>
+<li><span class="math inline">\(\Gamma = 2\)</span>: One unit could be <strong>twice as likely</strong> to receive treatment due to an unobserved confounder</li>
+<li><span class="math inline">\(\Gamma = 3\)</span>: Three times as likely</li>
+</ul>
+</section>
+<section id="procedure" class="level2">
+<h2 class="anchored" data-anchor-id="procedure">Procedure</h2>
 <ol type="1">
-<li>The standardized difference of means of the propensity score</li>
-<li>The ratio of the variances of the propensity score in the treated and control groups</li>
-<li>For each covariate, the ratio of the variance of the residuals orthogonal to the propensity score in the treated and control groups.</li>
+<li>Choose a range of <span class="math inline">\(\Gamma\)</span> values (e.g., 1.0, 1.1, 1.2, …, 3.0)</li>
+<li>For each <span class="math inline">\(\Gamma\)</span>, compute <strong>bounds</strong> on the p-value or treatment effect estimate</li>
+<li>Report the <strong>critical <span class="math inline">\(\Gamma\)</span></strong> at which the effect becomes insignificant</li>
 </ol>
 </section>
-<section id="falisfication-tests" class="level1">
-<h1>Falisfication Tests</h1>
+<section id="implementation-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-in-r">Implementation in R</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rbounds)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MatchIt)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform matching</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(treat <span class="sc">~</span> age <span class="sc">+</span> educ, <span class="at">data =</span> mydata, <span class="at">method =</span> <span class="st">"nearest"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>matched_data <span class="ot">&lt;-</span> <span class="fu">match.data</span>(m.out)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Split into groups</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>treat_y <span class="ot">&lt;-</span> matched_data<span class="sc">$</span>outcome[matched_data<span class="sc">$</span>treat <span class="sc">==</span> <span class="dv">1</span>]</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>control_y <span class="ot">&lt;-</span> matched_data<span class="sc">$</span>outcome[matched_data<span class="sc">$</span>treat <span class="sc">==</span> <span class="dv">0</span>]</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># P-value sensitivity</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">psens</span>(treat_y, control_y, <span class="at">Gamma =</span> <span class="dv">3</span>, <span class="at">GammaInc =</span> <span class="fl">0.1</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Hodges-Lehmann point estimate sensitivity</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="fu">hlsens</span>(treat_y, control_y, <span class="at">Gamma =</span> <span class="dv">3</span>, <span class="at">GammaInc =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Output:</strong></p>
+<ul>
+<li>Tables showing p-values and confidence intervals at different <span class="math inline">\(\Gamma\)</span> levels</li>
+<li>Identify <span class="math inline">\(\Gamma\)</span> where effect loses significance</li>
+</ul>
+</section>
+<section id="interpretation-1" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-1">Interpretation</h2>
+<p>If the critical <span class="math inline">\(\Gamma\)</span> is:</p>
+<ul>
+<li><strong>&lt; 1.5</strong>: Results are <strong>very sensitive</strong> to hidden bias</li>
+<li><strong>1.5 - 2.5</strong>: Moderately robust</li>
+<li><strong>&gt; 2.5</strong>: Highly robust—unobserved confounder would need to be very strong</li>
+</ul>
+</section>
+<section id="stata-implementation" class="level2">
+<h2 class="anchored" data-anchor-id="stata-implementation">Stata Implementation</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>* After matching, <span class="kw">save</span> matched <span class="kw">sample</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ssc</span> install rbounds</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>* Sensitivity analysis</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>rbounds outcome, <span class="kw">gamma</span>(1(0.1)3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="python-implementation" class="level2">
+<h2 class="anchored" data-anchor-id="python-implementation">Python Implementation</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># No direct Rosenbaum bounds in Python</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Use R via rpy2 or implement manually using Wilcoxon signed-rank test</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> rpy2.robjects <span class="im">as</span> ro</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>ro.r(<span class="st">'library(rbounds)'</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> ro.r(<span class="st">'psens(treat_y, control_y, Gamma=2)'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="relative-correlation-restrictions" class="level1">
+<h1>Relative Correlation Restrictions</h1>
+<p>An alternative sensitivity approach bounds the treatment effect under assumptions about <strong>selection on unobservables</strong> relative to <strong>selection on observables</strong> <span class="citation" data-cites="altonji2005selection">(<a href="#ref-altonji2005selection" role="doc-biblioref">Altonji, Elder, and Taber 2005</a>)</span>.</p>
+<section id="framework" class="level2">
+<h2 class="anchored" data-anchor-id="framework">Framework</h2>
+<p>Assume:</p>
+<p><span class="math display">\[
+\text{Cov}(T, \epsilon) = \lambda \cdot \text{Cov}(T, X^\top \gamma)
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(\epsilon\)</span> contains unobserved confounders</li>
+<li><span class="math inline">\(\lambda\)</span> is the <strong>relative selection ratio</strong></li>
+</ul>
+</section>
+<section id="interpretation-2" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-2">Interpretation</h2>
+<ul>
+<li><span class="math inline">\(\lambda = 0\)</span>: No selection on unobservables (standard OLS)</li>
+<li><span class="math inline">\(\lambda = 1\)</span>: Selection on unobservables is <strong>equal</strong> to selection on observables</li>
+<li><span class="math inline">\(\lambda &gt; 1\)</span>: Unobservables are <strong>more important</strong> than observables</li>
+</ul>
+<p><strong>Critical value <span class="math inline">\(\lambda^*\)</span></strong>: The value at which the treatment effect reaches zero</p>
+</section>
+<section id="implementation" class="level2">
+<h2 class="anchored" data-anchor-id="implementation">Implementation</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rcrbounds)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate bounds</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>rcr_result <span class="ot">&lt;-</span> <span class="fu">rcr</span>(</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> outcome <span class="sc">~</span> treat <span class="sc">|</span> age <span class="sc">+</span> educ <span class="sc">+</span> married,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">rc_range =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(rcr_result)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rcr_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="coefficient-stability-osters-delta" class="level1">
+<h1>Coefficient Stability (Oster’s delta)</h1>
+<p><span class="citation" data-cites="oster2019unobservable">Oster (<a href="#ref-oster2019unobservable" role="doc-biblioref">2019</a>)</span> proposes testing robustness by examining how coefficients change as controls are added.</p>
+<section id="key-metrics" class="level2">
+<h2 class="anchored" data-anchor-id="key-metrics">Key Metrics</h2>
+<ol type="1">
+<li><strong>Bias-adjusted coefficient</strong> beta_star(delta, Rmax^2)</li>
+<li><strong>Breakdown point</strong> delta_star: Value of delta at which beta_star = 0</li>
+</ol>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li>delta_star &gt; 1: Unobservables would need to be <strong>more selective</strong> than observables to eliminate the effect</li>
+<li>delta_star &lt; 1: Results fragile to hidden confounding</li>
+</ul>
+</section>
+<section id="implementation-1" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-1">Implementation</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(robomit)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute delta*</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>delta_result <span class="ot">&lt;-</span> <span class="fu">o_delta</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="st">"outcome"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="st">"treat"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">con =</span> <span class="st">"age + educ + married + re74 + re75"</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span> <span class="dv">0</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">R2max =</span> <span class="fl">1.3</span> <span class="sc">*</span> <span class="fu">summary</span>(lm_model)<span class="sc">$</span>r.squared,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"lm"</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="fu">o_delta_rsq_viz</span>(</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="st">"outcome"</span>, <span class="at">x =</span> <span class="st">"treat"</span>,</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">con =</span> <span class="st">"age + educ + married + re74 + re75"</span>,</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span> <span class="dv">0</span>,</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="falsification-tests" class="level1">
+<h1>Falsification Tests</h1>
+<section id="placebo-outcomes" class="level2">
+<h2 class="anchored" data-anchor-id="placebo-outcomes">Placebo Outcomes</h2>
+<p>Test whether the treatment “affects” outcomes it <strong>should not</strong> affect (e.g., pre-treatment variables, irrelevant outcomes).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Match as usual</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(treat <span class="sc">~</span> covariates, <span class="at">data =</span> mydata)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Test on placebo outcome</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>placebo_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(pre_treatment_outcome <span class="sc">~</span> treat, </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> <span class="fu">match.data</span>(m.out),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">weights =</span> weights)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Should find no effect</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(placebo_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="permutation-tests" class="level2">
+<h2 class="anchored" data-anchor-id="permutation-tests">Permutation Tests</h2>
+<p>Randomly reassign treatment status and re-estimate the effect. The true effect should be an outlier in the permutation distribution.</p>
+</section>
 </section>
 <section id="untestable-limitations" class="level1">
 <h1>Untestable Limitations</h1>
+<p>Some assumptions <strong>cannot be tested</strong> empirically:</p>
+<ol type="1">
+<li><strong>Unconfoundedness</strong>: We can never prove all confounders are observed</li>
+<li><strong>SUTVA</strong>: Interference effects are hard to detect directly</li>
+<li><strong>Functional form</strong>: Matching is somewhat robust, but outcome models still require assumptions</li>
+</ol>
+<p><strong>Strategies:</strong></p>
+<ul>
+<li><strong>Domain knowledge</strong>: Use theory to justify covariate selection</li>
+<li><strong>Sensitivity analyses</strong>: Quantify how robust conclusions are</li>
+<li><strong>Robustness checks</strong>: Try multiple matching methods and specifications</li>
+<li><strong>Transparency</strong>: Report all decisions and diagnostics</li>
+</ul>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-altonji2005selection" class="csl-entry" role="listitem">
+Altonji, Joseph G., Todd E. Elder, and Christopher R. Taber. 2005. <span>“Selection on Observed and Unobserved Variables: Assessing the Effectiveness of Catholic Schools.”</span> <em>Journal of Political Economy</em> 113 (1): 151–84. <a href="https://doi.org/10.1086/426036">https://doi.org/10.1086/426036</a>.
+</div>
+<div id="ref-king2006dangers" class="csl-entry" role="listitem">
+King, Gary, and Langche Zeng. 2006. <span>“The Dangers of Extreme Counterfactuals.”</span> <em>Political Analysis</em> 14 (2): 131–59. <a href="https://doi.org/10.1093/pan/mpj004">https://doi.org/10.1093/pan/mpj004</a>.
+</div>
+<div id="ref-oster2019unobservable" class="csl-entry" role="listitem">
+Oster, Emily. 2019. <span>“Unobservable Selection and Coefficient Stability: Theory and Evidence.”</span> <em>Journal of Business and Economic Statistics</em> 37 (2): 187–204. <a href="https://doi.org/10.1080/07350015.2016.1227711">https://doi.org/10.1080/07350015.2016.1227711</a>.
+</div>
+<div id="ref-rubin2001using" class="csl-entry" role="listitem">
+Rubin, Donald B. 2001. <span>“Using Propensity Scores to Help Design Observational Studies: Application to the Tobacco Litigation.”</span> <em>Health Services and Outcomes Research Methodology</em> 2 (3–4): 169–88. <a href="https://doi.org/10.1023/A:1020363010465">https://doi.org/10.1023/A:1020363010465</a>.
+</div>
+</div>
 
 
 </section>
@@ -342,7 +806,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("d");
+      var filterRegex = new RegExp("https:\/\/mcwayrm\.github\.io\/matching_methods\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

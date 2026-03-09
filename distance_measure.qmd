@@ -4,59 +4,168 @@ subtitle: "How to Determine Matching?"
 bibliography: references.bib
 ---
 
-How you select 'similarity' between two observations is critical to the matching design. Once you have established a proability score of treatment, there are four generally accepted distance measures to detect the difference between any to observations on this measure. The objective of the researcher is to minimize this distance and in doing so only compare observations that are similar in likelihood of being in the same treatment status. 
+Defining "closeness" between units is the foundation of matching. The choice of distance metric determines which treated and control units are considered similar enough to compare.
+
+# Variable Selection Guidelines
+
+Before selecting a distance measure, determine which covariates to include:
+
+**Include:**
+
+- All variables related to **both** treatment assignment **and** outcomes (confounders)
+- Pre-treatment characteristics only
+- As many relevant covariates as feasible
+
+**Exclude:**
+
+- **Post-treatment variables** (mediators, colliders)
+- Variables affected by treatment
+- Pure instrumental variables (increases variance without reducing bias)
 
 # Exact Matching
 
+## Definition
 
-𝐷𝑖⁢𝑗={0if𝑋𝑖=𝑋𝑗∞if𝑋𝑖≠𝑋𝑗,
+Two units match exactly if all their covariate values are identical:
 
-# Mahalanobis 
+$$
+D_{ij} = \begin{cases}
+0 & \text{if } X_i = X_j \\
+\infty & \text{if } X_i \neq X_j
+\end{cases}
+$$
 
-𝐷𝑖⁢𝑗=(𝑋𝑖−𝑋𝑗)′⁢∑−1(𝑋𝑖−𝑋𝑗).
+## When It Works
 
-If interest is in the ATT, Σ is the variance covariance matrix of X in the full control group; if interest is in the ATE then Σ is the variance covariance matrix of X in the pooled treatment and full control groups. If X contains categorical variables they should be converted to a series of binary indicators, although the distance works best with continuous variables.
+- **Few discrete covariates** (e.g., race, gender, region)
+- **Large sample** with sufficient overlap
+- **All covariates categorical** or can be meaningfully discretized
 
-# Propensity Score
+## Limitations
 
-An estimated propensity score is the estimated probability of taking the treatment as a
-function of variables that predict treatment assignment.
-Within a perfect stratification, the true propensity score is nothing other than the
-within-stratum probability of receiving the treatment, or Pr(D = 1jS), which you will
-recall is such that
-Pr(D = 1jS) =
-Pr(S = 1;D = 1)
-Pr(S = 1)
-by Bayes’ rule.
+- **Curse of dimensionality**: With $p$ covariates each having $k$ levels, there are $k^p$ possible cells
+- **Sparsity**: Many cells will be empty or have only treated or only control units
+- **Inefficiency**: Discards many observations
 
-We can recover that conditional probability by applying Bayes’ rule using the marginal
-distributions of D and S, such that
-Pr[S = 1jD = 1] =
-Pr(D = 1jS = 1)Pr(S = 1)
-Pr(D = 1)
+# Mahalanobis Distance
 
-The (true) propensity scores encode all of the necessary information about the joint
-dependence of S and D needed to estimate treatment effects
+## Definition
 
-Because such sparseness is conditionally random, strata with identical propensity scores
-can be combined into more coarse strata.
-Over repeated samples from the same population, zero cells would emerge with equal
-frequency across all strata within these coarse propensity-score-defined strata.
-Because sparseness emerges in this predictable fashion, stratifying on the propensity
-score itself rather than more finely on all values of the variables in S solves the
-sparseness problem because the propensity score can be treated as a single stratifying
-variable.
+The Mahalanobis distance accounts for scale and correlation among covariates:
 
+$$
+D_{M}(X_i, X_j) = \sqrt{(X_i - X_j)^\top \Sigma^{-1} (X_i - X_j)}
+$$
 
-𝐷𝑖⁢𝑗=∣𝑒𝑖−𝑒𝑗∣,
+where $\Sigma$ is the covariance matrix of $X$.
 
-where ek is the propensity score for individual k, defined in detail below.
+## Which Covariance Matrix?
 
+**For ATT (Average Treatment Effect on the Treated):**
 
-# Linear Probability Score 
+$$
+\Sigma = \text{Cov}(X | T = 0)
+$$
 
-𝐷𝑖⁢𝑗=∣logit⁡(𝑒𝑖)−logit⁡(𝑒𝑗)∣.
+Use covariance from the **control group** only.
 
+**For ATE (Average Treatment Effect):**
+
+$$
+\Sigma = \text{Cov}(X | T = 0, T = 1)
+$$
+
+Use **pooled** covariance from treated and control groups.
+
+## Properties
+
+1. **Scale-invariant**: Variables in different units (age in years, income in dollars) are comparable
+2. **Correlation-adjusted**: Accounts for relationships among covariates
+3. **Geometric interpretation**: Measures statistical distance in standardized space
+
+## Advantages
+
+- Works with **continuous and categorical** variables
+- **Robust** to adding irrelevant variables
+- No parametric model required
+
+## Limitations
+
+- **Assumes multivariate normality** (implicitly)
+- **Sensitive to dimensionality**: Performance degrades with many covariates
+- **Collinearity issues**: If $\Sigma$ is singular, inverse does not exist
+
+# Propensity Score Distance
+
+## Definition
+
+The **propensity score** is the conditional probability of treatment:
+
+$$
+e(X) = P(T = 1 | X)
+$$
+
+Distance based on propensity scores:
+
+$$
+D_{PS}(X_i, X_j) = |e(X_i) - e(X_j)|
+$$
+
+## The Balancing Property
+
+**Rosenbaum & Rubin (1983)** proved that conditioning on $e(X)$ is equivalent to conditioning on $X$:
+
+$$
+X \perp T | e(X)
+$$
+
+This means: **At each propensity score value, the distribution of $X$ is the same in treated and control groups**.
+
+## Estimation
+
+### Logistic Regression
+
+$$
+\log \left( \frac{e(X)}{1 - e(X)} \right) = X^\top \beta
+$$
+
+### Machine Learning Methods
+
+- Generalized Boosted Models (GBM)
+- Random Forests
+- LASSO regularization
+- Neural networks
+
+# Logit Propensity Score Distance
+
+## Definition
+
+Transform propensity scores to logit scale:
+
+$$
+D_{\text{logit}}(X_i, X_j) = |\text{logit}(e(X_i)) - \text{logit}(e(X_j))|
+$$
+
+where:
+
+$$
+\text{logit}(e) = \log \left( \frac{e}{1 - e} \right)
+$$
+
+## Why Use Logit Scale?
+
+1. **Unbounded**: Maps $(0, 1) \rightarrow (-\infty, \infty)$
+2. **More stable in tails**: Small differences near 0 or 1 are magnified
+3. **Symmetric**: Equal weighting to low and high propensity scores
+
+# Comparison of Distance Measures
+
+| **Method** | **Formula** | **Pros** | **Cons** |
+|------------|-------------|----------|----------|
+| Exact | $X_i = X_j$ | Perfect balance | Only for discrete $X$, sparse |
+| Mahalanobis | $(X_i - X_j)^\top \Sigma^{-1} (X_i - X_j)$ | Scale-invariant, multivariate | High-dimensional issues |
+| Propensity Score | $\|e(X_i) - e(X_j)\|$ | Dimension reduction | Model-dependent |
+| Logit PS | $\|\text{logit}(e(X_i)) - \text{logit}(e(X_j))\|$ | Better tail behavior | Still model-dependent |
 
 ::: {#refs}
 :::
