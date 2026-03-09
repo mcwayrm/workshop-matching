@@ -6,61 +6,67 @@ bibliography: references.bib
 
 # Perfect Stratification 
 
-Suppose that those who take the treatment and those who do not are very much unlike
-each other, and yet the ways in which they differ are captured exhaustively by a set of
-observed treatment assignment and/or selection variables S.
+Suppose that treated and untreated individuals differ substantially from each other, but that all systematic differences can be captured by a set of observed covariates $S$. This set $S$ includes all variables that jointly determine treatment assignment and potential outcomes.
 
-For the language we will adopt in this module, knowledge and observation of S allow
-for a “perfect stratification” of the data. By “perfect,” we mean precisely that individual
-within groups defined by values of the variables in S are entirely indistinguishable from
-each other except for (i) observed treatment status, and (ii) differences in the potential
-outcomes that are independent of treatment status.
+Knowledge and observation of $S$ enable **perfect stratification** of the data. By "perfect," we mean that individuals within groups defined by values of $S$ are entirely indistinguishable from each other except for:
 
-Under such perfect stratification, we would be able to assert
-Assumption 1-S: E[Y 1jD = 1; S] = E[Y 1jD = 0; S], and
-Assumption 2-S: E[Y 0jD = 1; S] = E[Y 0jD = 0; S].
-These assumptions are sufficient to enable consistent and unbiased estimation of the
-ATE because the treatment can be considered to be (as good as) randomly assigned
-within groups defined by values of the variables in S.
+1. Observed treatment status
+2. Differences in potential outcomes that are independent of treatment status
 
-Assumption of perfect stratification (Pearl DAG):
+## Conditional Independence Assumptions
 
-```{latex}
-\usepackage{tikz}
-\begin{tikzpicture}
-  % Define nodes
-  \node (S) at (0, 2) {S};
-  \node (D) at (-1, 0) {D};
-  \node (Y) at (1, 0) {Y};
-  
-  % Draw edges
-  \draw[->] (S) -- (D);
-  \draw[->] (S) -- (Y);
-  \draw[->] (D) -- (Y);
-\end{tikzpicture}
+Under perfect stratification, we can assert the following assumptions:
+
+**Assumption 1-S (Conditional Independence for $Y^1$):**
+$$
+E[Y^1 | D = 1, S] = E[Y^1 | D = 0, S]
+$$
+
+**Assumption 2-S (Conditional Independence for $Y^0$):**
+$$
+E[Y^0 | D = 1, S] = E[Y^0 | D = 0, S]
+$$
+
+These assumptions are sufficient to enable consistent and unbiased estimation of the average treatment effect (ATE) because treatment can be considered "as good as randomly assigned" within groups defined by values of $S$.
+
+## Causal Structure (Pearl DAG)
+
+The perfect stratification assumption implies the following causal structure:
+
+```{mermaid}
+%%| fig-width: 4
+%%| fig-align: center
+graph TD
+    S[S: Stratifying Variables] --> D[D: Treatment]
+    S --> Y[Y: Outcome]
+    D --> Y
 ```
 
-If a stratifying variable S completely accounts for all systematic differences
-between those who take the treatment and those who do not, then conditional-on-S
-estimators yield consistent and unbiased estimates of the ATE conditional on a
-particular value of S, s.t.
-fEN[yi jdi = 1; si = s]g 􀀀 fEN[yi jdi = 0; si = s]g
-p!
-E[Y 1 􀀀 Y 0jS = s] = E[jS = S]: 
+In this directed acyclic graph, $S$ affects both treatment assignment $D$ and the outcome $Y$, while $D$ has a direct causal effect on $Y$. Conditioning on $S$ blocks all backdoor paths from $D$ to $Y$.
+
+## Estimating Conditional Effects
+
+If a stratifying variable $S$ completely accounts for all systematic differences between treated and control groups, then conditional-on-$S$ estimators yield consistent and unbiased estimates of the ATE conditional on a particular value $S = s$:
+
+$$
+\underbrace{E[Y_i | D_i = 1, S_i = s] - E[Y_i | D_i = 0, S_i = s]}_{\text{Observable conditional difference}} \xrightarrow{p} \underbrace{E[Y^1 - Y^0 | S = s]}_{\text{Causal effect given } S = s}
+$$
+
+The average treatment effect across the entire population can then be obtained by averaging over the distribution of $S$.
 
 # Visualization of Matching 
 
 # Randomized Controlled Trials (RCT) as a Form of Matching
 
-Randomized experiments use a known randomized assignment mechanism to ensure “balance” of the covariates between the treated and control groups: The groups will be only randomly different from one another on all covariates, observed and unobserved. In non-experimental studies, we must posit an assignment mechanism, which determines which individuals receive treatment and which receive control. A key assumption in non-experimental studies is that of strongly ignorable treatment assignment (Rosenbaum and Rubin, 1983b) which implies that (1) treatment assignment (T) is independent of the potential outcomes (Y (0), Y (1)) given the covariates (X): T ⊥ Y (0), Y (1))|X, and (2) there is a positive probability of receiving each treatment for all values of X: 0 < P(T = 1|X) < 1 for all X. The first component of the definition of strong ignorability is sometimes termed “ignorable,” “no hidden bias,” or “unconfounded.” Weaker versions of the ignorability assumption are sufficient for some quantities of interest, discussed further in Imbens (2004). This assumption is often more reasonable than it may sound at first since matching on or controlling for the observed covariates also matches on or controls for the unobserved covariates, in so much as they are correlated with those that are observed. Thus, the only unobserved covariates of concern are those unrelated to the observed covariates. Analyses can be done to assess sensitivity of the results to the existence of an unobserved confounder related to both treatment assignment and the outcome (see Section 6.1.2). Heller et al. (2009) also discuss how matching can make effect estimates less sensitive to an unobserved confounder, using a concept called “design sensitivity.” An additional assumption is the Stable Unit Treatment Value Assumption (SUTVA; Rubin, 1980), which states that the outcomes of one individual are not affected by the treatment assignment of any other individuals. While not always plausible–for example in school settings where treatment and control children may interact, leading to “spillover” effects–the plausibility of SUTVA can often be improved by design, such as by reducing interactions between the treated and control groups.
+Randomized experiments use a known randomized assignment mechanism to ensure "balance" of the covariates between the treated and control groups: The groups will be only randomly different from one another on all covariates, observed and unobserved. In non-experimental studies, we must posit an assignment mechanism, which determines which individuals receive treatment and which receive control. A key assumption in non-experimental studies is that of strongly ignorable treatment assignment (Rosenbaum and Rubin, 1983b) which implies that (1) treatment assignment (T) is independent of the potential outcomes (Y (0), Y (1)) given the covariates (X): T ⊥ Y (0), Y (1))|X, and (2) there is a positive probability of receiving each treatment for all values of X: 0 < P(T = 1|X) < 1 for all X. The first component of the definition of strong ignorability is sometimes termed "ignorable," "no hidden bias," or "unconfounded." Weaker versions of the ignorability assumption are sufficient for some quantities of interest, discussed further in Imbens (2004). This assumption is often more reasonable than it may sound at first since matching on or controlling for the observed covariates also matches on or controls for the unobserved covariates, in so much as they are correlated with those that are observed. Thus, the only unobserved covariates of concern are those unrelated to the observed covariates. Analyses can be done to assess sensitivity of the results to the existence of an unobserved confounder related to both treatment assignment and the outcome (see Section 6.1.2). Heller et al. (2009) also discuss how matching can make effect estimates less sensitive to an unobserved confounder, using a concept called "design sensitivity." An additional assumption is the Stable Unit Treatment Value Assumption (SUTVA; Rubin, 1980), which states that the outcomes of one individual are not affected by the treatment assignment of any other individuals. While not always plausible–for example in school settings where treatment and control children may interact, leading to "spillover" effects–the plausibility of SUTVA can often be improved by design, such as by reducing interactions between the treated and control groups.
 
 To formalize, using notation similar to that in Rubin (1976b), we consider two populations, Pt and Pc, where the subscript t refers to a group exposed to the treatment and c refers to a group exposed to the control. Covariate data on p pre-treatment covariates is available on random samples of sizes Nt and Nc from Pt and Pc. The means and variance covariance matrix of the p covariates in group i are given by μi and Σi, respectively (i = t, c). For individual j, the p covariates are denoted by Xj, treatment assignment by Tj (Tj = 0 or 1), and the observed outcome by Yj. Without loss of generality we assume Nt < Nc.
 
-To define the treatment effect, let E(Y (1)|X) = R1(X) and E(Y (0)|X) = R0(X). In the matching context effects are usually defined as the difference in potential outcomes, τ(x) = R1(x) − R0(x), although other quantities, such as odds ratios, are also sometimes of interest. It is often assumed that the response surfaces, R0(x) and R1(x), are parallel, so that τ(x) = τ for all x. If the response surfaces are not parallel (i.e., the effect varies), an average effect over some population is generally estimated. Variation in effects is particularly relevant when the estimands of interest are not difference in means, but rather odds ratios or relative risks, for which the conditional and marginal effects are not necessarily equal (Austin, 2007; Lunt et al., 2009). The most common estimands in non-experimental studies are the “average effect of the treatment on the treated” (ATT), which is the effect for those in the treatment group, and the “average treatment effect” (ATE), which is the effect on all individuals (treatment and control).
+To define the treatment effect, let E(Y (1)|X) = R1(X) and E(Y (0)|X) = R0(X). In the matching context effects are usually defined as the difference in potential outcomes, τ(x) = R1(x) − R0(x), although other quantities, such as odds ratios, are also sometimes of interest. It is often assumed that the response surfaces, R0(x) and R1(x), are parallel, so that τ(x) = τ for all x. If the response surfaces are not parallel (i.e., the effect varies), an average effect over some population is generally estimated. Variation in effects is particularly relevant when the estimands of interest are not difference in means, but rather odds ratios or relative risks, for which the conditional and marginal effects are not necessarily equal (Austin, 2007; Lunt et al., 2009). The most common estimands in non-experimental studies are the "average effect of the treatment on the treated" (ATT), which is the effect for those in the treatment group, and the "average treatment effect" (ATE), which is the effect on all individuals (treatment and control).
 
 # Predicitive Determinants
 
-The key concept in determining which covariates to include in the matching process is that of strong ignorability. As discussed above, matching methods, and in fact most non-experimental study methods, rely on ignorability, which assumes that there are no unobserved differences between the treatment and control groups, conditional on the observed covariates. To satisfy the assumption of ignorable treatment assignment, it is important to include in the matching procedure all variables known to be related to both treatment assignment and the outcome (Rubin and Thomas, 1996; Heckman et al., 1998b; Glazerman et al., 2003; Hill et al., 2004). Generally poor performance is found of methods that use a relatively small set of “predictors of convenience,” such as demographics only (Shadish et al., 2008). 
+The key concept in determining which covariates to include in the matching process is that of strong ignorability. As discussed above, matching methods, and in fact most non-experimental study methods, rely on ignorability, which assumes that there are no unobserved differences between the treatment and control groups, conditional on the observed covariates. To satisfy the assumption of ignorable treatment assignment, it is important to include in the matching procedure all variables known to be related to both treatment assignment and the outcome (Rubin and Thomas, 1996; Heckman et al., 1998b; Glazerman et al., 2003; Hill et al., 2004). Generally poor performance is found of methods that use a relatively small set of "predictors of convenience," such as demographics only (Shadish et al., 2008). 
 
 Including variables that are actually unassociated with the outcome can yield slight increases in variance. However, excluding a potentially important confounder can be very costly in terms of increased bias. Researchers should thus be liberal in terms of including variables that may be associated with treatment assignment and/or the outcomes. 
 
@@ -77,7 +83,7 @@ In its simplest form, 1:1 nearest neighbor matching selects for each treated ind
 ## Optimal Matching 
 
 
-One complication of simple (“greedy”) nearest neighbor matching is that the order in which the treated subjects are matched may change the quality of the matches. Optimal matching avoids this issue by taking into account the overall set of matches when choosing individual matches, minimizing a global distance measure (Rosenbaum, 2002). Generally, greedy matching performs poorly when there is intense competition for controls, and performs well when there is little competition (Gu and Rosenbaum, 1993). Gu and Rosenbaum (1993) find that optimal matching does not in general perform any better than greedy matching in terms of creating groups with good balance, but does do better at reducing the distance within pairs (p. 413): “…optimal matching picks about the same controls [as greedy matching] but does a better job of assigning them to treated units.” Thus, if the goal is simply to find well-matched groups, greedy matching may be sufficient. However, if the goal is well-matched pairs, then optimal matching may be preferable.
+One complication of simple ("greedy") nearest neighbor matching is that the order in which the treated subjects are matched may change the quality of the matches. Optimal matching avoids this issue by taking into account the overall set of matches when choosing individual matches, minimizing a global distance measure (Rosenbaum, 2002). Generally, greedy matching performs poorly when there is intense competition for controls, and performs well when there is little competition (Gu and Rosenbaum, 1993). Gu and Rosenbaum (1993) find that optimal matching does not in general perform any better than greedy matching in terms of creating groups with good balance, but does do better at reducing the distance within pairs (p. 413): "…optimal matching picks about the same controls [as greedy matching] but does a better job of assigning them to treated units." Thus, if the goal is simply to find well-matched groups, greedy matching may be sufficient. However, if the goal is well-matched pairs, then optimal matching may be preferable.
 
 ## Ratio Matching 
 
@@ -85,7 +91,7 @@ When there are large numbers of control individuals, it is sometimes possible to
 
 ## With or Without Replacement
 
-Another key issue is whether controls can be used as matches for more than one treated individual; whether the matching should be done “with replacement” or “without replacement.” Matching with replacement can often decrease bias because controls that look similar to many treated individuals can be used multiple times. This is particularly helpful in settings where there are few control individuals comparable to the treated individuals (e.g., Dehejia and Wahba, 1999). Additionally, when matching with replacement the order in which the treated individuals are matched does not matter. However, inference becomes more complex when matching with replacement, because the matched controls are no longer independent–some are in the matched sample more than once and this needs to be accounted for in the outcome analysis, for example by using frequency weights. When matching with replacement it is also possible that the treatment effect estimate will be based on just a small number of controls; the number of times each control is matched should be monitored.
+Another key issue is whether controls can be used as matches for more than one treated individual; whether the matching should be done "with replacement" or "without replacement." Matching with replacement can often decrease bias because controls that look similar to many treated individuals can be used multiple times. This is particularly helpful in settings where there are few control individuals comparable to the treated individuals (e.g., Dehejia and Wahba, 1999). Additionally, when matching with replacement the order in which the treated individuals are matched does not matter. However, inference becomes more complex when matching with replacement, because the matched controls are no longer independent–some are in the matched sample more than once and this needs to be accounted for in the outcome analysis, for example by using frequency weights. When matching with replacement it is also possible that the treatment effect estimate will be based on just a small number of controls; the number of times each control is matched should be monitored.
 
 # Identifying Assumptions
 

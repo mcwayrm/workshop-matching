@@ -1,5 +1,258 @@
 [
   {
+    "objectID": "matching_entropy.html",
+    "href": "matching_entropy.html",
+    "title": "Matching Methods",
+    "section": "",
+    "text": "Entropy balancing is a preprocessing method that reweights control observations to achieve exact covariate balance on specified moments (means, variances, skewness) while staying as close as possible to uniform weights (Hainmueller 2012).\nUnlike propensity score weighting, which estimates weights indirectly through a propensity score model, entropy balancing directly solves for weights that satisfy user-specified balance constraints. This approach:\n\nAchieves exact balance on specified moments by construction\nRequires no iterative model specification searching for balance\nProduces stable weights through maximum entropy optimization\nCombines advantages of matching and weighting methods\n\n\n\nTraditional matching methods involve two steps:\n\nEstimate propensity scores (or distances)\nCheck if resulting matches achieve balance\n\nEntropy balancing reverses this logic:\n\nSpecify desired balance constraints directly\nSolve for weights that satisfy those constraints\n\nThis guarantees balance on chosen moments without iterative model tweaking.",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#the-core-insight",
+    "href": "matching_entropy.html#the-core-insight",
+    "title": "Matching Methods",
+    "section": "",
+    "text": "Traditional matching methods involve two steps:\n\nEstimate propensity scores (or distances)\nCheck if resulting matches achieve balance\n\nEntropy balancing reverses this logic:\n\nSpecify desired balance constraints directly\nSolve for weights that satisfy those constraints\n\nThis guarantees balance on chosen moments without iterative model tweaking.",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#the-optimization-problem",
+    "href": "matching_entropy.html#the-optimization-problem",
+    "title": "Matching Methods",
+    "section": "The Optimization Problem",
+    "text": "The Optimization Problem\nEntropy balancing finds weights \\(w_i\\) for control observations (\\(T_i = 0\\)) that minimize:\n\\[\nH(w) = \\sum_{i: T_i=0} h(w_i)\n\\]\nsubject to balance and normalization constraints.\n\nObjective Function\nThe objective uses a distance metric (typically Shannon entropy):\n\\[\nh(w_i) = w_i \\log(w_i / q_i)\n\\]\nwhere \\(q_i\\) is a base weight (typically \\(q_i = 1\\) for uniform base weights).\nThis is equivalent to minimizing the Kullback-Leibler divergence from the base weights, ensuring weights are as uniform as possible while satisfying constraints.\n\n\nBalance Constraints\nThe key constraints enforce exact balance on covariate moments:\nMoment balance constraints: \\[\n\\sum_{i: T_i=0} w_i c_{ri}(\\mathbf{X}_i) = \\sum_{j: T_j=1} c_{rj}(\\mathbf{X}_j) \\quad \\text{for } r = 1, \\ldots, R\n\\]\nwhere \\(c_r(\\mathbf{X})\\) are covariate moment functions.\n\n\nNormalization Constraint\nWeights must sum to the number of controls:\n\\[\n\\sum_{i: T_i=0} w_i = N_0\n\\]\nwhere \\(N_0\\) is the number of control observations.",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#common-balance-targets",
+    "href": "matching_entropy.html#common-balance-targets",
+    "title": "Matching Methods",
+    "section": "Common Balance Targets",
+    "text": "Common Balance Targets\n\nFirst Moment (Means)\nFor covariate \\(X_k\\): \\[\n\\sum_{i: T_i=0} w_i X_{ik} = \\sum_{j: T_j=1} X_{jk}\n\\]\nThis ensures weighted control mean equals treated mean.\n\n\nSecond Moment (Variances)\n\\[\n\\sum_{i: T_i=0} w_i X_{ik}^2 = \\sum_{j: T_j=1} X_{jk}^2\n\\]\nBalances not just means but also variances.\n\n\nHigher Moments and Interactions\nCan include: - Skewness: \\(E[X^3]\\) - Interactions: \\(E[X_j \\cdot X_k]\\) - Polynomials: \\(E[X^2], E[X^3]\\)",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#att-vs-ate",
+    "href": "matching_entropy.html#att-vs-ate",
+    "title": "Matching Methods",
+    "section": "ATT vs ATE",
+    "text": "ATT vs ATE\nATT weights (default): Balance controls to match treated group - Treated units get weight 1 - Only control units are reweighted\nATE weights: Balance both groups to population - Requires additional constraints on treated units - Less commonly used in practice",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#step-1-specify-covariates-and-moments",
+    "href": "matching_entropy.html#step-1-specify-covariates-and-moments",
+    "title": "Matching Methods",
+    "section": "Step 1: Specify Covariates and Moments",
+    "text": "Step 1: Specify Covariates and Moments\nDecide which variables and moments to balance:\n# R example\nbalance_vars &lt;- c(\"age\", \"education\", \"income\", \"female\")\nmoments &lt;- list(c(1, 2))  # Balance means and variances",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#step-2-fit-entropy-balancing",
+    "href": "matching_entropy.html#step-2-fit-entropy-balancing",
+    "title": "Matching Methods",
+    "section": "Step 2: Fit Entropy Balancing",
+    "text": "Step 2: Fit Entropy Balancing\nSolve the optimization problem:\nlibrary(ebal)\neb_out &lt;- ebalance(Treatment = df$treatment,\n                   X = df[, balance_vars])",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#step-3-extract-weights",
+    "href": "matching_entropy.html#step-3-extract-weights",
+    "title": "Matching Methods",
+    "section": "Step 3: Extract Weights",
+    "text": "Step 3: Extract Weights\n# Control weights\ndf$weight[df$treatment == 0] &lt;- eb_out$w\n\n# Treated weights (always 1 for ATT)\ndf$weight[df$treatment == 1] &lt;- 1",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#step-4-check-balance",
+    "href": "matching_entropy.html#step-4-check-balance",
+    "title": "Matching Methods",
+    "section": "Step 4: Check Balance",
+    "text": "Step 4: Check Balance\nVerify exact balance achieved:\nlibrary(cobalt)\nbal.tab(treatment ~ age + education + income + female,\n        data = df,\n        weights = \"weight\",\n        method = \"weighting\")",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#step-5-estimate-treatment-effect",
+    "href": "matching_entropy.html#step-5-estimate-treatment-effect",
+    "title": "Matching Methods",
+    "section": "Step 5: Estimate Treatment Effect",
+    "text": "Step 5: Estimate Treatment Effect\n# Weighted regression\neffect_model &lt;- lm(outcome ~ treatment, \n                   data = df, \n                   weights = weight)\nsummary(effect_model)",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#advantages",
+    "href": "matching_entropy.html#advantages",
+    "title": "Matching Methods",
+    "section": "Advantages",
+    "text": "Advantages\n✓ Exact balance - Achieves perfect balance on specified moments by construction\n✓ No model searching - Eliminates iterative propensity score specification\n✓ Stable weights - Maximum entropy ensures smooth weight distribution\n✓ Transparent - Clear specification of balance requirements\n✓ Flexible - Can balance means, variances, skewness, interactions\n✓ Efficiency - Retains all observations (like IPW)\n✓ Intuitive - Direct optimization of balance constraints",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#limitations",
+    "href": "matching_entropy.html#limitations",
+    "title": "Matching Methods",
+    "section": "Limitations",
+    "text": "Limitations\n✗ Balance target choice - User must specify which moments to balance\n✗ No overlap enforcement - Doesn’t automatically address positivity violations\n✗ Computational intensity - Optimization can be slow for large datasets\n✗ Perfect balance risk - May overfit to sample noise rather than population\n✗ Linear combinations only - Balances specified moments, not all possible functions\n✗ Extrapolation - Can produce large weights if groups are very different",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#entropy-balancing-vs-ipw",
+    "href": "matching_entropy.html#entropy-balancing-vs-ipw",
+    "title": "Matching Methods",
+    "section": "Entropy Balancing vs IPW",
+    "text": "Entropy Balancing vs IPW\n\n\n\nFeature\nEntropy Balancing\nIPW\n\n\n\n\nBalance\nExact on chosen moments\nApproximate\n\n\nPropensity model\nNot required\nRequired\n\n\nIteration\nOne-step\nMay need respecification\n\n\nMoment control\nUser specifies\nIndirect\n\n\nWeights\nOptimized for balance\nBased on PS model\n\n\nTransparency\nHigh\nModerate",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#entropy-balancing-vs-matching",
+    "href": "matching_entropy.html#entropy-balancing-vs-matching",
+    "title": "Matching Methods",
+    "section": "Entropy Balancing vs Matching",
+    "text": "Entropy Balancing vs Matching\n\n\n\nFeature\nEntropy Balancing\nMatching\n\n\n\n\nSample size\nRetains all data\nMay discard\n\n\nBalance\nExact on moments\nApproximate\n\n\nImplementation\nOptimization\nAlgorithm\n\n\nWeights\nContinuous\nBinary (1:1) or discrete\n\n\nEstimand\nATT primarily\nATT primarily",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#when-to-use-entropy-balancing",
+    "href": "matching_entropy.html#when-to-use-entropy-balancing",
+    "title": "Matching Methods",
+    "section": "When to Use Entropy Balancing",
+    "text": "When to Use Entropy Balancing\nIdeal scenarios:\n\nYou know which moments need balancing (means, variances)\nSample size is moderate to large\nYou want guaranteed exact balance on key variables\nPropensity score modeling is difficult or controversial\n\nUse alternatives when:\n\nVery small sample sizes (matching may be better)\nExtreme covariate imbalance (may produce extreme weights)\nNeed to enforce common support explicitly (use trimming)",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#asymptotic-properties",
+    "href": "matching_entropy.html#asymptotic-properties",
+    "title": "Matching Methods",
+    "section": "Asymptotic Properties",
+    "text": "Asymptotic Properties\nUnder standard regularity conditions (Hainmueller 2012):\n\nConsistency: \\(\\hat{\\tau}^{ATT} \\xrightarrow{p} \\tau^{ATT}\\)\nAsymptotic normality: \\(\\sqrt{n}(\\hat{\\tau}^{ATT} - \\tau^{ATT}) \\xrightarrow{d} N(0, V)\\)",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#double-robustness",
+    "href": "matching_entropy.html#double-robustness",
+    "title": "Matching Methods",
+    "section": "Double Robustness",
+    "text": "Double Robustness\nEntropy balancing combined with covariate adjustment in the outcome model provides double robustness:\n\\[\nE[Y_i|T_i, X_i] = \\alpha + \\tau T_i + X_i^\\top \\gamma\n\\]\nThe estimate is consistent if either: - The entropy balancing achieves correct balance, OR - The outcome model is correctly specified",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#choosing-moments-to-balance",
+    "href": "matching_entropy.html#choosing-moments-to-balance",
+    "title": "Matching Methods",
+    "section": "Choosing Moments to Balance",
+    "text": "Choosing Moments to Balance\nFirst moments (means) - Always include:\nebal(..., moments = 1)\nSecond moments (variances) - Add for distributional similarity:\nebal(..., moments = c(1, 2))\nHigher moments - Use sparingly to avoid overfitting:\nebal(..., moments = c(1, 2, 3))",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#handling-extreme-weights",
+    "href": "matching_entropy.html#handling-extreme-weights",
+    "title": "Matching Methods",
+    "section": "Handling Extreme Weights",
+    "text": "Handling Extreme Weights\nIf weights become very large:\n\nCheck overlap: Visualize propensity score distributions\nTrim sample: Remove units with extreme covariate values\nRelax constraints: Balance fewer moments\nUse covariate adjustment: Include covariates in outcome model\n\n# Check for extreme weights\nquantile(eb_weight, c(0.95, 0.99, 1.0))\n\n# Flag extreme weights\nextreme &lt;- eb_weight &gt; quantile(eb_weight, 0.99)\ntable(extreme)",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#diagnostics",
+    "href": "matching_entropy.html#diagnostics",
+    "title": "Matching Methods",
+    "section": "Diagnostics",
+    "text": "Diagnostics\n\nBalance Checks\n# Standardized mean differences should be ~0\nbal.tab(treatment ~ covariates, \n        data = df,\n        weights = \"weight\",\n        stats = \"m\")\n\n# Variance ratios should be ~1\nbal.tab(treatment ~ covariates,\n        data = df, \n        weights = \"weight\",\n        stats = \"v\")\n\n\nWeight Distribution\n# Summary statistics\nsummary(df$weight[df$treatment == 0])\n\n# Effective sample size\nsum(df$weight[df$treatment == 0])^2 / \n  sum(df$weight[df$treatment == 0]^2)",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#multivariate-balancing",
+    "href": "matching_entropy.html#multivariate-balancing",
+    "title": "Matching Methods",
+    "section": "Multivariate Balancing",
+    "text": "Multivariate Balancing\nBalance on interactions and polynomials:\n# Create interaction terms\ndf$age_edu &lt;- df$age * df$education\n\n# Include in balancing\nebalance(treatment, \n         X = cbind(age, education, age_edu))",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#stable-balancing-weights",
+    "href": "matching_entropy.html#stable-balancing-weights",
+    "title": "Matching Methods",
+    "section": "Stable Balancing Weights",
+    "text": "Stable Balancing Weights\nExtension by Zhao and Percival (2017) adds stability constraints:\n\\[\n\\min H(w) \\quad \\text{s.t. balance and } \\max(w_i) \\leq M\n\\]",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
+    "objectID": "matching_entropy.html#kernel-balancing",
+    "href": "matching_entropy.html#kernel-balancing",
+    "title": "Matching Methods",
+    "section": "Kernel Balancing",
+    "text": "Kernel Balancing\nHazlett (2020) proposes kernel-based approach for nonlinear balance.",
+    "crumbs": [
+      "Matching Methods",
+      "Entropy Balancing"
+    ]
+  },
+  {
     "objectID": "matching_double_robust.html",
     "href": "matching_double_robust.html",
     "title": "Matching Methods",
@@ -479,7 +732,37 @@
     "href": "concept.html",
     "title": "The Concept",
     "section": "",
-    "text": "Suppose that those who take the treatment and those who do not are very much unlike each other, and yet the ways in which they differ are captured exhaustively by a set of observed treatment assignment and/or selection variables S.\nFor the language we will adopt in this module, knowledge and observation of S allow for a “perfect stratification” of the data. By “perfect,” we mean precisely that individual within groups defined by values of the variables in S are entirely indistinguishable from each other except for (i) observed treatment status, and (ii) differences in the potential outcomes that are independent of treatment status.\nUnder such perfect stratification, we would be able to assert Assumption 1-S: E[Y 1jD = 1; S] = E[Y 1jD = 0; S], and Assumption 2-S: E[Y 0jD = 1; S] = E[Y 0jD = 0; S]. These assumptions are sufficient to enable consistent and unbiased estimation of the ATE because the treatment can be considered to be (as good as) randomly assigned within groups defined by values of the variables in S.\nAssumption of perfect stratification (Pearl DAG):\n\\usepackage{tikz}\n\\begin{tikzpicture}\n  % Define nodes\n  \\node (S) at (0, 2) {S};\n  \\node (D) at (-1, 0) {D};\n  \\node (Y) at (1, 0) {Y};\n  \n  % Draw edges\n  \\draw[-&gt;] (S) -- (D);\n  \\draw[-&gt;] (S) -- (Y);\n  \\draw[-&gt;] (D) -- (Y);\n\\end{tikzpicture}\nIf a stratifying variable S completely accounts for all systematic differences between those who take the treatment and those who do not, then conditional-on-S estimators yield consistent and unbiased estimates of the ATE conditional on a particular value of S, s.t. fEN[yi jdi = 1; si = s]g 􀀀 fEN[yi jdi = 0; si = s]g p! E[Y 1 􀀀 Y 0jS = s] = E[\u000ejS = S]:",
+    "text": "Suppose that treated and untreated individuals differ substantially from each other, but that all systematic differences can be captured by a set of observed covariates \\(S\\). This set \\(S\\) includes all variables that jointly determine treatment assignment and potential outcomes.\nKnowledge and observation of \\(S\\) enable perfect stratification of the data. By “perfect,” we mean that individuals within groups defined by values of \\(S\\) are entirely indistinguishable from each other except for:\n\nObserved treatment status\nDifferences in potential outcomes that are independent of treatment status\n\n\n\nUnder perfect stratification, we can assert the following assumptions:\nAssumption 1-S (Conditional Independence for \\(Y^1\\)): \\[\nE[Y^1 | D = 1, S] = E[Y^1 | D = 0, S]\n\\]\nAssumption 2-S (Conditional Independence for \\(Y^0\\)): \\[\nE[Y^0 | D = 1, S] = E[Y^0 | D = 0, S]\n\\]\nThese assumptions are sufficient to enable consistent and unbiased estimation of the average treatment effect (ATE) because treatment can be considered “as good as randomly assigned” within groups defined by values of \\(S\\).\n\n\n\nThe perfect stratification assumption implies the following causal structure:\n\n\n\n\n\ngraph TD\n    S[S: Stratifying Variables] --&gt; D[D: Treatment]\n    S --&gt; Y[Y: Outcome]\n    D --&gt; Y\n\n\n\n\n\n\nIn this directed acyclic graph, \\(S\\) affects both treatment assignment \\(D\\) and the outcome \\(Y\\), while \\(D\\) has a direct causal effect on \\(Y\\). Conditioning on \\(S\\) blocks all backdoor paths from \\(D\\) to \\(Y\\).\n\n\n\nIf a stratifying variable \\(S\\) completely accounts for all systematic differences between treated and control groups, then conditional-on-\\(S\\) estimators yield consistent and unbiased estimates of the ATE conditional on a particular value \\(S = s\\):\n\\[\n\\underbrace{E[Y_i | D_i = 1, S_i = s] - E[Y_i | D_i = 0, S_i = s]}_{\\text{Observable conditional difference}} \\xrightarrow{p} \\underbrace{E[Y^1 - Y^0 | S = s]}_{\\text{Causal effect given } S = s}\n\\]\nThe average treatment effect across the entire population can then be obtained by averaging over the distribution of \\(S\\).",
+    "crumbs": [
+      "The Concept"
+    ]
+  },
+  {
+    "objectID": "concept.html#conditional-independence-assumptions",
+    "href": "concept.html#conditional-independence-assumptions",
+    "title": "The Concept",
+    "section": "",
+    "text": "Under perfect stratification, we can assert the following assumptions:\nAssumption 1-S (Conditional Independence for \\(Y^1\\)): \\[\nE[Y^1 | D = 1, S] = E[Y^1 | D = 0, S]\n\\]\nAssumption 2-S (Conditional Independence for \\(Y^0\\)): \\[\nE[Y^0 | D = 1, S] = E[Y^0 | D = 0, S]\n\\]\nThese assumptions are sufficient to enable consistent and unbiased estimation of the average treatment effect (ATE) because treatment can be considered “as good as randomly assigned” within groups defined by values of \\(S\\).",
+    "crumbs": [
+      "The Concept"
+    ]
+  },
+  {
+    "objectID": "concept.html#causal-structure-pearl-dag",
+    "href": "concept.html#causal-structure-pearl-dag",
+    "title": "The Concept",
+    "section": "",
+    "text": "The perfect stratification assumption implies the following causal structure:\n\n\n\n\n\ngraph TD\n    S[S: Stratifying Variables] --&gt; D[D: Treatment]\n    S --&gt; Y[Y: Outcome]\n    D --&gt; Y\n\n\n\n\n\n\nIn this directed acyclic graph, \\(S\\) affects both treatment assignment \\(D\\) and the outcome \\(Y\\), while \\(D\\) has a direct causal effect on \\(Y\\). Conditioning on \\(S\\) blocks all backdoor paths from \\(D\\) to \\(Y\\).",
+    "crumbs": [
+      "The Concept"
+    ]
+  },
+  {
+    "objectID": "concept.html#estimating-conditional-effects",
+    "href": "concept.html#estimating-conditional-effects",
+    "title": "The Concept",
+    "section": "",
+    "text": "If a stratifying variable \\(S\\) completely accounts for all systematic differences between treated and control groups, then conditional-on-\\(S\\) estimators yield consistent and unbiased estimates of the ATE conditional on a particular value \\(S = s\\):\n\\[\n\\underbrace{E[Y_i | D_i = 1, S_i = s] - E[Y_i | D_i = 0, S_i = s]}_{\\text{Observable conditional difference}} \\xrightarrow{p} \\underbrace{E[Y^1 - Y^0 | S = s]}_{\\text{Causal effect given } S = s}\n\\]\nThe average treatment effect across the entire population can then be obtained by averaging over the distribution of \\(S\\).",
     "crumbs": [
       "The Concept"
     ]
@@ -1050,6 +1333,171 @@
     "crumbs": [
       "Matching Methods",
       "LASSO Matching"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html",
+    "href": "matching_iptw.html",
+    "title": "Matching Methods",
+    "section": "",
+    "text": "Inverse probability weighting (IPW), also known as propensity score weighting, is an alternative to matching that uses the propensity score to create a pseudo-population where treatment is independent of measured confounders (Rosenbaum 1987; Hirano, Imbens, and Ridder 2003).\nRather than discarding unmatched units, IPW reweights the sample so that treated and control groups have similar covariate distributions. This approach:\n\nRetains all observations (no discarding)\nDirectly estimates population-level treatment effects\nProvides a link between causal inference and survey sampling methods\n\n\n\nEach observation is weighted by the inverse of the probability of receiving the treatment they actually received:\n\\[\nw_i = \\frac{1}{P(\\text{Treatment}_i | X_i)}\n\\]\nThis upweights underrepresented observations and downweights overrepresented ones, creating balance in expectation.",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#the-core-idea",
+    "href": "matching_iptw.html#the-core-idea",
+    "title": "Matching Methods",
+    "section": "",
+    "text": "Each observation is weighted by the inverse of the probability of receiving the treatment they actually received:\n\\[\nw_i = \\frac{1}{P(\\text{Treatment}_i | X_i)}\n\\]\nThis upweights underrepresented observations and downweights overrepresented ones, creating balance in expectation.",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#average-treatment-effect-ate",
+    "href": "matching_iptw.html#average-treatment-effect-ate",
+    "title": "Matching Methods",
+    "section": "Average Treatment Effect (ATE)",
+    "text": "Average Treatment Effect (ATE)\nTo estimate the population average treatment effect, use ATE weights:\n\\[\nw_i^{ATE} = \\frac{T_i}{e(X_i)} + \\frac{1 - T_i}{1 - e(X_i)}\n\\]\n\nTreated observations get weight \\(1/e(X_i)\\)\nControl observations get weight \\(1/(1-e(X_i))\\)\n\nThe weighted mean difference estimates the ATE:\n\\[\n\\hat{\\tau}^{ATE} = \\frac{1}{n}\\sum_{i=1}^n w_i^{ATE} \\cdot Y_i \\cdot (2T_i - 1)\n\\]\nAlternatively: \\[\n\\hat{\\tau}^{ATE} = \\frac{\\sum_{i=1}^n \\frac{T_i \\cdot Y_i}{e(X_i)}}{\\sum_{i=1}^n \\frac{T_i}{e(X_i)}} - \\frac{\\sum_{i=1}^n \\frac{(1-T_i) \\cdot Y_i}{1-e(X_i)}}{\\sum_{i=1}^n \\frac{1-T_i}{1-e(X_i)}}\n\\]\nTarget population: The entire population (both treated and untreated)",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#average-treatment-effect-on-the-treated-att",
+    "href": "matching_iptw.html#average-treatment-effect-on-the-treated-att",
+    "title": "Matching Methods",
+    "section": "Average Treatment Effect on the Treated (ATT)",
+    "text": "Average Treatment Effect on the Treated (ATT)\nTo estimate the effect for the treated population, use ATT weights:\n\\[\nw_i^{ATT} = T_i + (1 - T_i) \\cdot \\frac{e(X_i)}{1 - e(X_i)}\n\\]\n\nTreated observations get weight 1\nControl observations get weight \\(e(X_i)/(1-e(X_i))\\)\n\nThis reweights controls to look like the treated group.\n\\[\n\\hat{\\tau}^{ATT} = \\frac{1}{n_1}\\sum_{i=1}^n w_i^{ATT} \\cdot Y_i \\cdot (T_i - (1-T_i))\n\\]\nTarget population: The treated group",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#average-treatment-effect-on-the-untreated-atu",
+    "href": "matching_iptw.html#average-treatment-effect-on-the-untreated-atu",
+    "title": "Matching Methods",
+    "section": "Average Treatment Effect on the Untreated (ATU)",
+    "text": "Average Treatment Effect on the Untreated (ATU)\nSymmetrically, for the untreated population:\n\\[\nw_i^{ATU} = T_i \\cdot \\frac{1 - e(X_i)}{e(X_i)} + (1 - T_i)\n\\]\nTarget population: The untreated group",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#overlap-weights",
+    "href": "matching_iptw.html#overlap-weights",
+    "title": "Matching Methods",
+    "section": "Overlap Weights",
+    "text": "Overlap Weights\nTo improve stability by focusing on the region of common support, use overlap weights (Li, Morgan, and Zaslavsky 2018):\n\\[\nw_i^{OW} = (1 - T_i) \\cdot e(X_i) + T_i \\cdot (1 - e(X_i))\n\\]\nThese weights emphasize the population where treatment assignment is most uncertain (near \\(e(X) = 0.5\\)) and downweight extreme propensity scores.",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#step-1-estimate-propensity-scores",
+    "href": "matching_iptw.html#step-1-estimate-propensity-scores",
+    "title": "Matching Methods",
+    "section": "Step 1: Estimate Propensity Scores",
+    "text": "Step 1: Estimate Propensity Scores\nFit a logistic regression (or more flexible model) to predict treatment:\n# R example\nps_model &lt;- glm(treatment ~ age + education + income + gender, \n                data = df, \n                family = binomial(link = \"logit\"))\n\ndf$propensity &lt;- predict(ps_model, type = \"response\")",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#step-2-calculate-weights",
+    "href": "matching_iptw.html#step-2-calculate-weights",
+    "title": "Matching Methods",
+    "section": "Step 2: Calculate Weights",
+    "text": "Step 2: Calculate Weights\nChoose the appropriate weight for your estimand:\n# ATE weights\ndf$weight_ate &lt;- with(df, treatment / propensity + \n                             (1 - treatment) / (1 - propensity))\n\n# ATT weights\ndf$weight_att &lt;- with(df, treatment + \n                          (1 - treatment) * propensity / (1 - propensity))\n\n# Stabilized ATE weights\np_treat &lt;- mean(df$treatment)\ndf$weight_ate_stab &lt;- with(df, \n  treatment * p_treat / propensity + \n  (1 - treatment) * (1 - p_treat) / (1 - propensity))",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#step-3-check-balance",
+    "href": "matching_iptw.html#step-3-check-balance",
+    "title": "Matching Methods",
+    "section": "Step 3: Check Balance",
+    "text": "Step 3: Check Balance\nVerify that weighting improves covariate balance by computing weighted standardized mean differences:\n# Weighted SMD\nlibrary(cobalt)\nbal.tab(treatment ~ age + education + income + gender,\n        data = df,\n        weights = \"weight_ate\",\n        method = \"weighting\")",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#step-4-estimate-treatment-effect",
+    "href": "matching_iptw.html#step-4-estimate-treatment-effect",
+    "title": "Matching Methods",
+    "section": "Step 4: Estimate Treatment Effect",
+    "text": "Step 4: Estimate Treatment Effect\nFit a weighted regression:\n# Weighted outcome model\neffect_model &lt;- lm(outcome ~ treatment, \n                   data = df, \n                   weights = weight_ate)\nsummary(effect_model)",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#advantages",
+    "href": "matching_iptw.html#advantages",
+    "title": "Matching Methods",
+    "section": "Advantages",
+    "text": "Advantages\n✓ Retains full sample - No observations discarded (unlike matching)\n✓ Efficient - Uses all available data\n✓ Flexible estimands - Easy to target ATE, ATT, or other parameters\n✓ Transparent - Clear connection to survey weighting methods\n✓ Doubly robust option - Can combine with outcome regression (see AIPW)",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#limitations",
+    "href": "matching_iptw.html#limitations",
+    "title": "Matching Methods",
+    "section": "Limitations",
+    "text": "Limitations\n✗ Sensitive to extreme weights - Poor overlap can create unstable estimates\n✗ Model dependence - Relies heavily on correct propensity score specification\n✗ Extrapolation - May estimate effects in regions with little empirical support\n✗ Variance estimation - Requires careful handling of uncertainty in weights\n✗ Positivity violations - Fails when \\(e(X) \\approx 0\\) or \\(e(X) \\approx 1\\)",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#weight-distribution",
+    "href": "matching_iptw.html#weight-distribution",
+    "title": "Matching Methods",
+    "section": "Weight Distribution",
+    "text": "Weight Distribution\nCheck for extreme weights:\n# Summary statistics\nsummary(df$weight_ate)\n\n# Flag extreme weights\nquantile(df$weight_ate, c(0.95, 0.99, 1.0))\n\n# Visualize\nggplot(df, aes(x = weight_ate)) +\n  geom_histogram() +\n  geom_vline(xintercept = quantile(df$weight_ate, 0.99), \n             color = \"red\", linetype = \"dashed\")",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#trimming-weights",
+    "href": "matching_iptw.html#trimming-weights",
+    "title": "Matching Methods",
+    "section": "Trimming Weights",
+    "text": "Trimming Weights\nIf weights are extreme, consider:\n\nTruncation - Cap weights at a threshold\nTrimming propensity scores - Exclude observations with \\(e(X) &lt; 0.05\\) or \\(e(X) &gt; 0.95\\)\nOverlap weights - Use alternative weighting scheme\n\n# Trim propensity scores\ndf_trimmed &lt;- df %&gt;%\n  filter(propensity &gt; 0.05 & propensity &lt; 0.95)\n\n# Truncate weights\nmax_weight &lt;- quantile(df$weight_ate, 0.99)\ndf$weight_ate_trimmed &lt;- pmin(df$weight_ate, max_weight)",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
+    ]
+  },
+  {
+    "objectID": "matching_iptw.html#propensity-score-overlap",
+    "href": "matching_iptw.html#propensity-score-overlap",
+    "title": "Matching Methods",
+    "section": "Propensity Score Overlap",
+    "text": "Propensity Score Overlap\nVisualize common support:\nggplot(df, aes(x = propensity, fill = factor(treatment))) +\n  geom_density(alpha = 0.5) +\n  labs(title = \"Propensity Score Overlap\",\n       x = \"Propensity Score\",\n       fill = \"Treatment\") +\n  theme_minimal()",
+    "crumbs": [
+      "Matching Methods",
+      "Inverse Probability Weighting"
     ]
   }
 ]

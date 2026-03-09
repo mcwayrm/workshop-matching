@@ -1,0 +1,631 @@
+---
+title: "Matching Methods"
+subtitle: "Entropy Balancing"
+bibliography: references.bib
+---
+
+# Introduction
+
+**Entropy balancing** is a preprocessing method that reweights control observations to achieve exact covariate balance on specified moments (means, variances, skewness) while staying as close as possible to uniform weights [@hainmueller2012entropy].
+
+Unlike propensity score weighting, which estimates weights indirectly through a propensity score model, entropy balancing directly solves for weights that satisfy user-specified balance constraints. This approach:
+
+- Achieves **exact balance** on specified moments by construction
+- Requires **no iterative model specification** searching for balance
+- Produces **stable weights** through maximum entropy optimization
+- Combines advantages of **matching and weighting** methods
+
+## The Core Insight
+
+Traditional matching methods involve two steps:
+
+1. Estimate propensity scores (or distances)
+2. Check if resulting matches achieve balance
+
+Entropy balancing **reverses this logic**:
+
+1. Specify desired balance constraints directly
+2. Solve for weights that satisfy those constraints
+
+This guarantees balance on chosen moments without iterative model tweaking.
+
+# Mathematical Formulation
+
+## The Optimization Problem
+
+Entropy balancing finds weights $w_i$ for control observations ($T_i = 0$) that minimize:
+
+$$
+H(w) = \sum_{i: T_i=0} h(w_i)
+$$
+
+subject to balance and normalization constraints.
+
+### Objective Function
+
+The objective uses a **distance metric** (typically Shannon entropy):
+
+$$
+h(w_i) = w_i \log(w_i / q_i)
+$$
+
+where $q_i$ is a base weight (typically $q_i = 1$ for uniform base weights).
+
+This is equivalent to minimizing the Kullback-Leibler divergence from the base weights, ensuring weights are as uniform as possible while satisfying constraints.
+
+### Balance Constraints
+
+The key constraints enforce exact balance on covariate moments:
+
+**Moment balance constraints:**
+$$
+\sum_{i: T_i=0} w_i c_{ri}(\mathbf{X}_i) = \sum_{j: T_j=1} c_{rj}(\mathbf{X}_j) \quad \text{for } r = 1, \ldots, R
+$$
+
+where $c_r(\mathbf{X})$ are covariate moment functions.
+
+### Normalization Constraint
+
+Weights must sum to the number of controls:
+
+$$
+\sum_{i: T_i=0} w_i = N_0
+$$
+
+where $N_0$ is the number of control observations.
+
+## Common Balance Targets
+
+### First Moment (Means)
+
+For covariate $X_k$:
+$$
+\sum_{i: T_i=0} w_i X_{ik} = \sum_{j: T_j=1} X_{jk}
+$$
+
+This ensures weighted control mean equals treated mean.
+
+### Second Moment (Variances)
+
+$$
+\sum_{i: T_i=0} w_i X_{ik}^2 = \sum_{j: T_j=1} X_{jk}^2
+$$
+
+Balances not just means but also variances.
+
+### Higher Moments and Interactions
+
+Can include:
+- Skewness: $E[X^3]$
+- Interactions: $E[X_j \cdot X_k]$
+- Polynomials: $E[X^2], E[X^3]$
+
+## ATT vs ATE
+
+**ATT weights** (default): Balance controls to match treated group
+- Treated units get weight 1
+- Only control units are reweighted
+
+**ATE weights**: Balance both groups to population
+- Requires additional constraints on treated units
+- Less commonly used in practice
+
+# Statistical Workflow
+
+## Step 1: Specify Covariates and Moments
+
+Decide which variables and moments to balance:
+
+```r
+# R example
+balance_vars <- c("age", "education", "income", "female")
+moments <- list(c(1, 2))  # Balance means and variances
+```
+
+## Step 2: Fit Entropy Balancing
+
+Solve the optimization problem:
+
+```r
+library(ebal)
+eb_out <- ebalance(Treatment = df$treatment,
+                   X = df[, balance_vars])
+```
+
+## Step 3: Extract Weights
+
+```r
+# Control weights
+df$weight[df$treatment == 0] <- eb_out$w
+
+# Treated weights (always 1 for ATT)
+df$weight[df$treatment == 1] <- 1
+```
+
+## Step 4: Check Balance
+
+Verify exact balance achieved:
+
+```r
+library(cobalt)
+bal.tab(treatment ~ age + education + income + female,
+        data = df,
+        weights = "weight",
+        method = "weighting")
+```
+
+## Step 5: Estimate Treatment Effect
+
+```r
+# Weighted regression
+effect_model <- lm(outcome ~ treatment, 
+                   data = df, 
+                   weights = weight)
+summary(effect_model)
+```
+
+# Examples
+
+::: {.panel-tabset}
+
+## R 
+
+```{r}
+#| eval: false
+#| code-fold: false
+
+library(tidyverse)
+library(ebal)
+library(cobalt)
+
+# Load data
+data <- read_csv("data.csv")
+
+# Prepare covariate matrix
+covariates <- c("age", "sex", "education", "income", "region")
+X <- data %>%
+  filter(treatment == 0) %>%
+  select(all_of(covariates)) %>%
+  as.matrix()
+
+T_vec <- data %>% pull(treatment)
+
+# Fit entropy balancing
+eb_fit <- ebalance(Treatment = T_vec, X = X)
+
+# Examine balance improvement
+print(eb_fit)
+
+# Extract weights
+data$weight <- 1  # Initialize all weights to 1
+data$weight[data$treatment == 0] <- eb_fit$w
+
+# Verify balance
+bal_check <- bal.tab(
+  reformulate(covariates, "treatment"),
+  data = data,
+  weights = "weight",
+  method = "weighting",
+  stats = c("m", "v"),
+  thresholds = c(m = 0.05, v = 2)
+)
+
+print(bal_check)
+
+# Visualize balance
+love.plot(bal_check, 
+          threshold = 0.1,
+          abs = TRUE,
+          var.order = "unadjusted",
+          colors = c("red", "blue"))
+
+# Check weight distribution
+summary(data$weight[data$treatment == 0])
+
+ggplot(data %>% filter(treatment == 0), 
+       aes(x = weight)) +
+  geom_histogram(bins = 30, fill = "steelblue") +
+  labs(title = "Distribution of Entropy Balancing Weights",
+       x = "Weight", y = "Count") +
+  theme_minimal()
+
+# Estimate treatment effect
+att_model <- lm(outcome ~ treatment, 
+                data = data, 
+                weights = weight)
+
+# Robust standard errors
+library(sandwich)
+library(lmtest)
+coeftest(att_model, vcov = vcovHC(att_model, type = "HC3"))
+
+# Alternative: Use WeightIt package
+library(WeightIt)
+W <- weightit(treatment ~ age + sex + education + income + region,
+              data = data,
+              method = "ebal",
+              estimand = "ATT")
+
+summary(W)
+bal.tab(W, stats = c("m", "v"), thresholds = c(m = 0.05))
+
+# Estimate with marginaleffects
+library(marginaleffects)
+fit <- lm(outcome ~ treatment, 
+          data = data, 
+          weights = W$weights)
+
+avg_comparisons(fit, variables = "treatment",
+                vcov = "HC3")
+```
+
+## Python 
+
+```{python}
+#| eval: false
+#| code-fold: false
+
+import pandas as pd
+import numpy as np
+from scipy.optimize import minimize
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
+def entropy_balancing(X_control, X_treated, max_iter=1000):
+    """
+    Compute entropy balancing weights for control group
+    
+    Parameters:
+    -----------
+    X_control : array-like, shape (n_control, p)
+        Covariate matrix for control group
+    X_treated : array-like, shape (n_treated, p)
+        Covariate matrix for treated group
+    
+    Returns:
+    --------
+    weights : array, shape (n_control,)
+        Entropy balancing weights for controls
+    """
+    n_control = X_control.shape[0]
+    p = X_control.shape[1]
+    
+    # Target moments (treated group means)
+    target_means = X_treated.mean(axis=0)
+    
+    # Objective: minimize entropy
+    def objective(w):
+        # Shannon entropy
+        return np.sum(w * np.log(w / (1.0)))
+    
+    # Constraint: moment balance
+    def balance_constraint(w):
+        weighted_means = (w[:, None] * X_control).sum(axis=0) / w.sum()
+        return weighted_means - target_means
+    
+    # Constraint: weights sum to n_control
+    def sum_constraint(w):
+        return w.sum() - n_control
+    
+    # Initial weights (uniform)
+    w0 = np.ones(n_control)
+    
+    # Constraints
+    constraints = [
+        {'type': 'eq', 'fun': sum_constraint},
+        {'type': 'eq', 'fun': balance_constraint}
+    ]
+    
+    # Bounds: weights must be positive
+    bounds = [(0.001, None) for _ in range(n_control)]
+    
+    # Optimize
+    result = minimize(objective, w0, 
+                     method='SLSQP',
+                     bounds=bounds,
+                     constraints=constraints,
+                     options={'maxiter': max_iter})
+    
+    return result.x
+
+# Load data
+data = pd.read_csv('data.csv')
+
+# Prepare covariates
+covariates = ['age', 'sex', 'education', 'income']
+X_control = data.loc[data['treatment'] == 0, covariates].values
+X_treated = data.loc[data['treatment'] == 1, covariates].values
+
+# Compute entropy balancing weights
+eb_weights = entropy_balancing(X_control, X_treated)
+
+# Assign weights to data
+data['weight'] = 1.0  # Treated units get weight 1
+data.loc[data['treatment'] == 0, 'weight'] = eb_weights
+
+# Check balance
+def check_balance(data, covariates, treatment_col, weight_col):
+    """Calculate weighted standardized mean differences"""
+    results = []
+    for var in covariates:
+        treated = data[data[treatment_col] == 1]
+        control = data[data[treatment_col] == 0]
+        
+        # Weighted means
+        mean_t = treated[var].mean()
+        mean_c = np.average(control[var], weights=control[weight_col])
+        
+        # Pooled standard deviation (unweighted for reference)
+        pooled_sd = np.sqrt((treated[var].var() + control[var].var()) / 2)
+        
+        smd = (mean_t - mean_c) / pooled_sd
+        results.append({'Variable': var, 'SMD': smd})
+    
+    return pd.DataFrame(results)
+
+balance_table = check_balance(data, covariates, 'treatment', 'weight')
+print("Balance after entropy balancing:")
+print(balance_table)
+
+# Estimate treatment effect
+outcome_model = smf.wls('outcome ~ treatment', 
+                        data=data, 
+                        weights=data['weight']).fit()
+
+print("\nTreatment Effect Estimate:")
+print(outcome_model.summary())
+
+# Robust standard errors
+print("\nRobust standard errors:")
+print(outcome_model.get_robustcov_results(cov_type='HC3').summary())
+
+# Weight diagnostics
+print("\nWeight Distribution (Controls):")
+print(data.loc[data['treatment'] == 0, 'weight'].describe())
+```
+
+## Stata
+
+```{stata}
+#| eval: false
+#| code-fold: false
+
+* Load data
+use "data.dta", clear
+
+* Install ebalance package if needed
+* ssc install ebalance
+
+* Fit entropy balancing
+* Balance on means (first moment) only
+ebalance treatment age education income i.sex, ///
+    targets(1) ///
+    generate(eb_weight)
+
+* Check balance
+ebalance summarize
+
+* Visualize balance
+ebalance plot treatment age education income, ///
+    weights(eb_weight)
+
+* Alternative: Include second moments (variances)
+ebalance treatment age education income i.sex, ///
+    targets(1 2) ///
+    generate(eb_weight2)
+
+* Compare balance
+tebalance summarize age education income, ///
+    baseline ///
+    weight(eb_weight)
+
+* Estimate treatment effect
+reg outcome treatment [aweight=eb_weight], robust
+
+* Store results
+estimates store eb_att
+
+* Compare to unweighted
+reg outcome treatment, robust
+estimates store unweighted
+
+* Compare estimates
+estimates table eb_att unweighted, ///
+    b(%7.3f) se(%7.3f) ///
+    stats(N r2)
+
+* Check weight distribution
+summarize eb_weight if treatment == 0, detail
+
+histogram eb_weight if treatment == 0, ///
+    title("Entropy Balancing Weights (Controls)") ///
+    xtitle("Weight") ///
+    ytitle("Frequency")
+```
+
+:::
+
+# Advantages and Limitations
+
+## Advantages
+
+✓ **Exact balance** - Achieves perfect balance on specified moments by construction  
+✓ **No model searching** - Eliminates iterative propensity score specification  
+✓ **Stable weights** - Maximum entropy ensures smooth weight distribution  
+✓ **Transparent** - Clear specification of balance requirements  
+✓ **Flexible** - Can balance means, variances, skewness, interactions  
+✓ **Efficiency** - Retains all observations (like IPW)  
+✓ **Intuitive** - Direct optimization of balance constraints
+
+## Limitations
+
+✗ **Balance target choice** - User must specify which moments to balance  
+✗ **No overlap enforcement** - Doesn't automatically address positivity violations  
+✗ **Computational intensity** - Optimization can be slow for large datasets  
+✗ **Perfect balance risk** - May overfit to sample noise rather than population  
+✗ **Linear combinations only** - Balances specified moments, not all possible functions  
+✗ **Extrapolation** - Can produce large weights if groups are very different
+
+# Comparison to Other Methods
+
+## Entropy Balancing vs IPW
+
+| Feature | Entropy Balancing | IPW |
+|---------|-------------------|-----|
+| Balance | Exact on chosen moments | Approximate |
+| Propensity model | Not required | Required |
+| Iteration | One-step | May need respecification |
+| Moment control | User specifies | Indirect |
+| Weights | Optimized for balance | Based on PS model |
+| Transparency | High | Moderate |
+
+## Entropy Balancing vs Matching
+
+| Feature | Entropy Balancing | Matching |
+|---------|-------------------|----------|
+| Sample size | Retains all data | May discard |
+| Balance | Exact on moments | Approximate |
+| Implementation | Optimization | Algorithm |
+| Weights | Continuous | Binary (1:1) or discrete |
+| Estimand | ATT primarily | ATT primarily |
+
+## When to Use Entropy Balancing
+
+**Ideal scenarios:**
+
+- You know which moments need balancing (means, variances)
+- Sample size is moderate to large
+- You want guaranteed exact balance on key variables
+- Propensity score modeling is difficult or controversial
+
+**Use alternatives when:**
+
+- Very small sample sizes (matching may be better)
+- Extreme covariate imbalance (may produce extreme weights)
+- Need to enforce common support explicitly (use trimming)
+
+# Theoretical Properties
+
+## Asymptotic Properties
+
+Under standard regularity conditions [@hainmueller2012entropy]:
+
+1. **Consistency**: $\hat{\tau}^{ATT} \xrightarrow{p} \tau^{ATT}$
+2. **Asymptotic normality**: $\sqrt{n}(\hat{\tau}^{ATT} - \tau^{ATT}) \xrightarrow{d} N(0, V)$
+
+## Double Robustness
+
+Entropy balancing combined with covariate adjustment in the outcome model provides **double robustness**:
+
+$$
+E[Y_i|T_i, X_i] = \alpha + \tau T_i + X_i^\top \gamma
+$$
+
+The estimate is consistent if either:
+- The entropy balancing achieves correct balance, OR
+- The outcome model is correctly specified
+
+# Practical Considerations
+
+## Choosing Moments to Balance
+
+**First moments (means)** - Always include:
+```r
+ebal(..., moments = 1)
+```
+
+**Second moments (variances)** - Add for distributional similarity:
+```r
+ebal(..., moments = c(1, 2))
+```
+
+**Higher moments** - Use sparingly to avoid overfitting:
+```r
+ebal(..., moments = c(1, 2, 3))
+```
+
+## Handling Extreme Weights
+
+If weights become very large:
+
+1. **Check overlap**: Visualize propensity score distributions
+2. **Trim sample**: Remove units with extreme covariate values
+3. **Relax constraints**: Balance fewer moments
+4. **Use covariate adjustment**: Include covariates in outcome model
+
+```r
+# Check for extreme weights
+quantile(eb_weight, c(0.95, 0.99, 1.0))
+
+# Flag extreme weights
+extreme <- eb_weight > quantile(eb_weight, 0.99)
+table(extreme)
+```
+
+## Diagnostics
+
+### Balance Checks
+
+```r
+# Standardized mean differences should be ~0
+bal.tab(treatment ~ covariates, 
+        data = df,
+        weights = "weight",
+        stats = "m")
+
+# Variance ratios should be ~1
+bal.tab(treatment ~ covariates,
+        data = df, 
+        weights = "weight",
+        stats = "v")
+```
+
+### Weight Distribution
+
+```r
+# Summary statistics
+summary(df$weight[df$treatment == 0])
+
+# Effective sample size
+sum(df$weight[df$treatment == 0])^2 / 
+  sum(df$weight[df$treatment == 0]^2)
+```
+
+# Extensions
+
+## Multivariate Balancing
+
+Balance on interactions and polynomials:
+
+```r
+# Create interaction terms
+df$age_edu <- df$age * df$education
+
+# Include in balancing
+ebalance(treatment, 
+         X = cbind(age, education, age_edu))
+```
+
+## Stable Balancing Weights
+
+Extension by @zhao2017covariate adds stability constraints:
+
+$$
+\min H(w) \quad \text{s.t. balance and } \max(w_i) \leq M
+$$
+
+## Kernel Balancing
+
+@hazlett2018kernel proposes kernel-based approach for nonlinear balance.
+
+# References
+
+Key papers on entropy balancing:
+
+- @hainmueller2012entropy - Original entropy balancing method
+- @zhao2017covariate - Stable balancing weights extensions
+- @hazlett2018kernel - Kernel balancing for nonparametric balance
+- @vegetabile2021nonparametric - Nonparametric preprocessing methods
+
+::: {#refs}
+:::

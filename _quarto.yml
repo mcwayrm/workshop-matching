@@ -12,10 +12,10 @@ website:
     
   page-footer: 
     right: "<div style='text-align:right;'>&copy; Copyright 2026, Ryan McWay. This site is built with <a href='https://quarto.org/' style='color:#1f4d4a;font-weight:bold;'>Quarto</a></div>"
-    background: "#c09925"
+    background: "#f2da61"
 
   sidebar:
-    background: "#c09925"
+    background: "#f2da61"
     pinned: true
     align: center
     style: "docked"
@@ -37,6 +37,10 @@ website:
             text: Covariate Matching
           - href: matching_lasso.qmd
             text: LASSO Matching
+          - href: matching_iptw.qmd
+            text: Inverse Probability Weighting
+          - href: matching_entropy.qmd
+            text: Entropy Balancing
           - href: matching_double_robust.qmd
             text: Doubly Robust Estimation
       - href: sensitivity.qmd

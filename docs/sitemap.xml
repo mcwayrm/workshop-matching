@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://mcwayrm.github.io/matching_methods/matching_entropy.html</loc>
+    <lastmod>2026-03-09T03:18:42.000Z</lastmod>
+  </url>
+  <url>
     <loc>https://mcwayrm.github.io/matching_methods/matching_double_robust.html</loc>
     <lastmod>2026-03-09T02:24:02.000Z</lastmod>
   </url>
@@ -34,7 +38,7 @@
   </url>
   <url>
     <loc>https://mcwayrm.github.io/matching_methods/concept.html</loc>
-    <lastmod>2026-03-09T01:41:02.000Z</lastmod>
+    <lastmod>2026-03-09T03:03:36.000Z</lastmod>
   </url>
   <url>
     <loc>https://mcwayrm.github.io/matching_methods/matching_cvm.html</loc>
@@ -51,5 +55,9 @@
   <url>
     <loc>https://mcwayrm.github.io/matching_methods/matching_lasso.html</loc>
     <lastmod>2026-03-09T02:24:02.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://mcwayrm.github.io/matching_methods/matching_iptw.html</loc>
+    <lastmod>2026-03-09T03:19:30.000Z</lastmod>
   </url>
 </urlset>
