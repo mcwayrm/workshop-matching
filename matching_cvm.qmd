@@ -68,8 +68,8 @@ Again, we use the `lalonde` data from the `MatchIt` R package as described in [P
 ```{r}
 #| cache: true
 
-library(MatchIt)
-library(Matching)
+library(MatchIt, quietly = TRUE)
+library(Matching, quietly = TRUE)
 
 # Download the lalonde data 
 df <- MatchIt::lalonde
@@ -102,8 +102,8 @@ plot(m.out2, type = "density", which.xs = ~age + educ, interactive = FALSE)
 matched_data <- match.data(m.out2)
 
 # Estimate treatment effect
-library(lmtest)
-library(sandwich)
+library(lmtest, quietly = TRUE)
+library(sandwich, quietly = TRUE)
 
 fit <- lm(re78 ~ treat + age + educ + race + married + nodegree + re74 + re75,
         data = matched_data, # Data already has matches
@@ -212,7 +212,7 @@ This provides **ex ante control** over balance.
 ```{r}
 #| cache: true
 
-library(cem)
+library(cem, quietly = TRUE)
 
 # Automatic coarsening
 mat <- cem(
@@ -244,7 +244,7 @@ import rpy2.robjects as ro
 from rpy2.robjects import pandas2ri
 pandas2ri.activate()
 
-ro.r('library(cem)')
+ro.r('library(cem, quietly = TRUE)')
 
 # Convert pandas df to R df
 r_data = pandas2ri.py2rpy(data)
@@ -312,7 +312,7 @@ where $b_k$ is a balance metric (e.g., standardized mean difference, KS statisti
 ```{r}
 #| cache: true
 
-library(Matching)
+library(Matching, quietly = TRUE)
 
 # Data
 data(lalonde) # same as df above
@@ -332,7 +332,8 @@ genout <- GenMatch(
     M=1,
     pop.size=16, 
     max.generations=10, 
-    wait.generations=1)
+    wait.generations=1, 
+    print.level = 0)
 
 # Match using optimized weights
 mout <- Match(
@@ -395,7 +396,7 @@ where $w_i^{(0)} = 1/n_0$ are uniform base weights.
 ```{r}
 #| cache: true
 
-library(ebal)
+library(ebal, quietly = TRUE)
 
 # Entropy balancing
 eb.out <- ebalance(

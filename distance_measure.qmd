@@ -26,7 +26,7 @@ Before selecting a distance measure, determine which covariates to include:
 
 Selecting on these covariates will be determined by a matching algorithim commonly referred to as a matching method. For each of the subsequent matching methods, you can determine the degree of tolerance between matching across treatment and control units. The diagram visually show how this varies by the caliper size (viz., degree of tolerance). Caliper size has a tradeoff. The smaller the caliper, the closer the match. But larger the caliper, the larger the selection of controls. 
 
-![](./assets/images/caliper_size.png)
+![](./assets/images/caliper_size.png){width=90%}
 
 # Coarsened Exact Matching
 
@@ -62,7 +62,7 @@ $$
 where $p$ is the number of covariates and $X_{ik}$ is the $k$-th covariate for observation $i$.
 
 
-![](/assets/images/euclidean_distance.png)
+![](/assets/images/euclidean_distance.png){width=70%}
 
 **When It Works:**
 

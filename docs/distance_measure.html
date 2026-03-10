@@ -57,7 +57,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-4bfece9002f65aa168ea8461ef0c0dc7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-45fcae083e787b4fc76b5362557656cf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -320,7 +320,7 @@ window.Quarto = {
 <li>Pure instrumental variables (increases variance without reducing bias)</li>
 </ul>
 <p>Selecting on these covariates will be determined by a matching algorithim commonly referred to as a matching method. For each of the subsequent matching methods, you can determine the degree of tolerance between matching across treatment and control units. The diagram visually show how this varies by the caliper size (viz., degree of tolerance). Caliper size has a tradeoff. The smaller the caliper, the closer the match. But larger the caliper, the larger the selection of controls.</p>
-<p><img src="./assets/images/caliper_size.png" class="img-fluid"></p>
+<p><img src="./assets/images/caliper_size.png" class="img-fluid" style="width:90.0%"></p>
 </section>
 <section id="coarsened-exact-matching" class="level1">
 <h1>Coarsened Exact Matching</h1>
@@ -351,7 +351,7 @@ D_{ij} = \begin{cases}
 D_{E}(X_i, X_j) = \sqrt{\sum_{k=1}^{p} (X_{ik} - X_{jk})^2}
 \]</span></p>
 <p>where <span class="math inline">\(p\)</span> is the number of covariates and <span class="math inline">\(X_{ik}\)</span> is the <span class="math inline">\(k\)</span>-th covariate for observation <span class="math inline">\(i\)</span>.</p>
-<p><img src=".\assets/images/euclidean_distance.png" class="img-fluid"></p>
+<p><img src=".\assets/images/euclidean_distance.png" class="img-fluid" style="width:70.0%"></p>
 <p><strong>When It Works:</strong></p>
 <ul>
 <li><strong>Few covariates</strong> (<span class="math inline">\(p &lt; 10\)</span>) with continuous measures</li>

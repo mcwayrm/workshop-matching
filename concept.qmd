@@ -235,7 +235,7 @@ $$
 This means that, after controlling for observed covariates $X$, treatment is "as good as randomly assigned." All variables that jointly affect treatment assignment and outcomes must be observed and included in $X$. In the following diagram, $W$ is a confounder which violates this assumption.
 
 
-![](./assets/images/confoundness.png)
+![](./assets/images/confoundness.png){width=80%}
 
 ### 2. Common Support (Overlap/Positivity)
 
@@ -251,7 +251,7 @@ $$
 - Matching naturally enforces common support by discarding units outside the region of overlap
 - This "pruning" improves internal validity but may reduce external validity
 
-![](./assets/images/common_support.png)
+![](./assets/images/common_support.png){width=120%}
 
 ### 3. Stable Unit Treatment Value Assumption (SUTVA)
 

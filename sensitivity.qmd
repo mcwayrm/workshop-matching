@@ -24,8 +24,7 @@ Without overlap, comparisons require **extrapolation** beyond the empirical data
 ```{r}
 #| eval: false
 
-library(ggplot2)
-
+library(ggplot2, quietly = TRUE)
 # Visualize propensity score distributions
 ggplot(data, aes(x = pscore, fill = factor(treat))) +
   geom_histogram(alpha = 0.5, position = "identity", bins = 30) +
@@ -108,8 +107,7 @@ Display standardized mean differences before and after matching:
 ```{r}
 #| eval: false
 
-library(cobalt)
-
+library(cobalt, quietly = TRUE)
 bal.plot(m.out, var.name = "distance", which = "both")
 
 love.plot(m.out, threshold = 0.1, 
@@ -175,23 +173,30 @@ $$
 2. For each $\Gamma$, compute **bounds** on the p-value or treatment effect estimate
 3. Report the **critical $\Gamma$** at which the effect becomes insignificant
 
+# Estimation 
+
 ::: {.panel-tabset}
 
 ## R
 
 ```{r}
-#| eval: false
+#| cache: true
 
-library(rbounds)
-library(MatchIt)
+library(rbounds, quietly = TRUE)
+library(MatchIt, quietly = TRUE)
+
+# Download the lalonde data 
+df <- MatchIt::lalonde
 
 # Perform matching
-m.out <- matchit(treat ~ age + educ, data = mydata, method = "nearest")
+m.out <- matchit(treat ~ age + educ + race + married + nodegree + re74 + re75, 
+    data = df, 
+    method = "nearest")
 matched_data <- match.data(m.out)
 
 # Split into groups
-treat_y <- matched_data$outcome[matched_data$treat == 1]
-control_y <- matched_data$outcome[matched_data$treat == 0]
+treat_y <- matched_data$re78[matched_data$treat == 1]
+control_y <- matched_data$re78[matched_data$treat == 0]
 
 # P-value sensitivity
 psens(treat_y, control_y, Gamma = 3, GammaInc = 0.1)
@@ -213,6 +218,18 @@ If the critical $\Gamma$ is:
 - **1.5 - 2.5**: Moderately robust
 - **> 2.5**: Highly robust—unobserved confounder would need to be very strong
 
+## Python
+
+```{python}
+#| eval: false
+
+# No direct Rosenbaum bounds in Python
+# Use R via rpy2 or implement manually using Wilcoxon signed-rank test
+import rpy2.robjects as ro
+ro.r('library(rbounds, quietly = TRUE)')
+result = ro.r('psens(treat_y, control_y, Gamma=2)')
+```
+
 ## Stata
 
 ```{stata}
@@ -225,17 +242,6 @@ ssc install rbounds
 rbounds outcome, gamma(1(0.1)3)
 ```
 
-## Python
-
-```{python}
-#| eval: false
-
-# No direct Rosenbaum bounds in Python
-# Use R via rpy2 or implement manually using Wilcoxon signed-rank test
-import rpy2.robjects as ro
-ro.r('library(rbounds)')
-result = ro.r('psens(treat_y, control_y, Gamma=2)')
-```
 
 :::
 
@@ -269,8 +275,7 @@ where:
 ```{r}
 #| eval: false
 
-library(rcrbounds)
-
+library(rcrbounds, quietly = TRUE)
 # Estimate bounds
 rcr_result <- rcr(
   formula = outcome ~ treat | age + educ + married,
@@ -301,8 +306,7 @@ plot(rcr_result)
 ```{r}
 #| eval: false
 
-library(robomit)
-
+library(robomit, quietly = TRUE)
 # Compute delta*
 delta_result <- o_delta(
   y = "outcome",

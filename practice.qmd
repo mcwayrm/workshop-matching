@@ -25,9 +25,8 @@ If treated and control groups differ systematically in pre-treatment covariates,
 ```{r}
 #| eval: false
 
-library(causaldata)
-library(dplyr)
-
+library(causaldata, quietly = TRUE)
+library(dplyr, quietly = TRUE)
 br <- black_politicians
 
 # Naive difference in means
@@ -153,9 +152,8 @@ For matched pairs, Rosenbaum bounds are standard.
 ```{r}
 #| eval: false
 
-library(MatchIt)
-library(rbounds)
-
+library(MatchIt, quietly = TRUE)
+library(rbounds, quietly = TRUE)
 # Reconstruct matched dataset via MatchIt for sensitivity workflow
 m.out <- matchit(
     leg_black ~ medianhhincom + blackpercent + leg_democrat,

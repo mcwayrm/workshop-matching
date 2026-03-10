@@ -95,10 +95,9 @@ LASSO Propensity + Matching
 ```{r}
 #| cache: true
 
-library(glmnet)
-library(MatchIt)
-library(cobalt)
-
+library(glmnet, quietly = TRUE)
+library(MatchIt, quietly = TRUE)
+library(cobalt, quietly = TRUE)
 # Download the lalonde data 
 df <- MatchIt::lalonde
 

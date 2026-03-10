@@ -127,7 +127,7 @@ moments <- list(c(1, 2))  # Balance means and variances
 Solve the optimization problem:
 
 ```r
-library(ebal)
+library(ebal, quietly = TRUE)
 eb_out <- ebalance(Treatment = df$treat,
                    X = df[, balance_vars])
 ```
@@ -147,7 +147,7 @@ df$weight[df$treat == 1] <- 1
 Verify exact balance achieved:
 
 ```r
-library(cobalt)
+library(cobalt, quietly = TRUE)
 bal.tab(treat ~ age + educ + race + married + nodegree + re74 + re75,
         data = df,
         weights = "weight",
@@ -174,10 +174,9 @@ summary(effect_model)
 #| cache: true
 #| code-fold: false
 
-library(tidyverse)
-library(ebal)
-library(cobalt)
-
+library(tidyverse, quietly = TRUE)
+library(ebal, quietly = TRUE)
+library(cobalt, quietly = TRUE)
 # Download the lalonde data 
 data <- MatchIt::lalonde
 
@@ -235,8 +234,8 @@ att_model <- lm(re78 ~ treat,
                 weights = weight)
 
 # Robust standard errors
-library(sandwich)
-library(lmtest)
+library(sandwich, quietly = TRUE)
+library(lmtest, quietly = TRUE)
 coeftest(att_model, vcov = vcovHC(att_model, type = "HC3"))
 
 # Alternative: Use WeightIt package

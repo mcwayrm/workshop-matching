@@ -91,7 +91,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-4bfece9002f65aa168ea8461ef0c0dc7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-45fcae083e787b4fc76b5362557656cf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -408,42 +408,41 @@ window.Quarto = {
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MatchIt)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the lalonde data </span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> MatchIt<span class="sc">::</span>lalonde</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: matching (example)</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> married <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">data =</span> data,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">"nearest"</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">ratio =</span> <span class="dv">1</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">caliper =</span> <span class="fl">0.2</span>)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>matched <span class="ot">&lt;-</span> <span class="fu">match.data</span>(m.out)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: propensity model on matched sample</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>ps_mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> married <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> matched)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>matched<span class="sc">$</span>ps <span class="ot">&lt;-</span> <span class="fu">pmin</span>(<span class="fu">pmax</span>(<span class="fu">predict</span>(ps_mod, <span class="at">type =</span> <span class="st">"response"</span>), <span class="fl">1e-6</span>), <span class="dv">1</span> <span class="sc">-</span> <span class="fl">1e-6</span>)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: outcome models</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>mu1_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(re78 <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> married <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> <span class="fu">subset</span>(matched, treat <span class="sc">==</span> <span class="dv">1</span>))</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>mu0_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(re78 <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> married <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> <span class="fu">subset</span>(matched, treat <span class="sc">==</span> <span class="dv">0</span>))</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>matched<span class="sc">$</span>mu1 <span class="ot">&lt;-</span> <span class="fu">predict</span>(mu1_mod, <span class="at">newdata =</span> matched)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>matched<span class="sc">$</span>mu0 <span class="ot">&lt;-</span> <span class="fu">predict</span>(mu0_mod, <span class="at">newdata =</span> matched)</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: AIPW estimate</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>aipw <span class="ot">&lt;-</span> <span class="fu">with</span>(matched,</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>            <span class="fu">mean</span>(treat<span class="sc">*</span>(re78 <span class="sc">-</span> mu1)<span class="sc">/</span>ps <span class="sc">+</span> mu1 <span class="sc">-</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">-</span>treat)<span class="sc">*</span>(re78 <span class="sc">-</span> mu0)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>ps) <span class="sc">-</span> mu0))</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># AIPW Estimate</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>aipw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MatchIt, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the lalonde data </span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> MatchIt<span class="sc">::</span>lalonde</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: matching (example)</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> married <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">data =</span> data,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">"nearest"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">ratio =</span> <span class="dv">1</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">caliper =</span> <span class="fl">0.2</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>matched <span class="ot">&lt;-</span> <span class="fu">match.data</span>(m.out)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: propensity model on matched sample</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>ps_mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> married <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> matched)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>matched<span class="sc">$</span>ps <span class="ot">&lt;-</span> <span class="fu">pmin</span>(<span class="fu">pmax</span>(<span class="fu">predict</span>(ps_mod, <span class="at">type =</span> <span class="st">"response"</span>), <span class="fl">1e-6</span>), <span class="dv">1</span> <span class="sc">-</span> <span class="fl">1e-6</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: outcome models</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>mu1_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(re78 <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> married <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> <span class="fu">subset</span>(matched, treat <span class="sc">==</span> <span class="dv">1</span>))</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>mu0_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(re78 <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> married <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> <span class="fu">subset</span>(matched, treat <span class="sc">==</span> <span class="dv">0</span>))</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>matched<span class="sc">$</span>mu1 <span class="ot">&lt;-</span> <span class="fu">predict</span>(mu1_mod, <span class="at">newdata =</span> matched)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>matched<span class="sc">$</span>mu0 <span class="ot">&lt;-</span> <span class="fu">predict</span>(mu0_mod, <span class="at">newdata =</span> matched)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: AIPW estimate</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>aipw <span class="ot">&lt;-</span> <span class="fu">with</span>(matched,</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>            <span class="fu">mean</span>(treat<span class="sc">*</span>(re78 <span class="sc">-</span> mu1)<span class="sc">/</span>ps <span class="sc">+</span> mu1 <span class="sc">-</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">-</span>treat)<span class="sc">*</span>(re78 <span class="sc">-</span> mu0)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>ps) <span class="sc">-</span> mu0))</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co"># AIPW Estimate</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>aipw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 655.3255</code></pre>
 </div>

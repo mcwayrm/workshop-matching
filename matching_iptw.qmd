@@ -164,7 +164,7 @@ Verify that weighting improves covariate balance by computing weighted standardi
 
 ```r
 # Weighted SMD
-library(cobalt)
+library(cobalt, quietly = TRUE)
 bal.tab(treatment ~ age + education + income + gender,
         data = df,
         weights = "weight_ate",
@@ -193,9 +193,8 @@ summary(effect_model)
 #| cache: true
 #| code-fold: false
 
-library(tidyverse)
-library(cobalt)
-
+library(tidyverse, quietly = TRUE)
+library(cobalt, quietly = TRUE)
 # Download the lalonde data 
 data <- MatchIt::lalonde
 
@@ -244,8 +243,8 @@ ate_model <- lm(re78 ~ treat,
                 weights = weight_ate)
 
 # Robust standard errors
-library(sandwich)
-library(lmtest)
+library(sandwich, quietly = TRUE)
+library(lmtest, quietly = TRUE)
 coeftest(ate_model, vcov = vcovHC(ate_model, type = "HC3"))
 ```
 
@@ -254,8 +253,7 @@ coeftest(ate_model, vcov = vcovHC(ate_model, type = "HC3"))
 #| code-fold: false
 
 # Alternative: Use WeightIt package
-library(WeightIt)
-
+library(WeightIt, quietly = TRUE)
 W <- weightit(treat ~ age + educ + race + married + nodegree + re74 + re75,
             data = data,
             method = "ps",
@@ -265,8 +263,7 @@ summary(W)
 bal.tab(W)
 
 # Estimate effect
-library(marginaleffects)
-
+library(marginaleffects, quietly = TRUE)
 fit <- glm(re78 ~ treat, 
             data = data, 
             weights = W$weights,

@@ -186,7 +186,7 @@ The variables in this data are:
 #| cache: true
 
 # Key Matching Package
-library(MatchIt)
+library(MatchIt, quietly = TRUE)
 
 # Download the lalonde data 
 df <- MatchIt::lalonde
@@ -212,8 +212,8 @@ plot(m.out, type = "jitter", interactive = FALSE)
 matched_data <- match.data(m.out)
 
 # Estimate treatment effect
-library(lmtest)
-library(sandwich)
+library(lmtest, quietly = TRUE)
+library(sandwich, quietly = TRUE)
 
 fit <- lm(re78 ~ treat + age + educ + race + married + nodegree + re74 + re75,
         data = matched_data, # Data already has matches

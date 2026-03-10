@@ -88,8 +88,7 @@ For ATT, a doubly robust estimator can be written with treated-group focus and a
 ```{r}
 #| cache: true
 
-library(MatchIt)
-
+library(MatchIt, quietly = TRUE)
 # Download the lalonde data 
 data <- MatchIt::lalonde
 

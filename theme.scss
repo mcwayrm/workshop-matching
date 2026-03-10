@@ -9,13 +9,13 @@ $font-family: "Atkinson Hyperlegible", sans-serif;
 $body-bg: #fff;
 $body-color: #222;
 $sidebar-bg: #ffc30b;
-$sidebar-fg: #7a0019;
-$link-color: #7a0019;
+$sidebar-fg: #450011;
+$link-color: #450011;
 
 img.sidebar-logo {
   border-radius: 50%;
   object-fit: cover;
-  background: #7a0019;
+  background: #450011;
 }
 .quarto-navigation-tool .bi,
 .quarto-color-scheme-toggle .bi {
@@ -24,7 +24,7 @@ img.sidebar-logo {
 }
 
 a, a:visited {
-  color: #7a0019;
+  color: #450011;
 }
 
 a:hover, a:focus {
@@ -41,19 +41,19 @@ a:hover, a:focus {
 
 /* Sidebar link color */
 .sidebar-link {
-  color: #7a0019 !important;
+  color: #450011 !important;
 }
 
 /* Sidebar link hover/focus */
 .sidebar-link:hover,
 .sidebar-link:focus {
-  color: #7a0019 !important;
+  color: #450011 !important;
 }
 
 /* Sidebar link for current/active page */
 .sidebar-link.active,
 .sidebar-link[aria-current="page"] {
-  color: #7a0019 !important;
+  color: #450011 !important;
   font-style: italic;
 }
 
