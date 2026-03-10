@@ -220,5 +220,8 @@ Suggested student exercise:
 3. Run Rosenbaum bounds and report the critical Gamma where inference changes.
 4. Conclude whether results are robust to moderate hidden bias.
 
+
+# References
+
 ::: {#refs}
 :::

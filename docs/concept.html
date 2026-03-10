@@ -57,7 +57,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-b18a7f4b6f3202b6080e6fe89b64549f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-4bfece9002f65aa168ea8461ef0c0dc7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -243,12 +243,6 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./practice.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Practice</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./application_psp.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">The PSP Program</span></a>
   </div>
@@ -300,6 +294,7 @@ window.Quarto = {
   </ul></li>
   <li><a href="#selection-on-observables-vs.-unobservables" id="toc-selection-on-observables-vs.-unobservables" class="nav-link" data-scroll-target="#selection-on-observables-vs.-unobservables">Selection on Observables vs.&nbsp;Unobservables</a></li>
   </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
     </div>
@@ -500,8 +495,7 @@ X_i = X_j \quad \text{for matched treated-control pairs } (i, j).
 <li>Covariates are continuous</li>
 <li>Treated and control groups come from very different populations</li>
 </ul>
-<p>As dimensionality grows, exact profile matches become rare (the “curse of dimensionality”[^1]), which can lead to substantial sample loss and limit external validity even if internal validity is improved.</p>
-<p>[^1] The curse of dimensionality is a phenomena that arise when analyzing high-dimensional data, where the volume of the space increases exponentially with dimensions, causing data to become sparse and, in turn, making distance-based models struggle to generalize.</p>
+<p>As dimensionality grows, exact profile matches become rare (the “curse of dimensionality”<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>), which can lead to substantial sample loss and limit external validity even if internal validity is improved.</p>
 <p>Exact matching works best when matching on a small set of key, coarsened, or categorical covariates. When overlap is weak, researchers typically move to near-exact approaches (for example, calipers, Mahalanobis distance, or propensity score methods) to preserve more observations while still improving balance.</p>
 </section>
 </section>
@@ -584,7 +578,7 @@ X_i = X_j \quad \text{for matched treated-control pairs } (i, j).
 <li>Matching naturally enforces common support by discarding units outside the region of overlap</li>
 <li>This “pruning” improves internal validity but may reduce external validity</li>
 </ul>
-<p><img src="./assets/images/common_support.png.png" class="img-fluid"></p>
+<p><img src="./assets/images/common_support.png" class="img-fluid"></p>
 </section>
 <section id="stable-unit-treatment-value-assumption-sutva" class="level3">
 <h3 class="anchored" data-anchor-id="stable-unit-treatment-value-assumption-sutva">3. Stable Unit Treatment Value Assumption (SUTVA)</h3>
@@ -615,6 +609,10 @@ Y_i(T_i, T_{-i}) = Y_i(T_i) \quad \forall i
 <li><strong>Relative correlation restrictions</strong> (bound effects under assumptions)</li>
 <li><strong>Coefficient stability tests</strong> (assess impact of additional controls)</li>
 </ul>
+</section>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-austin2007" class="csl-entry" role="listitem">
 Austin, Peter C. 2007. <span>“The Performance of Different Propensity-Score Methods for Estimating Relative Risks.”</span> <em>Journal of Clinical Epidemiology</em> 61 (6): 537–45. <a href="https://doi.org/10.1016/j.jclinepi.2007.07.011">https://doi.org/10.1016/j.jclinepi.2007.07.011</a>.
@@ -704,9 +702,14 @@ Wacholder, Sholom, and Clarice R. Weinberg. 1982. <span>“Flexible Maximum Like
 
 
 </section>
-</section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>The curse of dimensionality is a phenomena that arise when analyzing high-dimensional data, where the volume of the space increases exponentially with dimensions, causing data to become sparse and, in turn, making distance-based models struggle to generalize.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

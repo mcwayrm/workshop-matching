@@ -118,7 +118,7 @@ Decide which variables and moments to balance:
 
 ```r
 # R example
-balance_vars <- c("age", "education", "income", "female")
+balance_vars <- c("age", "educ", "race", "married", "nodegree", "re74", "re75")
 moments <- list(c(1, 2))  # Balance means and variances
 ```
 
@@ -128,7 +128,7 @@ Solve the optimization problem:
 
 ```r
 library(ebal)
-eb_out <- ebalance(Treatment = df$treatment,
+eb_out <- ebalance(Treatment = df$treat,
                    X = df[, balance_vars])
 ```
 
@@ -136,10 +136,10 @@ eb_out <- ebalance(Treatment = df$treatment,
 
 ```r
 # Control weights
-df$weight[df$treatment == 0] <- eb_out$w
+df$weight[df$treat == 0] <- eb_out$w
 
 # Treated weights (always 1 for ATT)
-df$weight[df$treatment == 1] <- 1
+df$weight[df$treat == 1] <- 1
 ```
 
 ## Step 4: Check Balance
@@ -148,7 +148,7 @@ Verify exact balance achieved:
 
 ```r
 library(cobalt)
-bal.tab(treatment ~ age + education + income + female,
+bal.tab(treat ~ age + educ + race + married + nodegree + re74 + re75,
         data = df,
         weights = "weight",
         method = "weighting")
@@ -158,79 +158,79 @@ bal.tab(treatment ~ age + education + income + female,
 
 ```r
 # Weighted regression
-effect_model <- lm(outcome ~ treatment, 
+effect_model <- lm(re78 ~ treat, 
                    data = df, 
                    weights = weight)
 summary(effect_model)
 ```
 
-# Examples
+# Estimation
 
 ::: {.panel-tabset}
 
 ## R 
 
 ```{r}
-#| eval: false
+#| cache: true
 #| code-fold: false
 
 library(tidyverse)
 library(ebal)
 library(cobalt)
 
-# Load data
-data <- read_csv("data.csv")
+# Download the lalonde data 
+data <- MatchIt::lalonde
 
-# Prepare covariate matrix
-covariates <- c("age", "sex", "education", "income", "region")
-X <- data %>%
-  filter(treatment == 0) %>%
-  select(all_of(covariates)) %>%
-  as.matrix()
+# Prepare covariate matrix (use model.matrix to handle factor variables)
+X <- model.matrix(
+    ~ age + educ + race + married + nodegree + re74 + re75,
+    data = data
+)[, -1]  # Remove intercept column
 
-T_vec <- data %>% pull(treatment)
+T_vec <- data$treat
 
 # Fit entropy balancing
 eb_fit <- ebalance(Treatment = T_vec, X = X)
 
 # Examine balance improvement
-print(eb_fit)
+bal.tab(eb_fit, treat = T_vec, covs = X)   # balance table
+love.plot(eb_fit, treat = T_vec, covs = X) # Love plot of standardized mean differences
 
 # Extract weights
 data$weight <- 1  # Initialize all weights to 1
-data$weight[data$treatment == 0] <- eb_fit$w
+data$weight[data$treat == 0] <- eb_fit$w
 
 # Verify balance
 bal_check <- bal.tab(
-  reformulate(covariates, "treatment"),
-  data = data,
-  weights = "weight",
-  method = "weighting",
-  stats = c("m", "v"),
-  thresholds = c(m = 0.05, v = 2)
+    treat ~ age + educ + race + married + nodegree + re74 + re75,
+    data = data,
+    weights = "weight",
+    method = "weighting",
+    stats = c("m", "v"),
+    thresholds = c(m = 0.05, v = 2)
 )
 
 print(bal_check)
 
 # Visualize balance
 love.plot(bal_check, 
-          threshold = 0.1,
-          abs = TRUE,
-          var.order = "unadjusted",
-          colors = c("red", "blue"))
+        threshold = 0.1,
+        abs = TRUE,
+        var.order = "unadjusted",
+        colors = c("red", "blue"))
 
 # Check weight distribution
-summary(data$weight[data$treatment == 0])
+summary(data$weight[data$treat == 0])
 
-ggplot(data %>% filter(treatment == 0), 
-       aes(x = weight)) +
-  geom_histogram(bins = 30, fill = "steelblue") +
-  labs(title = "Distribution of Entropy Balancing Weights",
-       x = "Weight", y = "Count") +
-  theme_minimal()
+ggplot(data %>% filter(treat == 0), 
+        aes(x = weight)) +
+    geom_histogram(bins = 30, fill = "steelblue") +
+    labs(title = "Distribution of Entropy Balancing Weights",
+        x = "Weight", y = "Count") +
+    theme_minimal()
 
 # Estimate treatment effect
-att_model <- lm(outcome ~ treatment, 
+att_model <- lm(re78 ~ treat, 
                 data = data, 
                 weights = weight)
 
@@ -240,23 +240,23 @@ library(lmtest)
 coeftest(att_model, vcov = vcovHC(att_model, type = "HC3"))
 
 # Alternative: Use WeightIt package
-library(WeightIt)
-W <- weightit(treatment ~ age + sex + education + income + region,
-              data = data,
-              method = "ebal",
-              estimand = "ATT")
+# library(WeightIt)
+# W <- weightit(treat ~ age + educ + race + married + nodegree + re74 + re75,
+#             data = data,
+#             method = "ebal",
+#             estimand = "ATT")
 
-summary(W)
-bal.tab(W, stats = c("m", "v"), thresholds = c(m = 0.05))
+# summary(W)
+# bal.tab(W, stats = c("m", "v"), thresholds = c(m = 0.05))
 
 # Estimate with marginaleffects
-library(marginaleffects)
-fit <- lm(outcome ~ treatment, 
-          data = data, 
-          weights = W$weights)
+# library(marginaleffects)
+# fit <- lm(re78 ~ treat, 
+#             data = data, 
+#             weights = W$weights)
 
-avg_comparisons(fit, variables = "treatment",
-                vcov = "HC3")
+# avg_comparisons(fit, variables = "treat",
+#                 vcov = "HC3")
 ```
 
 ## Python 
@@ -270,6 +270,9 @@ import numpy as np
 from scipy.optimize import minimize
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
+
+# Load data
+data = pd.read_csv('lalonde.csv')
 
 def entropy_balancing(X_control, X_treated, max_iter=1000):
     """
@@ -321,10 +324,10 @@ def entropy_balancing(X_control, X_treated, max_iter=1000):
     
     # Optimize
     result = minimize(objective, w0, 
-                     method='SLSQP',
-                     bounds=bounds,
-                     constraints=constraints,
-                     options={'maxiter': max_iter})
+                    method='SLSQP',
+                    bounds=bounds,
+                    constraints=constraints,
+                    options={'maxiter': max_iter})
     
     return result.x
 
@@ -332,16 +335,16 @@ def entropy_balancing(X_control, X_treated, max_iter=1000):
 data = pd.read_csv('data.csv')
 
 # Prepare covariates
-covariates = ['age', 'sex', 'education', 'income']
-X_control = data.loc[data['treatment'] == 0, covariates].values
-X_treated = data.loc[data['treatment'] == 1, covariates].values
+covariates = ['age', 'educ', 'race', 'married', 'nodegree', 're74', 're75']
+X_control = data.loc[data['treat'] == 0, covariates].values
+X_treated = data.loc[data['treat'] == 1, covariates].values
 
 # Compute entropy balancing weights
 eb_weights = entropy_balancing(X_control, X_treated)
 
 # Assign weights to data
 data['weight'] = 1.0  # Treated units get weight 1
-data.loc[data['treatment'] == 0, 'weight'] = eb_weights
+data.loc[data['treat'] == 0, 'weight'] = eb_weights
 
 # Check balance
 def check_balance(data, covariates, treatment_col, weight_col):
@@ -363,12 +366,12 @@ def check_balance(data, covariates, treatment_col, weight_col):
     
     return pd.DataFrame(results)
 
-balance_table = check_balance(data, covariates, 'treatment', 'weight')
+balance_table = check_balance(data, covariates, 'treat', 'weight')
 print("Balance after entropy balancing:")
 print(balance_table)
 
 # Estimate treatment effect
-outcome_model = smf.wls('outcome ~ treatment', 
+outcome_model = smf.wls('re78 ~ treat', 
                         data=data, 
                         weights=data['weight']).fit()
 
@@ -381,7 +384,7 @@ print(outcome_model.get_robustcov_results(cov_type='HC3').summary())
 
 # Weight diagnostics
 print("\nWeight Distribution (Controls):")
-print(data.loc[data['treatment'] == 0, 'weight'].describe())
+print(data.loc[data['treat'] == 0, 'weight'].describe())
 ```
 
 ## Stata
@@ -390,15 +393,16 @@ print(data.loc[data['treatment'] == 0, 'weight'].describe())
 #| eval: false
 #| code-fold: false
 
-* Load data
-use "data.dta", clear
+
+* Load data 
+import delimited "lalonde.csv", clear
 
 * Install ebalance package if needed
 * ssc install ebalance
 
 * Fit entropy balancing
 * Balance on means (first moment) only
-ebalance treatment age education income i.sex, ///
+ebalance treat age educ i.race married i.nodegree re74 re75, ///
     targets(1) ///
     generate(eb_weight)
 
@@ -406,27 +410,27 @@ ebalance treatment age education income i.sex, ///
 ebalance summarize
 
 * Visualize balance
-ebalance plot treatment age education income, ///
+ebalance plot treat age educ re74 re75, ///
     weights(eb_weight)
 
 * Alternative: Include second moments (variances)
-ebalance treatment age education income i.sex, ///
+ebalance treat age educ i.race married i.nodegree re74 re75, ///
     targets(1 2) ///
     generate(eb_weight2)
 
 * Compare balance
-tebalance summarize age education income, ///
+tebalance summarize age educ re74 re75, ///
     baseline ///
     weight(eb_weight)
 
 * Estimate treatment effect
-reg outcome treatment [aweight=eb_weight], robust
+reg re78 treat [aweight=eb_weight], robust
 
 * Store results
 estimates store eb_att
 
 * Compare to unweighted
-reg outcome treatment, robust
+reg re78 treat, robust
 estimates store unweighted
 
 * Compare estimates
@@ -435,9 +439,9 @@ estimates table eb_att unweighted, ///
     stats(N r2)
 
 * Check weight distribution
-summarize eb_weight if treatment == 0, detail
+summarize eb_weight if treat == 0, detail
 
-histogram eb_weight if treatment == 0, ///
+histogram eb_weight if treat == 0, ///
     title("Entropy Balancing Weights (Controls)") ///
     xtitle("Weight") ///
     ytitle("Frequency")
@@ -449,22 +453,22 @@ histogram eb_weight if treatment == 0, ///
 
 ## Advantages
 
-✓ **Exact balance** - Achieves perfect balance on specified moments by construction  
-✓ **No model searching** - Eliminates iterative propensity score specification  
-✓ **Stable weights** - Maximum entropy ensures smooth weight distribution  
-✓ **Transparent** - Clear specification of balance requirements  
-✓ **Flexible** - Can balance means, variances, skewness, interactions  
-✓ **Efficiency** - Retains all observations (like IPW)  
-✓ **Intuitive** - Direct optimization of balance constraints
+* **Exact balance** - Achieves perfect balance on specified moments by construction  
+* **No model searching** - Eliminates iterative propensity score specification  
+* **Stable weights** - Maximum entropy ensures smooth weight distribution  
+* **Transparent** - Clear specification of balance requirements  
+* **Flexible** - Can balance means, variances, skewness, interactions  
+* **Efficiency** - Retains all observations (like IPW)  
+* **Intuitive** - Direct optimization of balance constraints
 
 ## Limitations
 
-✗ **Balance target choice** - User must specify which moments to balance  
-✗ **No overlap enforcement** - Doesn't automatically address positivity violations  
-✗ **Computational intensity** - Optimization can be slow for large datasets  
-✗ **Perfect balance risk** - May overfit to sample noise rather than population  
-✗ **Linear combinations only** - Balances specified moments, not all possible functions  
-✗ **Extrapolation** - Can produce large weights if groups are very different
+* **Balance target choice** - User must specify which moments to balance  
+* **No overlap enforcement** - Doesn't automatically address positivity violations  
+* **Computational intensity** - Optimization can be slow for large datasets  
+* **Perfect balance risk** - May overfit to sample noise rather than population  
+* **Linear combinations only** - Balances specified moments, not all possible functions  
+* **Extrapolation** - Can produce large weights if groups are very different
 
 # Comparison to Other Methods
 
@@ -568,13 +572,13 @@ table(extreme)
 
 ```r
 # Standardized mean differences should be ~0
-bal.tab(treatment ~ covariates, 
+bal.tab(treat ~ age + educ + race + married + nodegree + re74 + re75, 
         data = df,
         weights = "weight",
         stats = "m")
 
 # Variance ratios should be ~1
-bal.tab(treatment ~ covariates,
+bal.tab(treat ~ age + educ + race + married + nodegree + re74 + re75,
         data = df, 
         weights = "weight",
         stats = "v")
@@ -584,11 +588,11 @@ bal.tab(treatment ~ covariates,
 
 ```r
 # Summary statistics
-summary(df$weight[df$treatment == 0])
+summary(df$weight[df$treat == 0])
 
 # Effective sample size
-sum(df$weight[df$treatment == 0])^2 / 
-  sum(df$weight[df$treatment == 0]^2)
+sum(df$weight[df$treat == 0])^2 / 
+  sum(df$weight[df$treat == 0]^2)
 ```
 
 # Extensions
@@ -626,6 +630,9 @@ Key papers on entropy balancing:
 - @zhao2017covariate - Stable balancing weights extensions
 - @hazlett2018kernel - Kernel balancing for nonparametric balance
 - @vegetabile2021nonparametric - Nonparametric preprocessing methods
+
+
+# References
 
 ::: {#refs}
 :::

@@ -12,10 +12,10 @@ website:
     
   page-footer: 
     right: "<div style='text-align:right;'>&copy; Copyright 2026, Ryan McWay. This site is built with <a href='https://quarto.org/' style='color:#1f4d4a;font-weight:bold;'>Quarto</a></div>"
-    background: "#f2da61"
+    background: "#ffc30b"
 
   sidebar:
-    background: "#f2da61"
+    background: "#ffc30b"
     pinned: true
     align: center
     style: "docked"
@@ -47,8 +47,8 @@ website:
         text: Sensitivity Analysis
       - section: Empirical Application
         contents:
-          - href: practice.qmd
-            text: Coding Practice
+          # - href: practice.qmd
+          #   text: Coding Practice
           - href: application_psp.qmd
             text: The PSP Program
       - href: resources.qmd

@@ -85,7 +85,7 @@ $$
 
 **Target population**: The treated group
 
-## Average Treatment Effect on the Untreated (ATU)
+<!-- ## Average Treatment Effect on the Untreated (ATU)
 
 Symmetrically, for the untreated population:
 
@@ -93,7 +93,7 @@ $$
 w_i^{ATU} = T_i \cdot \frac{1 - e(X_i)}{e(X_i)} + (1 - T_i)
 $$
 
-**Target population**: The untreated group
+**Target population**: The untreated group -->
 
 ## Overlap Weights
 
@@ -145,7 +145,7 @@ Choose the appropriate weight for your estimand:
 ```r
 # ATE weights
 df$weight_ate <- with(df, treatment / propensity + 
-                             (1 - treatment) / (1 - propensity))
+                            (1 - treatment) / (1 - propensity))
 
 # ATT weights
 df$weight_att <- with(df, treatment + 
@@ -178,66 +178,68 @@ Fit a weighted regression:
 ```r
 # Weighted outcome model
 effect_model <- lm(outcome ~ treatment, 
-                   data = df, 
-                   weights = weight_ate)
+                data = df, 
+                weights = weight_ate)
 summary(effect_model)
 ```
 
-# Examples
+# Estimation
 
 ::: {.panel-tabset}
 
 ## R
 
 ```{r}
-#| eval: false
+#| cache: true
 #| code-fold: false
 
 library(tidyverse)
 library(cobalt)
 
-# Load data
-data <- read_csv("data.csv")
+# Download the lalonde data 
+data <- MatchIt::lalonde
 
 # Step 1: Estimate propensity scores
-ps_model <- glm(treatment ~ age + sex + education + income,
-                data = data,
-                family = binomial(link = "logit"))
+ps_model <- glm(treat ~ age + educ + race + married + nodegree + re74 + re75,
+        data = data,
+        family = binomial(link = "logit"))
 
 data <- data %>%
-  mutate(propensity = predict(ps_model, type = "response"))
+    mutate(propensity = predict(ps_model, type = "response"))
 
 # Step 2: Calculate IPW weights
 data <- data %>%
-  mutate(
+    mutate(
     # ATE weights
-    weight_ate = treatment / propensity + 
-                 (1 - treatment) / (1 - propensity),
+    weight_ate = treat / propensity + 
+                (1 - treat) / (1 - propensity),
     
     # ATT weights  
-    weight_att = treatment + 
-                 (1 - treatment) * propensity / (1 - propensity),
+    weight_att = treat + 
+                 (1 - treat) * propensity / (1 - propensity),
     
     # Stabilized ATE weights
-    weight_ate_stab = (treatment * mean(treatment) / propensity) + 
-                      ((1 - treatment) * (1 - mean(treatment)) / (1 - propensity))
-  )
+    weight_ate_stab = (treat * mean(treat) / propensity) + 
+                      ((1 - treat) * (1 - mean(treat)) / (1 - propensity))
+    )
 
 # Step 3: Check balance
-bal.tab(treatment ~ age + sex + education + income,
+bal.tab(treat ~ age + educ + race + married + nodegree + re74 + re75,
         data = data,
         weights = "weight_ate",
         stats = c("m", "v"),
         thresholds = c(m = 0.1))
 
 # Visualize weights
-ggplot(data, aes(x = weight_ate)) +
-  geom_histogram(bins = 50) +
-  labs(title = "Distribution of ATE Weights",
-       x = "Weight", y = "Count")
+ggplot(data, aes(x = weight_ate, group = as.factor(treat), fill = as.factor(treat))) +
+    geom_histogram(bins = 50, alpha = 0.6, position = "identity") +
+    labs(title = "Distribution of ATE Weights",
+        x = "Weight", y = "Count",
+        fill = "Treatment") +
+    scale_fill_manual(values = c("0" = "steelblue", "1" = "tomato"))
 
 # Step 4: Estimate treatment effect
-ate_model <- lm(outcome ~ treatment, 
+ate_model <- lm(re78 ~ treat, 
                 data = data, 
                 weights = weight_ate)
 
@@ -245,25 +247,32 @@ ate_model <- lm(outcome ~ treatment,
 library(sandwich)
 library(lmtest)
 coeftest(ate_model, vcov = vcovHC(ate_model, type = "HC3"))
+```
+
+```{r}
+#| cache: true
+#| code-fold: false
 
 # Alternative: Use WeightIt package
 library(WeightIt)
-W <- weightit(treatment ~ age + sex + education + income,
-              data = data,
-              method = "ps",
-              estimand = "ATE")
+
+W <- weightit(treat ~ age + educ + race + married + nodegree + re74 + re75,
+            data = data,
+            method = "ps",
+            estimand = "ATE")
 
 summary(W)
 bal.tab(W)
 
 # Estimate effect
 library(marginaleffects)
-fit <- glm(outcome ~ treatment, 
-           data = data, 
-           weights = W$weights,
-           family = gaussian())
 
-avg_comparisons(fit, variables = "treatment")
+fit <- glm(re78 ~ treat, 
+            data = data, 
+            weights = W$weights,
+            family = gaussian())
+
+avg_comparisons(fit, variables = "treat")
 ```
 
 ## Python
@@ -279,11 +288,11 @@ import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
 # Load data
-data = pd.read_csv('data.csv')
+data = pd.read_csv('lalonde.csv')
 
 # Step 1: Estimate propensity scores
-X = data[['age', 'sex', 'education', 'income']]
-y = data['treatment']
+X = data[['age', 'educ', 'race', 'married', 'nodegree', 're74', 're75']]
+y = data['treat']
 
 ps_model = LogisticRegression(random_state=42)
 ps_model.fit(X, y)
@@ -291,17 +300,17 @@ ps_model.fit(X, y)
 data['propensity'] = ps_model.predict_proba(X)[:, 1]
 
 # Step 2: Calculate weights
-p_treat = data['treatment'].mean()
+p_treat = data['treat'].mean()
 
-data['weight_ate'] = (data['treatment'] / data['propensity'] + 
-                      (1 - data['treatment']) / (1 - data['propensity']))
+data['weight_ate'] = (data['treat'] / data['propensity'] + 
+                      (1 - data['treat']) / (1 - data['propensity']))
 
-data['weight_att'] = (data['treatment'] + 
-                      (1 - data['treatment']) * data['propensity'] / 
+data['weight_att'] = (data['treat'] + 
+                      (1 - data['treat']) * data['propensity'] / 
                       (1 - data['propensity']))
 
-data['weight_ate_stab'] = (data['treatment'] * p_treat / data['propensity'] + 
-                           (1 - data['treatment']) * (1 - p_treat) / 
+data['weight_ate_stab'] = (data['treat'] * p_treat / data['propensity'] + 
+                           (1 - data['treat']) * (1 - p_treat) / 
                            (1 - data['propensity']))
 
 # Step 3: Check balance
@@ -322,13 +331,13 @@ def weighted_smd(data, var, treatment_col, weight_col):
     return (mean_t - mean_c) / pooled_sd
 
 # Calculate SMDs for all covariates
-covariates = ['age', 'sex', 'education', 'income']
+covariates = ['age', 'educ', 'race', 'married', 'nodegree', 're74', 're75']
 for var in covariates:
-    smd = weighted_smd(data, var, 'treatment', 'weight_ate')
+    smd = weighted_smd(data, var, 'treat', 'weight_ate')
     print(f"Weighted SMD for {var}: {smd:.3f}")
 
 # Step 4: Estimate treatment effect with weighted regression
-outcome_model = smf.wls('outcome ~ treatment', 
+outcome_model = smf.wls('re78 ~ treat', 
                         data=data, 
                         weights=data['weight_ate']).fit()
 
@@ -344,48 +353,48 @@ print(outcome_model.get_robustcov_results(cov_type='HC3').summary())
 #| eval: false
 #| code-fold: false
 
-* Load data
-use "data.dta", clear
+* Load data 
+import delimited "lalonde.csv", clear
 
 * Step 1: Estimate propensity scores
-logit treatment age i.sex education income
+logit treat age i.race married i.nodegree re74 re75
 predict propensity, pr
 
 * Step 2: Calculate IPW weights
 * ATE weights
-gen weight_ate = treatment/propensity + (1-treatment)/(1-propensity)
+gen weight_ate = treat/propensity + (1-treat)/(1-propensity)
 
 * ATT weights
-gen weight_att = treatment + (1-treatment)*propensity/(1-propensity)
+gen weight_att = treat + (1-treat)*propensity/(1-propensity)
 
 * Stabilized ATE weights
-sum treatment
+sum treat
 local p_treat = r(mean)
-gen weight_ate_stab = treatment*`p_treat'/propensity + ///
-                      (1-treatment)*(1-`p_treat')/(1-propensity)
+gen weight_ate_stab = treat*`p_treat'/propensity + ///
+                    (1-treat)*(1-`p_treat')/(1-propensity)
 
 * Step 3: Check balance
 * teffects package provides balance diagnostics
-teffects ipw (outcome) (treatment age i.sex education income), ///
+teffects ipw (re78) (treat age i.race married i.nodegree re74 re75), ///
     atet
 
 tebalance summarize
 
 * Or manually check weighted balance
-foreach var of varlist age education income {
-    reg `var' treatment [aweight=weight_ate]
+foreach var of varlist age educ married re74 re75 {
+    reg `var' treat [aweight=weight_ate]
 }
 
 * Step 4: Estimate treatment effect
 * Weighted regression
-reg outcome treatment [aweight=weight_ate], robust
+reg re78 treat [aweight=weight_ate], robust
 
 * Alternative: Use teffects directly
-teffects ipw (outcome) (treatment age i.sex education income), ///
+teffects ipw (re78) (treat age i.race married i.nodegree re74 re75), ///
     ate
 
 * For ATT
-teffects ipw (outcome) (treatment age i.sex education income), ///
+teffects ipw (re78) (treat age i.race married i.nodegree re74 re75), ///
     atet
 ```
 
@@ -395,19 +404,19 @@ teffects ipw (outcome) (treatment age i.sex education income), ///
 
 ## Advantages
 
-✓ **Retains full sample** - No observations discarded (unlike matching)  
-✓ **Efficient** - Uses all available data  
-✓ **Flexible estimands** - Easy to target ATE, ATT, or other parameters  
-✓ **Transparent** - Clear connection to survey weighting methods  
-✓ **Doubly robust option** - Can combine with outcome regression (see AIPW)
+* **Retains full sample** - No observations discarded (unlike matching)  
+* **Efficient** - Uses all available data  
+* **Flexible estimands** - Easy to target ATE, ATT, or other parameters  
+* **Transparent** - Clear connection to survey weighting methods  
+* **Doubly robust option** - Can combine with outcome regression (see AIPW)
 
 ## Limitations
 
-✗ **Sensitive to extreme weights** - Poor overlap can create unstable estimates  
-✗ **Model dependence** - Relies heavily on correct propensity score specification  
-✗ **Extrapolation** - May estimate effects in regions with little empirical support  
-✗ **Variance estimation** - Requires careful handling of uncertainty in weights  
-✗ **Positivity violations** - Fails when $e(X) \approx 0$ or $e(X) \approx 1$
+* **Sensitive to extreme weights** - Poor overlap can create unstable estimates  
+* **Model dependence** - Relies heavily on correct propensity score specification  
+* **Extrapolation** - May estimate effects in regions with little empirical support  
+* **Variance estimation** - Requires careful handling of uncertainty in weights  
+* **Positivity violations** - Fails when $e(X) \approx 0$ or $e(X) \approx 1$
 
 # Diagnostics and Robustness
 
@@ -424,9 +433,9 @@ quantile(df$weight_ate, c(0.95, 0.99, 1.0))
 
 # Visualize
 ggplot(df, aes(x = weight_ate)) +
-  geom_histogram() +
-  geom_vline(xintercept = quantile(df$weight_ate, 0.99), 
-             color = "red", linetype = "dashed")
+    geom_histogram() +
+    geom_vline(xintercept = quantile(df$weight_ate, 0.99), 
+            color = "red", linetype = "dashed")
 ```
 
 ## Trimming Weights
@@ -440,7 +449,7 @@ If weights are extreme, consider:
 ```r
 # Trim propensity scores
 df_trimmed <- df %>%
-  filter(propensity > 0.05 & propensity < 0.95)
+    filter(propensity > 0.05 & propensity < 0.95)
 
 # Truncate weights
 max_weight <- quantile(df$weight_ate, 0.99)
@@ -453,11 +462,11 @@ Visualize common support:
 
 ```r
 ggplot(df, aes(x = propensity, fill = factor(treatment))) +
-  geom_density(alpha = 0.5) +
-  labs(title = "Propensity Score Overlap",
-       x = "Propensity Score",
-       fill = "Treatment") +
-  theme_minimal()
+    geom_density(alpha = 0.5) +
+    labs(title = "Propensity Score Overlap",
+        x = "Propensity Score",
+        fill = "Treatment") +
+    theme_minimal()
 ```
 
 # Comparison to Matching
@@ -483,7 +492,7 @@ ggplot(df, aes(x = propensity, fill = factor(treatment))) +
 - You want ATT specifically
 - Pairing interpretation is important
 
-# References
+# Key Articles
 
 Key papers on IPW:
 
@@ -492,6 +501,9 @@ Key papers on IPW:
 - @robins2000marginal - Marginal structural models and stabilized weights
 - @li2018balancing - Overlap weights for improved balance
 - @austin2015moving - Comparison of propensity score methods
+
+
+# References
 
 ::: {#refs}
 :::

@@ -363,5 +363,8 @@ Some assumptions **cannot be tested** empirically:
 - **Robustness checks**: Try multiple matching methods and specifications
 - **Transparency**: Report all decisions and diagnostics
 
+
+# References
+
 ::: {#refs}
 :::

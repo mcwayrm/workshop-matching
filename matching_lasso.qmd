@@ -8,7 +8,7 @@ bibliography: references.bib
 
 When the number of candidate covariates is large, standard propensity score modeling can overfit and produce unstable matches. A common strategy is to estimate the propensity score with **LASSO-regularized logistic regression**, which performs shrinkage and variable selection simultaneously [@tibshirani1996].
 
-In this module, "LASSO matching" means:
+In this context, "LASSO matching" means:
 
 1. Estimate treatment propensity with penalized logistic regression.
 2. Use the resulting propensity scores for matching (nearest neighbor, caliper, or subclassification).
@@ -25,7 +25,7 @@ $$
 where:
 
 - $\ell(\cdot)$ is the loss (for propensity scores, usually logistic deviance),
-- $\|\beta\|_1 = \sum_j |\beta_j|$ is the L1 penalty,
+- $\|\beta\|_1 = \sum_j |\beta_j|$ is the $L1$ penalty,
 - $\lambda \ge 0$ controls shrinkage strength.
 
 For logistic propensity score models,
@@ -34,7 +34,7 @@ $$
 \Pr(T_i=1\mid X_i)=e(X_i)=\frac{1}{1+\exp(-X_i^\top\beta)}.
 $$
 
-The L1 penalty pushes many coefficients exactly to zero, giving a sparse and more stable model in high-dimensional settings.
+The $L1$ penalty pushes many coefficients exactly to zero, giving a sparse and more stable model in high-dimensional settings.
 
 # Why Use LASSO for Propensity Scores?
 
@@ -84,6 +84,8 @@ $$
 - Use robust or clustered standard errors by matched subclass where appropriate.
 
 
+## Estimation 
+
 ::: {.panel-tabset}
 
 ## R 
@@ -91,53 +93,61 @@ $$
 LASSO Propensity + Matching
 
 ```{r}
-#| eval: false
+#| cache: true
 
 library(glmnet)
 library(MatchIt)
 library(cobalt)
 
-# Example inputs:
-# data$treat is binary treatment indicator
-# outcome is data$outcome
+# Download the lalonde data 
+df <- MatchIt::lalonde
 
 X <- model.matrix(
-  treat ~ age + educ + race + married + nodegree + re74 + re75 +
+    treat ~ age + educ + race + married + nodegree + re74 + re75 +
     age:educ + I(age^2) + I(re74^2),
-  data = data
+  data = df
 )[, -1]
 
-y <- data$treat
+y <- df$treat
 
 # Cross-validated LASSO logistic regression
 cvfit <- cv.glmnet(
-  x = X,
-  y = y,
-  family = "binomial",
-  alpha = 1,
-  nfolds = 10
+    x = X,
+    y = y,
+    family = "binomial",
+    alpha = 1,
+    nfolds = 10
 )
 
 # Choose lambda (more parsimonious: lambda.1se)
-ps_hat <- as.numeric(predict(cvfit, newx = X, s = "lambda.1se", type = "response"))
-data$ps_lasso <- pmin(pmax(ps_hat, 1e-6), 1 - 1e-6)
+ps_hat <- as.numeric(predict(cvfit, 
+    newx = X, 
+    s = "lambda.1se",
+    type = "response"))
+df$ps_lasso <- pmin(pmax(ps_hat, 1e-6), 1 - 1e-6)
 
 # Matching on LASSO propensity score
 m.out <- matchit(
-  treat ~ 1,
-  data = data,
-  method = "nearest",
-  distance = data$ps_lasso,
-  caliper = 0.2,
-  std.caliper = TRUE,
-  replace = FALSE
+    treat ~ 1,
+    data = df,
+    method = "nearest",
+    distance = df$ps_lasso,
+    caliper = 0.2,
+    std.caliper = TRUE,
+    replace = FALSE
 )
 
 summary(m.out)
+
+# Check balance 
 love.plot(m.out, threshold = 0.1, abs = TRUE)
+# Alternative: Check balance with MatchIt's summary
+# summary(m.out, improve = TRUE, unit.measure = "std.diffs")
 
 matched <- match.data(m.out)
-att_fit <- lm(outcome ~ treat, data = matched, weights = weights)
+att_fit <- lm(re78 ~ treat, 
+    data = matched, 
+    weights = weights)
 summary(att_fit)
 ```
 
@@ -153,6 +163,9 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegressionCV
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
+
+# Load data
+data = pd.read_csv('lalonde.csv')
 
 # Suppose df has columns: treat, outcome, and covariates
 covars = ["age", "educ", "married", "nodegree", "re74", "re75"]
@@ -188,8 +201,8 @@ Penalized PS then Match
 ```{stata}
 #| eval: false
 
-* User-written command may be required depending on setup
-* Example logic:
+* Load data 
+import delimited "lalonde.csv", clear
 
 * 1) Fit lasso-logit propensity model
 lasso logit treat age educ i.race married nodegree re74 re75
@@ -199,7 +212,7 @@ predict double ps_lasso, pr
 
 * 3) Match using propensity score
 * (psmatch2 is user-written)
-psmatch2 treat, pscore(ps_lasso) outcome(outcome) neighbor(1) caliper(0.2)
+psmatch2 treat, pscore(ps_lasso) outcome(re78) neighbor(1) caliper(0.2)
 
 * 4) Check balance
 pstest age educ married nodegree re74 re75, both
@@ -207,7 +220,7 @@ pstest age educ married nodegree re74 re75, both
 
 ::: 
 
-# Practical Guidance
+# Practical Considerations
 
 ## Tuning Parameter Choice
 
@@ -220,7 +233,7 @@ High-dimensional sets can include interactions and nonlinear terms, but retain o
 
 ## Do Not Skip Diagnostics
 
-A good propensity model is one that yields balance, not just high AUC.
+A good propensity model is one that yields balance, not just high Area Under the Receiver Operating Characteristic Curve (AUC-ROC).
 
 # Connection to High-Dimensional Treatment Effect Literature
 
@@ -242,6 +255,9 @@ For observational matching, this translates to a pragmatic approach:
 - Balance diagnostics before and after matching.
 - Effective sample size and discarded units.
 - Outcome model and uncertainty method.
+
+
+# References
 
 ::: {#refs}
 :::

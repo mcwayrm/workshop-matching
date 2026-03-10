@@ -90,7 +90,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-b18a7f4b6f3202b6080e6fe89b64549f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-4bfece9002f65aa168ea8461ef0c0dc7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -151,7 +151,10 @@ window.Quarto = {
 
 <meta property="og:title" content="Matching Methods">
 <meta property="og:description" content="Covariate Matching">
+<meta property="og:image" content="https://mcwayrm.github.io/matching_methods/matching_cvm_files/figure-html/unnamed-chunk-1-1.png">
 <meta property="og:site_name" content="Matching Methods">
+<meta property="og:image:height" content="960">
+<meta property="og:image:width" content="1344">
 </head>
 
 <body class="nav-sidebar docked">
@@ -270,12 +273,6 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./practice.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Practice</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./application_psp.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">The PSP Program</span></a>
   </div>
@@ -300,34 +297,38 @@ window.Quarto = {
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
   <ul class="collapse">
-  <li><a href="#advantages-over-propensity-score-matching" id="toc-advantages-over-propensity-score-matching" class="nav-link" data-scroll-target="#advantages-over-propensity-score-matching">Advantages Over Propensity Score Matching</a></li>
+  <li><a href="#advantages-over-propensity-score-matching-psm" id="toc-advantages-over-propensity-score-matching-psm" class="nav-link" data-scroll-target="#advantages-over-propensity-score-matching-psm">Advantages Over Propensity Score Matching (PSM)</a></li>
   </ul></li>
   <li><a href="#mahalanobis-distance-matching" id="toc-mahalanobis-distance-matching" class="nav-link" data-scroll-target="#mahalanobis-distance-matching">Mahalanobis Distance Matching</a>
   <ul class="collapse">
-  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
   <li><a href="#why-not-euclidean-distance" id="toc-why-not-euclidean-distance" class="nav-link" data-scroll-target="#why-not-euclidean-distance">Why Not Euclidean Distance?</a></li>
   <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">Properties</a></li>
   <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
+  <li><a href="#estimation" id="toc-estimation" class="nav-link" data-scroll-target="#estimation">Estimation</a></li>
   </ul></li>
   <li><a href="#coarsened-exact-matching-cem" id="toc-coarsened-exact-matching-cem" class="nav-link" data-scroll-target="#coarsened-exact-matching-cem">Coarsened Exact Matching (CEM)</a>
   <ul class="collapse">
   <li><a href="#concept" id="toc-concept" class="nav-link" data-scroll-target="#concept">Concept</a></li>
   <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm">Algorithm</a></li>
   <li><a href="#monotonic-imbalance-bounding" id="toc-monotonic-imbalance-bounding" class="nav-link" data-scroll-target="#monotonic-imbalance-bounding">Monotonic Imbalance Bounding</a></li>
+  <li><a href="#estimation-1" id="toc-estimation-1" class="nav-link" data-scroll-target="#estimation-1">Estimation</a></li>
   </ul></li>
   <li><a href="#genetic-matching" id="toc-genetic-matching" class="nav-link" data-scroll-target="#genetic-matching">Genetic Matching</a>
   <ul class="collapse">
   <li><a href="#concept-1" id="toc-concept-1" class="nav-link" data-scroll-target="#concept-1">Concept</a></li>
   <li><a href="#genetic-algorithm" id="toc-genetic-algorithm" class="nav-link" data-scroll-target="#genetic-algorithm">Genetic Algorithm</a></li>
   <li><a href="#balance-criteria" id="toc-balance-criteria" class="nav-link" data-scroll-target="#balance-criteria">Balance Criteria</a></li>
+  <li><a href="#estimation-2" id="toc-estimation-2" class="nav-link" data-scroll-target="#estimation-2">Estimation</a></li>
   </ul></li>
   <li><a href="#entropy-balancing" id="toc-entropy-balancing" class="nav-link" data-scroll-target="#entropy-balancing">Entropy Balancing</a>
   <ul class="collapse">
   <li><a href="#concept-2" id="toc-concept-2" class="nav-link" data-scroll-target="#concept-2">Concept</a></li>
   <li><a href="#optimization-problem" id="toc-optimization-problem" class="nav-link" data-scroll-target="#optimization-problem">Optimization Problem</a></li>
   <li><a href="#advantages" id="toc-advantages" class="nav-link" data-scroll-target="#advantages">Advantages</a></li>
+  <li><a href="#estimation-3" id="toc-estimation-3" class="nav-link" data-scroll-target="#estimation-3">Estimation</a></li>
   </ul></li>
   <li><a href="#comparison-of-methods" id="toc-comparison-of-methods" class="nav-link" data-scroll-target="#comparison-of-methods">Comparison of Methods</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
     </div>
@@ -357,26 +358,23 @@ window.Quarto = {
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
 <p>Covariate matching methods directly match units based on the similarity of their observed characteristics, rather than reducing them to a single propensity score. These methods preserve the <strong>multivariate structure</strong> of covariates and can achieve better balance.</p>
-<section id="advantages-over-propensity-score-matching" class="level2">
-<h2 class="anchored" data-anchor-id="advantages-over-propensity-score-matching">Advantages Over Propensity Score Matching</h2>
+<section id="advantages-over-propensity-score-matching-psm" class="level2">
+<h2 class="anchored" data-anchor-id="advantages-over-propensity-score-matching-psm">Advantages Over Propensity Score Matching (PSM)</h2>
 <ol type="1">
 <li><strong>No information loss</strong>: Matching on full covariate space preserves all information</li>
 <li><strong>Better balance</strong>: Can achieve exact or near-exact balance on all covariates</li>
 <li><strong>Transparency</strong>: Easier to inspect and understand matches</li>
-<li><strong>Robustness</strong>: Not sensitive to propensity score model specification</li>
+<li><strong>Robustness</strong>: Not sensitive to propensity score model specification (e.g., non-parametric)</li>
 </ol>
 </section>
 </section>
 <section id="mahalanobis-distance-matching" class="level1">
 <h1>Mahalanobis Distance Matching</h1>
-<section id="definition" class="level2">
-<h2 class="anchored" data-anchor-id="definition">Definition</h2>
 <p>The Mahalanobis distance between units <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> is:</p>
 <p><span class="math display">\[
 D_M(X_i, X_j) = \sqrt{(X_i - X_j)^\top S^{-1} (X_i - X_j)}
 \]</span></p>
 <p>where <span class="math inline">\(S\)</span> is the sample covariance matrix of covariates.</p>
-</section>
 <section id="why-not-euclidean-distance" class="level2">
 <h2 class="anchored" data-anchor-id="why-not-euclidean-distance">Why Not Euclidean Distance?</h2>
 <p>Euclidean distance treats all variables equally:</p>
@@ -409,76 +407,215 @@ D_E(X_i, X_j) = \sqrt{(X_i - X_j)^\top (X_i - X_j)}
 <li><strong>Sensitive to outliers</strong>: Extreme values can distort <span class="math inline">\(S\)</span></li>
 <li><strong>Assumes multivariate normality</strong> (implicitly)</li>
 </ul>
+</section>
+<section id="estimation" class="level2">
+<h2 class="anchored" data-anchor-id="estimation">Estimation</h2>
+<p>Again, we use the <code>lalonde</code> data from the <code>MatchIt</code> R package as described in <a href="./matching_psm.html#estimation">Propensity Score Matching</a>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Stata</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MatchIt)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Matching)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Mahalanobis distance matching</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> married <span class="sc">+</span> nodegree <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"nearest"</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">distance =</span> <span class="st">"mahalanobis"</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># With caliper on propensity score</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>m.out2 <span class="ot">&lt;-</span> <span class="fu">matchit</span>(</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> married <span class="sc">+</span> nodegree <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"nearest"</span>,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">distance =</span> <span class="st">"mahalanobis"</span>,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">mahvars =</span> <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> re74 <span class="sc">+</span> re75,  <span class="co"># Variables for Mahal distance</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">caliper =</span> <span class="fl">0.25</span>,                         <span class="co"># Caliper on propensity score</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">std.caliper =</span> <span class="cn">TRUE</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Check balance</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m.out, <span class="at">un =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Matching)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: MASS</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>## 
+##  Matching (Version 4.10-15, Build Date: 2024-10-14)
+##  See https://www.jsekhon.com for additional documentation.
+##  Please cite software as:
+##   Jasjeet S. Sekhon. 2011. ``Multivariate and Propensity Score Matching
+##   Software with Automated Balance Optimization: The Matching package for R.''
+##   Journal of Statistical Software, 42(7): 1-52. 
+##</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the lalonde data </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> MatchIt<span class="sc">::</span>lalonde</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Mahalanobis distance matching</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> married <span class="sc">+</span> nodegree <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">"nearest"</span>,         <span class="co"># Nearest neighbor</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">distance =</span> <span class="st">"mahalanobis"</span>,   <span class="co"># Mahalanobis matching</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio =</span> <span class="dv">1</span>,                  <span class="co"># 1:1 matching</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">replace =</span> <span class="cn">FALSE</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Example with exact matching</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>m.out2 <span class="ot">&lt;-</span> <span class="fu">matchit</span>(</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> nodegree <span class="sc">+</span> married <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">distance =</span> <span class="st">"mahalanobis"</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">replace =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">exact =</span> <span class="sc">~</span> married <span class="sc">+</span> race)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Fewer control units than treated units in some `exact` strata; not all
+treated units will get a match.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check Balance</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m.out2, <span class="at">un =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+matchit(formula = treat ~ age + educ + race + nodegree + married + 
+    re74 + re75, data = df, distance = "mahalanobis", exact = ~married + 
+    race, replace = FALSE)
+
+Summary of Balance for All Data:
+           Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+age              25.8162       28.0303         -0.3094     0.4400    0.0813
+educ             10.3459       10.2354          0.0550     0.4959    0.0347
+raceblack         0.8432        0.2028          1.7615          .    0.6404
+racehispan        0.0595        0.1422         -0.3498          .    0.0827
+racewhite         0.0973        0.6550         -1.8819          .    0.5577
+nodegree          0.7081        0.5967          0.2450          .    0.1114
+married           0.1892        0.5128         -0.8263          .    0.3236
+re74           2095.5737     5619.2365         -0.7211     0.5181    0.2248
+re75           1532.0553     2466.4844         -0.2903     0.9563    0.1342
+           eCDF Max
+age          0.1577
+educ         0.1114
+raceblack    0.6404
+racehispan   0.0827
+racewhite    0.5577
+nodegree     0.1114
+married      0.3236
+re74         0.4470
+re75         0.2876
+
+Summary of Balance for Matched Data:
+           Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+age              26.2414       25.4655          0.1084     0.5382    0.0703
+educ             10.3276       10.2414          0.0429     0.7281    0.0145
+raceblack         0.7500        0.7500          0.0000          .    0.0000
+racehispan        0.0948        0.0948          0.0000          .    0.0000
+racewhite         0.1552        0.1552          0.0000          .    0.0000
+nodegree          0.6810        0.6379          0.0948          .    0.0431
+married           0.2672        0.2672          0.0000          .    0.0000
+re74            861.0568     2839.4506         -0.4049     0.3698    0.1534
+re75            761.7040     1722.7378         -0.2985     0.4547    0.1284
+           eCDF Max Std. Pair Dist.
+age          0.2759          0.7398
+educ         0.0517          0.4459
+raceblack    0.0000          0.0000
+racehispan   0.0000          0.0000
+racewhite    0.0000          0.0000
+nodegree     0.0431          0.2844
+married      0.0000          0.0000
+re74         0.4569          0.5753
+re75         0.3276          0.4827
+
+Sample Sizes:
+          Control Treated
+All           429     185
+Matched       116     116
+Unmatched     313      69
+Discarded       0       0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize covariate balance</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m.out2, <span class="at">type =</span> <span class="st">"density"</span>, <span class="at">which.xs =</span> <span class="sc">~</span>age <span class="sc">+</span> educ, <span class="at">interactive =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="matching_cvm_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract matched data</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>matched_data <span class="ot">&lt;-</span> <span class="fu">match.data</span>(m.out2)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate treatment effect</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: zoo</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'zoo'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sandwich)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(re78 <span class="sc">~</span> treat <span class="sc">+</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> married <span class="sc">+</span> nodegree <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> matched_data, <span class="co"># Data already has matches</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">weights =</span> weights <span class="co"># Re-weights for PSM</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Robust standard errors (no clustering needed with replacement matching)</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fit, <span class="at">vcov =</span> vcovHC, <span class="at">type =</span> <span class="st">"HC3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+               Estimate  Std. Error t value Pr(&gt;|t|)   
+(Intercept) -3.6223e+03  3.5920e+03 -1.0084 0.314338   
+treat        8.5002e+02  8.5536e+02  0.9938 0.321422   
+age          8.0097e+01  5.7126e+01  1.4021 0.162277   
+educ         5.7361e+02  2.1916e+02  2.6173 0.009473 **
+racehispan   2.3218e+03  1.7286e+03  1.3432 0.180582   
+racewhite    1.9451e+03  1.1677e+03  1.6658 0.097165 . 
+married     -6.8797e+02  1.1151e+03 -0.6169 0.537909   
+nodegree     5.6023e+02  1.2967e+03  0.4321 0.666119   
+re74        -2.6058e-02  1.7309e-01 -0.1505 0.880474   
+re75         4.1668e-01  2.5088e-01  1.6609 0.098144 . 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
 </div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.spatial.distance <span class="im">import</span> mahalanobis</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.covariance <span class="im">import</span> EmpiricalCovariance</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute covariance matrix</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> data[[<span class="st">'age'</span>, <span class="st">'educ'</span>, <span class="st">'married'</span>, <span class="st">'re74'</span>, <span class="st">'re75'</span>]].values</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>cov <span class="op">=</span> EmpiricalCovariance().fit(X)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>S_inv <span class="op">=</span> np.linalg.inv(cov.covariance_)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distance between two units</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>dist <span class="op">=</span> mahalanobis(X[i], X[j], S_inv)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Using causalinference package</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> causalinference <span class="im">import</span> CausalModel</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> data[<span class="st">'outcome'</span>].values</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> data[<span class="st">'treat'</span>].values</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> data[[<span class="st">'age'</span>, <span class="st">'educ'</span>, <span class="st">'married'</span>, <span class="st">'re74'</span>, <span class="st">'re75'</span>]].values</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>causal <span class="op">=</span> CausalModel(Y, D, X)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>causal.est_via_matching(matches<span class="op">=</span><span class="dv">1</span>, bias_adj<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(causal.estimates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.spatial.distance <span class="im">import</span> mahalanobis</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.covariance <span class="im">import</span> EmpiricalCovariance</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.read_csv(<span class="st">'lalonde.csv'</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute covariance matrix</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> data[[<span class="st">'age'</span>, <span class="st">'educ'</span>, <span class="st">'race'</span>, <span class="st">'married'</span>,<span class="st">'nodegree'</span>, <span class="st">'re74'</span>, <span class="st">'re75'</span>]].values</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>cov <span class="op">=</span> EmpiricalCovariance().fit(X)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>S_inv <span class="op">=</span> np.linalg.inv(cov.covariance_)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distance between two units</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>dist <span class="op">=</span> mahalanobis(X[i], X[j], S_inv)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Using causalinference package</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> causalinference <span class="im">import</span> CausalModel</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> data[<span class="st">'re78'</span>].values</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> data[<span class="st">'treat'</span>].values</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> X <span class="op">=</span> data[[<span class="st">'age'</span>, <span class="st">'educ'</span>, <span class="st">'race'</span>, <span class="st">'married'</span>,<span class="st">'nodegree'</span>, <span class="st">'re74'</span>, <span class="st">'re75'</span>]].values</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>causal <span class="op">=</span> CausalModel(Y, D, X)</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>causal.est_via_matching(matches<span class="op">=</span><span class="dv">1</span>, bias_adj<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(causal.estimates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>* Install mahapick <span class="kw">if</span> needed</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>* <span class="kw">ssc</span> install mahapick</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>mahapick treat age educ <span class="bn">black</span> hispanic married nodegree re74 re75, <span class="co">///</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>         idvar(id) nummatches(1) scorevar(mahal_dist) matchedvar(matched)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>* Keep matched observations</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">keep</span> <span class="kw">if</span> matched == 1</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>* Estimate treatment effect</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> outcome treat age educ <span class="bn">black</span> hispanic married nodegree re74 re75</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>* Install mahapick <span class="kw">if</span> needed</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>* <span class="kw">ssc</span> install mahapick</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>* Load <span class="kw">data</span> </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>import delimited <span class="st">"lalonde.csv"</span>, <span class="kw">clear</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>mahapick treat age educ <span class="bn">black</span> hispanic married nodegree re74 re75, <span class="co">///</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    idvar(id) nummatches(1) scorevar(mahal_dist) matchedvar(matched)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>* Keep matched observations</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="kw">keep</span> <span class="kw">if</span> matched == 1</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>* Estimate treatment effect</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> re78 treat age educ <span class="bn">black</span> hispanic married nodegree re74 re75</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -516,69 +653,122 @@ D_E(X_i, X_j) = \sqrt{(X_i - X_j)^\top (X_i - X_j)}
 L(C_1(X)) \leq L(C_2(X))
 \]</span></p>
 <p>This provides <strong>ex ante control</strong> over balance.</p>
+</section>
+<section id="estimation-1" class="level2">
+<h2 class="anchored" data-anchor-id="estimation-1">Estimation</h2>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Python</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Stata</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cem)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Automatic coarsening</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>mat <span class="ot">&lt;-</span> <span class="fu">cem</span>(</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">treatment =</span> <span class="st">"treat"</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">drop =</span> <span class="st">"outcome"</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">keep.all =</span> <span class="cn">TRUE</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Manual coarsening with custom bins</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>educut <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">6.5</span>, <span class="fl">8.5</span>, <span class="fl">12.5</span>, <span class="dv">17</span>)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>mat2 <span class="ot">&lt;-</span> <span class="fu">cem</span>(</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">treatment =</span> <span class="st">"treat"</span>,</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata,</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">drop =</span> <span class="st">"outcome"</span>,</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">cutpoints =</span> <span class="fu">list</span>(<span class="at">education =</span> educut)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Check imbalance</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="fu">imbalance</span>(<span class="at">group =</span> mydata<span class="sc">$</span>treat, <span class="at">data =</span> mydata[covariates])</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate treatment effect with weights</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(outcome <span class="sc">~</span> treat <span class="sc">+</span> age <span class="sc">+</span> educ, <span class="at">data =</span> mydata, <span class="at">weights =</span> mat<span class="sc">$</span>w)</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cem)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: tcltk</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: lattice</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+How to use CEM? Type vignette("cem")</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Automatic coarsening</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>mat <span class="ot">&lt;-</span> <span class="fu">cem</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">treatment =</span> <span class="st">"treat"</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">drop =</span> <span class="st">"re78"</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">keep.all =</span> <span class="cn">TRUE</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Using 'treat'='1' as baseline group</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check imbalance</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">imbalance</span>(<span class="at">group =</span> df<span class="sc">$</span>treat, <span class="at">data =</span> df, <span class="at">drop =</span> <span class="st">"re78"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Multivariate Imbalance Measure: L1=1.000
+Percentage of local common support: LCS=0.0%
+
+Univariate Imbalance Measures:
+
+             statistic   type        L1 min 25%       50%       75%     max
+treat        1.0000000 (diff) 1.0000000   1   1     1.000     1.000    1.00
+age         -2.2140868 (diff) 0.0000000   1   1     0.000    -6.000   -7.00
+educ         0.1105147 (diff) 0.2170730   4   0     0.000     0.000   -2.00
+race       224.0708295 (Chi2) 0.6404460  NA  NA        NA        NA      NA
+married     -0.3236313 (diff) 0.3236313   0   0    -1.000    -1.000    0.00
+nodegree     0.1113715 (diff) 0.1113715   0   0     0.000     0.000    0.00
+re74     -3523.6628177 (diff) 0.0000000   0   0 -2547.047 -7985.660 9177.75
+re75      -934.4291293 (diff) 0.0000000   0   0 -1086.726 -2064.135 6795.01</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate treatment effect with weights</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(re78 <span class="sc">~</span> treat <span class="sc">+</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> nodegree <span class="sc">+</span> married <span class="sc">+</span> re74 <span class="sc">+</span> re75, </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df, </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">weights =</span> mat<span class="sc">$</span>w)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = re78 ~ treat + age + educ + race + nodegree + married + 
+    re74 + re75, data = df, weights = mat$w)
+
+Weighted Residuals:
+   Min     1Q Median     3Q    Max 
+-13127      0      0      0  27730 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept) -1803.7914  6692.1386  -0.270   0.7879  
+treat         744.2106   972.4550   0.765   0.4454  
+age            31.9503    97.7658   0.327   0.7443  
+educ          505.1141   439.6080   1.149   0.2526  
+racehispan   4572.7844  2215.6024   2.064   0.0409 *
+racewhite    2300.2659  1941.7918   1.185   0.2382  
+nodegree      281.2088  1887.4331   0.149   0.8818  
+married     -4922.4051  2541.8938  -1.937   0.0549 .
+re74            0.3736     0.5127   0.729   0.4675  
+re75            1.3726     0.6705   2.047   0.0426 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 5829 on 136 degrees of freedom
+Multiple R-squared:  0.1188,    Adjusted R-squared:  0.06044 
+F-statistic: 2.036 on 9 and 136 DF,  p-value: 0.03975</code></pre>
+</div>
 </div>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># CEM not natively available in Python</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Use rpy2 to call R's cem package</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> rpy2.robjects <span class="im">as</span> ro</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> rpy2.robjects <span class="im">import</span> pandas2ri</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>pandas2ri.activate()</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>ro.r(<span class="st">'library(cem)'</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert pandas df to R df</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>r_data <span class="op">=</span> pandas2ri.py2rpy(data)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Run CEM in R</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> ro.r.cem(<span class="st">'treat'</span>, data<span class="op">=</span>r_data, drop<span class="op">=</span><span class="st">'outcome'</span>)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> ro.r(<span class="st">'result$w'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># CEM not natively available in Python</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Use rpy2 to call R's cem package</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> rpy2.robjects <span class="im">as</span> ro</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> rpy2.robjects <span class="im">import</span> pandas2ri</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>pandas2ri.activate()</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>ro.r(<span class="st">'library(cem)'</span>)</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert pandas df to R df</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>r_data <span class="op">=</span> pandas2ri.py2rpy(data)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Run CEM in R</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> ro.r.cem(<span class="st">'treat'</span>, data<span class="op">=</span>r_data, drop<span class="op">=</span><span class="st">'re78'</span>)</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> ro.r(<span class="st">'result$w'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>* Install cem</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>* <span class="kw">ssc</span> install cem</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>cem age (#3) educ (#4) <span class="bn">black</span> hispanic married, treatment(treat)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>* Check balance</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>imbalance age educ <span class="bn">black</span> hispanic married, <span class="kw">by</span>(treat)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>* Regression with CEM weights</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> outcome treat age educ <span class="bn">black</span> hispanic married [iw=cem_weights]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>* Install cem</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>* <span class="kw">ssc</span> install cem</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>cem age educ <span class="bn">black</span> hispanic married nodegree re74 re75, treatment(treat)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>* Check balance</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>imbalance age educ <span class="bn">black</span> hispanic married nodegree re74 re75, <span class="kw">by</span>(treat)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>* Regression with CEM weights</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> re78 treat age educ <span class="bn">black</span> hispanic married nodegree re74 re75 [iw = cem_weights]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -593,7 +783,7 @@ L(C_1(X)) \leq L(C_2(X))
 <p><span class="math display">\[
 D_{\text{gen}}(X_i, X_j) = \sqrt{(X_i - X_j)^\top W (X_i - X_j)}
 \]</span></p>
-<p>where <span class="math inline">\(W\)</span> is <strong>learned</strong> using a genetic algorithm.</p>
+<p>where <span class="math inline">\(W\)</span> is <strong>learned</strong> using a genetic algorithm. This follows an iterative, evolutionary pattern to determine the covariate matching set.</p>
 </section>
 <section id="genetic-algorithm" class="level2">
 <h2 class="anchored" data-anchor-id="genetic-algorithm">Genetic Algorithm</h2>
@@ -612,44 +802,682 @@ D_{\text{gen}}(X_i, X_j) = \sqrt{(X_i - X_j)^\top W (X_i - X_j)}
 B = \sum_{k=1}^p w_k b_k^2
 \]</span></p>
 <p>where <span class="math inline">\(b_k\)</span> is a balance metric (e.g., standardized mean difference, KS statistic) for covariate <span class="math inline">\(k\)</span>.</p>
+</section>
+<section id="estimation-2" class="level2">
+<h2 class="anchored" data-anchor-id="estimation-2">Estimation</h2>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">R</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Matching)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define covariates</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">cbind</span>(age, educ, black, hisp, married, nodegr, u74, u75, re75, re74)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Genetic matching to find optimal weights</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>genout <span class="ot">&lt;-</span> <span class="fu">GenMatch</span>(</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Tr =</span> treat,</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">X =</span> X,</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimand =</span> <span class="st">"ATT"</span>,</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">M =</span> <span class="dv">1</span>,</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">pop.size =</span> <span class="dv">100</span>,</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">max.generations =</span> <span class="dv">25</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Match using optimized weights</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>mout <span class="ot">&lt;-</span> <span class="fu">Match</span>(</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">Y =</span> outcome,</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">Tr =</span> treat,</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">X =</span> X,</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimand =</span> <span class="st">"ATT"</span>,</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">Weight.matrix =</span> genout</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Results</span></span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mout)</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Assess balance</span></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>mb <span class="ot">&lt;-</span> <span class="fu">MatchBalance</span>(</span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>  treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> black <span class="sc">+</span> hisp <span class="sc">+</span> married <span class="sc">+</span> nodegr <span class="sc">+</span> u74 <span class="sc">+</span> u75 <span class="sc">+</span> re75 <span class="sc">+</span> re74,</span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">match.out =</span> mout,</span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">nboots =</span> <span class="dv">500</span></span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Matching)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Data</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(lalonde) <span class="co"># same as df above</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(lalonde)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="co"># The covariates we want to match on</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>X <span class="ot">=</span> <span class="fu">cbind</span>(age, educ, black, hisp, married, nodegr, u74, u75, re75, re74)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="co"># The covariates we want to obtain balance on</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>BalanceMat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(age, educ, black, hisp, married, nodegr, u74, u75, re75, re74, <span class="fu">I</span>(re74<span class="sc">*</span>re75))</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Genetic matching to find optimal weights</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>genout <span class="ot">&lt;-</span> <span class="fu">GenMatch</span>(</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">Tr=</span>treat, </span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">X=</span>X, </span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">BalanceMatrix=</span>BalanceMat, </span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">estimand=</span><span class="st">"ATE"</span>, </span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">M=</span><span class="dv">1</span>,</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">pop.size=</span><span class="dv">16</span>, </span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">max.generations=</span><span class="dv">10</span>, </span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">wait.generations=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required namespace: rgenoud</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Mon Mar  9 22:56:16 2026
+Domains:
+ 0.000000e+00   &lt;=  X1   &lt;=    1.000000e+03 
+ 0.000000e+00   &lt;=  X2   &lt;=    1.000000e+03 
+ 0.000000e+00   &lt;=  X3   &lt;=    1.000000e+03 
+ 0.000000e+00   &lt;=  X4   &lt;=    1.000000e+03 
+ 0.000000e+00   &lt;=  X5   &lt;=    1.000000e+03 
+ 0.000000e+00   &lt;=  X6   &lt;=    1.000000e+03 
+ 0.000000e+00   &lt;=  X7   &lt;=    1.000000e+03 
+ 0.000000e+00   &lt;=  X8   &lt;=    1.000000e+03 
+ 0.000000e+00   &lt;=  X9   &lt;=    1.000000e+03 
+ 0.000000e+00   &lt;=  X10  &lt;=    1.000000e+03 
+
+Data Type: Floating Point
+Operators (code number, name, population) 
+    (1) Cloning...........................  1
+    (2) Uniform Mutation..................  2
+    (3) Boundary Mutation.................  2
+    (4) Non-Uniform Mutation..............  2
+    (5) Polytope Crossover................  2
+    (6) Simple Crossover..................  2
+    (7) Whole Non-Uniform Mutation........  2
+    (8) Heuristic Crossover...............  2
+    (9) Local-Minimum Crossover...........  0
+
+SOFT Maximum Number of Generations: 10
+Maximum Nonchanging Generations: 1
+Population size       : 16
+Convergence Tolerance: 1.000000e-03
+
+Not Using the BFGS Derivative Based Optimizer on the Best Individual Each Generation.
+Not Checking Gradients before Stopping.
+Using Out of Bounds Individuals.
+
+Maximization Problem.
+GENERATION: 0 (initializing the population)
+Lexical Fit..... 1.795176e-01  1.795176e-01  2.021821e-01  2.811813e-01  3.131651e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  4.831465e-01  5.294148e-01  5.822445e-01  6.548664e-01  6.548664e-01  6.548664e-01  6.548664e-01  7.735920e-01  9.968970e-01  9.990083e-01  9.999999e-01  1.000000e+00  1.000000e+00  
+#unique......... 16, #Total UniqueCount: 16
+var 1:
+best............ 6.015448e+01
+mean............ 3.776134e+02
+variance........ 6.457064e+04
+var 2:
+best............ 3.266528e+01
+mean............ 4.874757e+02
+variance........ 1.087416e+05
+var 3:
+best............ 3.378188e+02
+mean............ 4.611706e+02
+variance........ 7.971527e+04
+var 4:
+best............ 1.703433e+02
+mean............ 4.377754e+02
+variance........ 1.122009e+05
+var 5:
+best............ 5.707733e+02
+mean............ 4.342059e+02
+variance........ 5.722831e+04
+var 6:
+best............ 5.377291e+02
+mean............ 4.167471e+02
+variance........ 6.695071e+04
+var 7:
+best............ 8.145256e+02
+mean............ 4.851634e+02
+variance........ 9.290906e+04
+var 8:
+best............ 3.781348e+02
+mean............ 4.290732e+02
+variance........ 6.681962e+04
+var 9:
+best............ 5.863434e+02
+mean............ 4.110530e+02
+variance........ 7.492577e+04
+var 10:
+best............ 6.837017e+02
+mean............ 4.735502e+02
+variance........ 7.746079e+04
+
+GENERATION: 1
+Lexical Fit..... 1.795176e-01  1.795176e-01  2.021821e-01  2.811813e-01  3.131651e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  4.831465e-01  5.294148e-01  5.822445e-01  6.548664e-01  6.548664e-01  6.548664e-01  6.548664e-01  7.735920e-01  9.968970e-01  9.990083e-01  9.999999e-01  1.000000e+00  1.000000e+00  
+#unique......... 13, #Total UniqueCount: 29
+var 1:
+best............ 6.015448e+01
+mean............ 1.867506e+02
+variance........ 2.594270e+04
+var 2:
+best............ 3.266528e+01
+mean............ 2.673979e+02
+variance........ 1.127125e+05
+var 3:
+best............ 3.378188e+02
+mean............ 3.221245e+02
+variance........ 2.227205e+04
+var 4:
+best............ 1.703433e+02
+mean............ 2.773467e+02
+variance........ 5.484490e+04
+var 5:
+best............ 5.707733e+02
+mean............ 5.795334e+02
+variance........ 2.356118e+04
+var 6:
+best............ 5.377291e+02
+mean............ 5.544194e+02
+variance........ 1.968410e+04
+var 7:
+best............ 8.145256e+02
+mean............ 6.169249e+02
+variance........ 6.916601e+04
+var 8:
+best............ 3.781348e+02
+mean............ 4.363151e+02
+variance........ 1.316877e+04
+var 9:
+best............ 5.863434e+02
+mean............ 6.332346e+02
+variance........ 1.967101e+04
+var 10:
+best............ 6.837017e+02
+mean............ 5.646865e+02
+variance........ 5.191172e+04
+
+GENERATION: 2
+Lexical Fit..... 1.795176e-01  1.795176e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.648608e-01  4.186912e-01  4.557151e-01  5.929106e-01  6.304238e-01  6.548664e-01  6.548664e-01  6.548664e-01  6.548664e-01  8.178449e-01  8.867825e-01  9.968970e-01  9.990083e-01  9.999999e-01  1.000000e+00  1.000000e+00  
+#unique......... 11, #Total UniqueCount: 40
+var 1:
+best............ 8.385688e+01
+mean............ 9.941707e+01
+variance........ 1.275413e+04
+var 2:
+best............ 3.969411e+01
+mean............ 7.060958e+01
+variance........ 3.847239e+03
+var 3:
+best............ 3.371710e+02
+mean............ 3.329697e+02
+variance........ 2.214690e+02
+var 4:
+best............ 1.567318e+02
+mean............ 1.970141e+02
+variance........ 9.639894e+03
+var 5:
+best............ 5.991767e+02
+mean............ 5.689981e+02
+variance........ 6.552425e+02
+var 6:
+best............ 5.739567e+02
+mean............ 5.558737e+02
+variance........ 5.856892e+02
+var 7:
+best............ 8.160007e+02
+mean............ 7.948831e+02
+variance........ 1.269439e+03
+var 8:
+best............ 3.822292e+02
+mean............ 3.905239e+02
+variance........ 8.159185e+02
+var 9:
+best............ 5.488388e+02
+mean............ 6.047242e+02
+variance........ 2.719349e+03
+var 10:
+best............ 6.668321e+02
+mean............ 6.648204e+02
+variance........ 1.126123e+03
+
+GENERATION: 3
+Lexical Fit..... 3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.648608e-01  4.186912e-01  4.694932e-01  5.601933e-01  6.304238e-01  6.548664e-01  6.548664e-01  8.178449e-01  8.867825e-01  9.968970e-01  9.990083e-01  9.999999e-01  1.000000e+00  1.000000e+00  1.000000e+00  1.000000e+00  
+#unique......... 13, #Total UniqueCount: 53
+var 1:
+best............ 8.385688e+01
+mean............ 1.018961e+02
+variance........ 1.002527e+04
+var 2:
+best............ 3.969411e+01
+mean............ 1.038050e+02
+variance........ 4.294224e+04
+var 3:
+best............ 3.255259e+02
+mean............ 3.383773e+02
+variance........ 1.372628e+02
+var 4:
+best............ 1.947109e+02
+mean............ 1.671782e+02
+variance........ 2.114382e+02
+var 5:
+best............ 5.685650e+02
+mean............ 5.509683e+02
+variance........ 9.548692e+03
+var 6:
+best............ 5.559779e+02
+mean............ 5.600375e+02
+variance........ 5.609242e+02
+var 7:
+best............ 8.170001e+02
+mean............ 8.162322e+02
+variance........ 4.232926e+00
+var 8:
+best............ 3.819499e+02
+mean............ 4.049073e+02
+variance........ 9.522888e+03
+var 9:
+best............ 5.516250e+02
+mean............ 5.436426e+02
+variance........ 6.396636e+03
+var 10:
+best............ 6.762827e+02
+mean............ 5.891722e+02
+variance........ 3.961308e+04
+
+GENERATION: 4
+Lexical Fit..... 3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.789976e-01  4.213652e-01  4.630614e-01  6.265539e-01  6.304238e-01  6.548664e-01  6.548664e-01  7.346976e-01  8.178449e-01  9.968970e-01  9.990083e-01  9.999999e-01  1.000000e+00  1.000000e+00  1.000000e+00  1.000000e+00  
+#unique......... 13, #Total UniqueCount: 66
+var 1:
+best............ 8.385688e+01
+mean............ 1.316061e+02
+variance........ 1.639699e+04
+var 2:
+best............ 3.969411e+01
+mean............ 5.529060e+01
+variance........ 3.286677e+03
+var 3:
+best............ 3.255259e+02
+mean............ 3.560502e+02
+variance........ 1.014775e+04
+var 4:
+best............ 1.947109e+02
+mean............ 1.799343e+02
+variance........ 4.155299e+02
+var 5:
+best............ 5.685650e+02
+mean............ 5.795934e+02
+variance........ 3.368206e+02
+var 6:
+best............ 5.559779e+02
+mean............ 5.526092e+02
+variance........ 1.455385e+03
+var 7:
+best............ 8.170001e+02
+mean............ 8.238292e+02
+variance........ 5.293491e+02
+var 8:
+best............ 3.813771e+02
+mean............ 4.058967e+02
+variance........ 7.993330e+03
+var 9:
+best............ 5.564951e+02
+mean............ 5.622295e+02
+variance........ 2.218088e+03
+var 10:
+best............ 6.711161e+02
+mean............ 6.699464e+02
+variance........ 3.412209e+02
+
+GENERATION: 5
+Lexical Fit..... 3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.442749e-01  3.995651e-01  4.617905e-01  5.620328e-01  5.638495e-01  5.638495e-01  6.325049e-01  6.548664e-01  6.548664e-01  7.088048e-01  8.193944e-01  9.969691e-01  9.990352e-01  9.999999e-01  1.000000e+00  1.000000e+00  1.000000e+00  1.000000e+00  
+#unique......... 13, #Total UniqueCount: 79
+var 1:
+best............ 8.385688e+01
+mean............ 1.065929e+02
+variance........ 7.494216e+03
+var 2:
+best............ 3.969411e+01
+mean............ 4.035176e+01
+variance........ 4.275596e+00
+var 3:
+best............ 3.255259e+02
+mean............ 3.368959e+02
+variance........ 2.055490e+03
+var 4:
+best............ 1.947109e+02
+mean............ 1.972264e+02
+variance........ 2.320113e+01
+var 5:
+best............ 5.685650e+02
+mean............ 5.698427e+02
+variance........ 1.978315e+03
+var 6:
+best............ 5.559779e+02
+mean............ 5.498904e+02
+variance........ 4.539813e+02
+var 7:
+best............ 3.583415e+02
+mean............ 7.882245e+02
+variance........ 1.232091e+04
+var 8:
+best............ 3.813771e+02
+mean............ 4.145254e+02
+variance........ 1.037821e+04
+var 9:
+best............ 5.564951e+02
+mean............ 5.397519e+02
+variance........ 3.210814e+03
+var 10:
+best............ 6.711161e+02
+mean............ 6.734227e+02
+variance........ 1.306210e+01
+
+GENERATION: 6
+Lexical Fit..... 3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.442749e-01  3.995651e-01  4.617905e-01  5.620328e-01  5.638495e-01  5.638495e-01  6.325049e-01  6.548664e-01  6.548664e-01  7.088048e-01  8.193944e-01  9.969691e-01  9.990352e-01  9.999999e-01  1.000000e+00  1.000000e+00  1.000000e+00  1.000000e+00  
+#unique......... 12, #Total UniqueCount: 91
+var 1:
+best............ 8.385688e+01
+mean............ 8.373862e+01
+variance........ 5.448931e-02
+var 2:
+best............ 3.969411e+01
+mean............ 4.385563e+01
+variance........ 5.735830e+01
+var 3:
+best............ 3.255259e+02
+mean............ 3.302727e+02
+variance........ 2.909128e+02
+var 4:
+best............ 1.947109e+02
+mean............ 2.078297e+02
+variance........ 2.528442e+03
+var 5:
+best............ 5.685650e+02
+mean............ 5.614741e+02
+variance........ 4.408036e+02
+var 6:
+best............ 5.559779e+02
+mean............ 5.562451e+02
+variance........ 5.696974e-01
+var 7:
+best............ 3.583415e+02
+mean............ 6.002608e+02
+variance........ 6.066749e+04
+var 8:
+best............ 3.813771e+02
+mean............ 4.104398e+02
+variance........ 1.353807e+04
+var 9:
+best............ 5.564951e+02
+mean............ 5.623780e+02
+variance........ 2.969808e+02
+var 10:
+best............ 6.711161e+02
+mean............ 6.861372e+02
+variance........ 3.358896e+03
+
+GENERATION: 7
+Lexical Fit..... 3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.442749e-01  3.995651e-01  4.617905e-01  5.620328e-01  5.638495e-01  5.638495e-01  6.325049e-01  6.548664e-01  6.548664e-01  7.088048e-01  8.193944e-01  9.969691e-01  9.990352e-01  9.999999e-01  1.000000e+00  1.000000e+00  1.000000e+00  1.000000e+00  
+#unique......... 12, #Total UniqueCount: 103
+var 1:
+best............ 8.385688e+01
+mean............ 1.332042e+02
+variance........ 3.849283e+04
+var 2:
+best............ 3.969411e+01
+mean............ 5.855607e+01
+variance........ 4.645476e+03
+var 3:
+best............ 3.255259e+02
+mean............ 3.417257e+02
+variance........ 1.768031e+03
+var 4:
+best............ 1.947109e+02
+mean............ 1.975664e+02
+variance........ 1.214540e+02
+var 5:
+best............ 5.685650e+02
+mean............ 5.595224e+02
+variance........ 1.060515e+03
+var 6:
+best............ 5.559779e+02
+mean............ 5.427564e+02
+variance........ 2.715437e+03
+var 7:
+best............ 3.583415e+02
+mean............ 4.520576e+02
+variance........ 3.167742e+04
+var 8:
+best............ 3.813771e+02
+mean............ 4.160390e+02
+variance........ 1.881512e+04
+var 9:
+best............ 5.564951e+02
+mean............ 5.708614e+02
+variance........ 2.856993e+03
+var 10:
+best............ 6.711161e+02
+mean............ 6.711037e+02
+variance........ 2.540303e-02
+
+'wait.generations' limit reached.
+No significant improvement in 1 generations.
+
+Solution Lexical Fitness Value:
+3.173114e-01  3.173114e-01  3.173114e-01  3.173114e-01  3.442749e-01  3.995651e-01  4.617905e-01  5.620328e-01  5.638495e-01  5.638495e-01  6.325049e-01  6.548664e-01  6.548664e-01  7.088048e-01  8.193944e-01  9.969691e-01  9.990352e-01  9.999999e-01  1.000000e+00  1.000000e+00  1.000000e+00  1.000000e+00  
+
+Parameters at the Solution:
+
+ X[ 1] :    8.385688e+01
+ X[ 2] :    3.969411e+01
+ X[ 3] :    3.255259e+02
+ X[ 4] :    1.947109e+02
+ X[ 5] :    5.685650e+02
+ X[ 6] :    5.559779e+02
+ X[ 7] :    3.583415e+02
+ X[ 8] :    3.813771e+02
+ X[ 9] :    5.564951e+02
+ X[10] :    6.711161e+02
+
+Solution Found Generation 5
+Number of Generations Run 7
+
+Mon Mar  9 22:56:17 2026
+Total run time : 0 hours 0 minutes and 1 seconds</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Match using optimized weights</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>mout <span class="ot">&lt;-</span> <span class="fu">Match</span>(</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Y =</span> re78,</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Tr =</span> treat,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">X =</span> X,</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">estimand =</span> <span class="st">"ATE"</span>,</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Weight.matrix =</span> genout</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="co"># ATE Results</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Estimate...  2227.4 
+AI SE......  818 
+T-stat.....  2.723 
+p.val......  0.0064688 
+
+Original number of observations..............  445 
+Original number of treated obs...............  185 
+Matched number of observations...............  445 
+Matched number of observations  (unweighted).  606 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Assess balance</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>mb <span class="ot">&lt;-</span> <span class="fu">MatchBalance</span>(</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> black <span class="sc">+</span> hisp <span class="sc">+</span> married <span class="sc">+</span> nodegr <span class="sc">+</span> u74 <span class="sc">+</span> u75 <span class="sc">+</span> re75 <span class="sc">+</span> re74,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">match.out =</span> mout,</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">nboots =</span> <span class="dv">500</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+***** (V1) age *****
+                       Before Matching       After Matching
+mean treatment........     25.816            25.105 
+mean control..........     25.054            24.937 
+std mean diff.........     10.655            2.5088 
+
+mean raw eQQ diff.....    0.94054           0.34818 
+med  raw eQQ diff.....          1                 0 
+max  raw eQQ diff.....          7                 8 
+
+mean eCDF diff........   0.025364         0.0095127 
+med  eCDF diff........   0.022193         0.0074257 
+max  eCDF diff........   0.065177          0.036304 
+
+var ratio (Tr/Co).....     1.0278           0.95886 
+T-test p-value........    0.26594           0.39957 
+KS Bootstrap p-value..      0.514             0.544 
+KS Naive p-value......     0.7481           0.81939 
+KS Statistic..........   0.065177          0.036304 
+
+
+***** (V2) educ *****
+                       Before Matching       After Matching
+mean treatment........     10.346            10.213 
+mean control..........     10.088             10.24 
+std mean diff.........     12.806           -1.5612 
+
+mean raw eQQ diff.....    0.40541           0.10066 
+med  raw eQQ diff.....          0                 0 
+max  raw eQQ diff.....          2                 2 
+
+mean eCDF diff........   0.028698           0.00719 
+med  eCDF diff........   0.012682         0.0033003 
+max  eCDF diff........    0.12651          0.042904 
+
+var ratio (Tr/Co).....     1.5513            1.0883 
+T-test p-value........    0.15017           0.56203 
+KS Bootstrap p-value..      0.016             0.242 
+KS Naive p-value......   0.062873            0.6325 
+KS Statistic..........    0.12651          0.042904 
+
+
+***** (V3) black *****
+                       Before Matching       After Matching
+mean treatment........    0.84324            0.8382 
+mean control..........    0.82692            0.8382 
+std mean diff.........     4.4767                 0 
+
+mean raw eQQ diff.....   0.016216                 0 
+med  raw eQQ diff.....          0                 0 
+max  raw eQQ diff.....          1                 0 
+
+mean eCDF diff........  0.0081601                 0 
+med  eCDF diff........  0.0081601                 0 
+max  eCDF diff........    0.01632                 0 
+
+var ratio (Tr/Co).....    0.92503                 1 
+T-test p-value........    0.64736                 1 
+
+
+***** (V4) hisp *****
+                       Before Matching       After Matching
+mean treatment........   0.059459          0.083146 
+mean control..........    0.10769           0.08764 
+std mean diff.........    -20.341            -1.626 
+
+mean raw eQQ diff.....   0.048649         0.0033003 
+med  raw eQQ diff.....          0                 0 
+max  raw eQQ diff.....          1                 1 
+
+mean eCDF diff........   0.024116         0.0016502 
+med  eCDF diff........   0.024116         0.0016502 
+max  eCDF diff........   0.048233         0.0033003 
+
+var ratio (Tr/Co).....    0.58288           0.95339 
+T-test p-value........   0.064043           0.31731 
+
+
+***** (V5) married *****
+                       Before Matching       After Matching
+mean treatment........    0.18919           0.16854 
+mean control..........    0.15385           0.16629 
+std mean diff.........     8.9995           0.59963 
+
+mean raw eQQ diff.....   0.037838         0.0016502 
+med  raw eQQ diff.....          0                 0 
+max  raw eQQ diff.....          1                 1 
+
+mean eCDF diff........   0.017672        0.00082508 
+med  eCDF diff........   0.017672        0.00082508 
+max  eCDF diff........   0.035343         0.0016502 
+
+var ratio (Tr/Co).....     1.1802            1.0108 
+T-test p-value........    0.33425           0.31731 
+
+
+***** (V6) nodegr *****
+                       Before Matching       After Matching
+mean treatment........    0.70811           0.78202 
+mean control..........    0.83462           0.78202 
+std mean diff.........    -27.751                 0 
+
+mean raw eQQ diff.....    0.12432                 0 
+med  raw eQQ diff.....          0                 0 
+max  raw eQQ diff.....          1                 0 
+
+mean eCDF diff........   0.063254                 0 
+med  eCDF diff........   0.063254                 0 
+max  eCDF diff........    0.12651                 0 
+
+var ratio (Tr/Co).....     1.4998                 1 
+T-test p-value........  0.0020368                 1 
+
+
+***** (V7) u74 *****
+                       Before Matching       After Matching
+mean treatment........    0.70811           0.73708 
+mean control..........       0.75           0.73483 
+std mean diff.........    -9.1895            0.5099 
+
+mean raw eQQ diff.....   0.037838         0.0016502 
+med  raw eQQ diff.....          0                 0 
+max  raw eQQ diff.....          1                 1 
+
+mean eCDF diff........   0.020946        0.00082508 
+med  eCDF diff........   0.020946        0.00082508 
+max  eCDF diff........   0.041892         0.0016502 
+
+var ratio (Tr/Co).....     1.1041           0.99456 
+T-test p-value........    0.33033           0.65487 
+
+
+***** (V8) u75 *****
+                       Before Matching       After Matching
+mean treatment........        0.6           0.64944 
+mean control..........    0.68462           0.65169 
+std mean diff.........    -17.225          -0.47044 
+
+mean raw eQQ diff.....   0.081081         0.0016502 
+med  raw eQQ diff.....          0                 0 
+max  raw eQQ diff.....          1                 1 
+
+mean eCDF diff........   0.042308        0.00082508 
+med  eCDF diff........   0.042308        0.00082508 
+max  eCDF diff........   0.084615         0.0016502 
+
+var ratio (Tr/Co).....     1.1133             1.003 
+T-test p-value........   0.068031           0.56385 
+
+
+***** (V9) re75 *****
+                       Before Matching       After Matching
+mean treatment........     1532.1            1297.2 
+mean control..........     1266.9            1344.8 
+std mean diff.........     8.2363           -1.5589 
+
+mean raw eQQ diff.....     367.61            91.977 
+med  raw eQQ diff.....          0                 0 
+max  raw eQQ diff.....     2110.2            2973.4 
+
+mean eCDF diff........   0.050834         0.0068685 
+med  eCDF diff........   0.061954         0.0066007 
+max  eCDF diff........    0.10748          0.021452 
+
+var ratio (Tr/Co).....     1.0763            1.0373 
+T-test p-value........    0.38527           0.46179 
+KS Bootstrap p-value..      0.034              0.81 
+KS Naive p-value......    0.16449           0.99904 
+KS Statistic..........    0.10748          0.021452 
+
+
+***** (V10) re74 *****
+                       Before Matching       After Matching
+mean treatment........     2095.6            2005.8 
+mean control..........       2107            2040.4 
+std mean diff.........   -0.23437           -0.7091 
+
+mean raw eQQ diff.....     487.98            197.53 
+med  raw eQQ diff.....          0                 0 
+max  raw eQQ diff.....       8413            7870.3 
+
+mean eCDF diff........   0.019223         0.0059289 
+med  eCDF diff........     0.0158         0.0049505 
+max  eCDF diff........   0.047089          0.023102 
+
+var ratio (Tr/Co).....     0.7381           0.87161 
+T-test p-value........    0.98186            0.7088 
+KS Bootstrap p-value..      0.574              0.66 
+KS Naive p-value......    0.97023           0.99697 
+KS Statistic..........   0.047089          0.023102 
+
+
+Before Matching Minimum p.value: 0.0020368 
+Variable Name(s): nodegr  Number(s): 6 
+
+After Matching Minimum p.value: 0.242 
+Variable Name(s): educ  Number(s): 2 </code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -682,25 +1510,56 @@ B = \sum_{k=1}^p w_k b_k^2
 <li><strong>Unique solution</strong> via convex optimization</li>
 <li><strong>No iteration</strong> required</li>
 </ul>
+</section>
+<section id="estimation-3" class="level2">
+<h2 class="anchored" data-anchor-id="estimation-3">Estimation</h2>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ebal)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Entropy balancing</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>eb.out <span class="ot">&lt;-</span> <span class="fu">ebalance</span>(</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Treatment =</span> treat,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">X =</span> <span class="fu">cbind</span>(age, educ, black, married, re74, re75)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct weights</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>weights <span class="ot">&lt;-</span> <span class="fu">c</span>(eb.out<span class="sc">$</span>w, <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">sum</span>(treat)))</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate ATE</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(outcome <span class="sc">~</span> treat, <span class="at">weights =</span> weights)</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ebal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>##
+## ebal Package: Implements Entropy Balancing.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>## See http://www.stanford.edu/~jhain/ for additional information.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Entropy balancing</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>eb.out <span class="ot">&lt;-</span> <span class="fu">ebalance</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Treatment =</span> treat,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">X =</span> <span class="fu">cbind</span>(age, educ, black, married, re74, re75)</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Converged within tolerance </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct weights</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>weights <span class="ot">&lt;-</span> <span class="fu">c</span>(eb.out<span class="sc">$</span>w, <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">sum</span>(treat)))</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate ATE</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(re78 <span class="sc">~</span> treat, <span class="at">weights =</span> weights)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = re78 ~ treat, weights = weights)
+
+Weighted Residuals:
+   Min     1Q Median     3Q    Max 
+ -6848  -4518  -1626   2638  38706 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   4518.0      371.2  12.172  &lt; 2e-16 ***
+treat         1874.1      633.8   2.957  0.00327 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 5787 on 443 degrees of freedom
+Multiple R-squared:  0.01935,   Adjusted R-squared:  0.01714 
+F-statistic: 8.743 on 1 and 443 DF,  p-value: 0.003274</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -751,6 +1610,9 @@ B = \sum_{k=1}^p w_k b_k^2
 </tr>
 </tbody>
 </table>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
 <div id="refs" role="list">
 
 </div>

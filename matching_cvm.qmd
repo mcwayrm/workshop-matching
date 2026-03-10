@@ -8,16 +8,15 @@ bibliography: references.bib
 
 Covariate matching methods directly match units based on the similarity of their observed characteristics, rather than reducing them to a single propensity score. These methods preserve the **multivariate structure** of covariates and can achieve better balance.
 
-## Advantages Over Propensity Score Matching
+## Advantages Over Propensity Score Matching (PSM)
 
 1. **No information loss**: Matching on full covariate space preserves all information
 2. **Better balance**: Can achieve exact or near-exact balance on all covariates
 3. **Transparency**: Easier to inspect and understand matches
-4. **Robustness**: Not sensitive to propensity score model specification
+4. **Robustness**: Not sensitive to propensity score model specification (e.g., non-parametric)
 
 # Mahalanobis Distance Matching
 
-## Definition
 
 The Mahalanobis distance between units $i$ and $j$ is:
 
@@ -58,38 +57,61 @@ Mahalanobis distance **standardizes** by $S^{-1}$, making it:
 - **Assumes multivariate normality** (implicitly)
 
 
+## Estimation
+
+Again, we use the `lalonde` data from the `MatchIt` R package as described in [Propensity Score Matching](./matching_psm.qmd#estimation).
 
 ::: {.panel-tabset}
 
 ## R
 
 ```{r}
-#| eval: false
+#| cache: true
 
 library(MatchIt)
 library(Matching)
 
+# Download the lalonde data 
+df <- MatchIt::lalonde
+
 # Mahalanobis distance matching
 m.out <- matchit(
-  treat ~ age + educ + race + married + nodegree + re74 + re75,
-  data = mydata,
-  method = "nearest",
-  distance = "mahalanobis"
+    treat ~ age + educ + race + married + nodegree + re74 + re75,
+    data = df,
+    method = "nearest",         # Nearest neighbor
+    distance = "mahalanobis",   # Mahalanobis matching
+    ratio = 1,                  # 1:1 matching
+    replace = FALSE
 )
 
-# With caliper on propensity score
+# Example with exact matching
 m.out2 <- matchit(
-  treat ~ age + educ + race + married + nodegree + re74 + re75,
-  data = mydata,
-  method = "nearest",
-  distance = "mahalanobis",
-  mahvars = ~ age + educ + re74 + re75,  # Variables for Mahal distance
-  caliper = 0.25,                         # Caliper on propensity score
-  std.caliper = TRUE
-)
+    treat ~ age + educ + race + nodegree + married + re74 + re75,
+    data = df,
+    distance = "mahalanobis",
+    replace = FALSE,
+    exact = ~ married + race)
 
-# Check balance
-summary(m.out, un = FALSE)
+# Check Balance
+summary(m.out2, un = TRUE)
+
+# Visualize covariate balance
+plot(m.out2, type = "density", which.xs = ~age + educ, interactive = FALSE)
+
+# Extract matched data
+matched_data <- match.data(m.out2)
+
+# Estimate treatment effect
+library(lmtest)
+library(sandwich)
+
+fit <- lm(re78 ~ treat + age + educ + race + married + nodegree + re74 + re75,
+        data = matched_data, # Data already has matches
+        weights = weights # Re-weights for PSM
+        )
+
+# Robust standard errors (no clustering needed with replacement matching)
+coeftest(fit, vcov = vcovHC, type = "HC3")
 ```
 
 ## Python
@@ -100,9 +122,13 @@ summary(m.out, un = FALSE)
 import numpy as np
 from scipy.spatial.distance import mahalanobis
 from sklearn.covariance import EmpiricalCovariance
+import pandas as pd
+
+# Load data
+data = pd.read_csv('lalonde.csv')
 
 # Compute covariance matrix
-X = data[['age', 'educ', 'married', 're74', 're75']].values
+X = data[['age', 'educ', 'race', 'married','nodegree', 're74', 're75']].values
 cov = EmpiricalCovariance().fit(X)
 S_inv = np.linalg.inv(cov.covariance_)
 
@@ -112,9 +138,9 @@ dist = mahalanobis(X[i], X[j], S_inv)
 # Using causalinference package
 from causalinference import CausalModel
 
-Y = data['outcome'].values
+Y = data['re78'].values
 D = data['treat'].values
-X = data[['age', 'educ', 'married', 're74', 're75']].values
+X = X = data[['age', 'educ', 'race', 'married','nodegree', 're74', 're75']].values
 
 causal = CausalModel(Y, D, X)
 causal.est_via_matching(matches=1, bias_adj=True)
@@ -129,14 +155,17 @@ print(causal.estimates)
 * Install mahapick if needed
 * ssc install mahapick
 
+* Load data 
+import delimited "lalonde.csv", clear
+
 mahapick treat age educ black hispanic married nodegree re74 re75, ///
-         idvar(id) nummatches(1) scorevar(mahal_dist) matchedvar(matched)
+    idvar(id) nummatches(1) scorevar(mahal_dist) matchedvar(matched)
 
 * Keep matched observations
 keep if matched == 1
 
 * Estimate treatment effect
-reg outcome treat age educ black hispanic married nodegree re74 re75
+reg re78 treat age educ black hispanic married nodegree re74 re75
 ```
 
 :::
@@ -174,38 +203,32 @@ $$
 
 This provides **ex ante control** over balance.
 
+## Estimation
 
 ::: {.panel-tabset}
 
 ## R
 
 ```{r}
-#| eval: false
+#| cache: true
 
 library(cem)
 
 # Automatic coarsening
 mat <- cem(
-  treatment = "treat",
-  data = mydata,
-  drop = "outcome",
-  keep.all = TRUE
-)
-
-# Manual coarsening with custom bins
-educut <- c(0, 6.5, 8.5, 12.5, 17)
-mat2 <- cem(
-  treatment = "treat",
-  data = mydata,
-  drop = "outcome",
-  cutpoints = list(education = educut)
+    treatment = "treat",
+    data = df,
+    drop = "re78",
+    keep.all = TRUE
 )
 
 # Check imbalance
-imbalance(group = mydata$treat, data = mydata[covariates])
+imbalance(group = df$treat, data = df, drop = "re78")
 
 # Estimate treatment effect with weights
-fit <- lm(outcome ~ treat + age + educ, data = mydata, weights = mat$w)
+fit <- lm(re78 ~ treat + age + educ + race + nodegree + married + re74 + re75, 
+    data = df, 
+    weights = mat$w)
 summary(fit)
 ```
 
@@ -227,7 +250,7 @@ ro.r('library(cem)')
 r_data = pandas2ri.py2rpy(data)
 
 # Run CEM in R
-result = ro.r.cem('treat', data=r_data, drop='outcome')
+result = ro.r.cem('treat', data=r_data, drop='re78')
 weights = ro.r('result$w')
 ```
 
@@ -239,13 +262,13 @@ weights = ro.r('result$w')
 * Install cem
 * ssc install cem
 
-cem age (#3) educ (#4) black hispanic married, treatment(treat)
+cem age educ black hispanic married nodegree re74 re75, treatment(treat)
 
 * Check balance
-imbalance age educ black hispanic married, by(treat)
+imbalance age educ black hispanic married nodegree re74 re75, by(treat)
 
 * Regression with CEM weights
-reg outcome treat age educ black hispanic married [iw=cem_weights]
+reg re78 treat age educ black hispanic married nodegree re74 re75 [iw = cem_weights]
 ```
 
 :::
@@ -260,7 +283,7 @@ $$
 D_{\text{gen}}(X_i, X_j) = \sqrt{(X_i - X_j)^\top W (X_i - X_j)}
 $$
 
-where $W$ is **learned** using a genetic algorithm.
+where $W$ is **learned** using a genetic algorithm. This follows an iterative, evolutionary pattern to determine the covariate matching set. 
 
 ## Genetic Algorithm
 
@@ -280,47 +303,57 @@ $$
 
 where $b_k$ is a balance metric (e.g., standardized mean difference, KS statistic) for covariate $k$.
 
+## Estimation 
 
 ::: {.panel-tabset}
 
 ## R
 
 ```{r}
-#| eval: false
+#| cache: true
 
 library(Matching)
 
-# Define covariates
-X <- cbind(age, educ, black, hisp, married, nodegr, u74, u75, re75, re74)
+# Data
+data(lalonde) # same as df above
+attach(lalonde)
+
+# The covariates we want to match on
+X = cbind(age, educ, black, hisp, married, nodegr, u74, u75, re75, re74)
+# The covariates we want to obtain balance on
+BalanceMat <- cbind(age, educ, black, hisp, married, nodegr, u74, u75, re75, re74, I(re74*re75))
 
 # Genetic matching to find optimal weights
 genout <- GenMatch(
-  Tr = treat,
-  X = X,
-  estimand = "ATT",
-  M = 1,
-  pop.size = 100,
-  max.generations = 25
-)
+    Tr=treat, 
+    X=X, 
+    BalanceMatrix=BalanceMat, 
+    estimand="ATE", 
+    M=1,
+    pop.size=16, 
+    max.generations=10, 
+    wait.generations=1)
 
 # Match using optimized weights
 mout <- Match(
-  Y = outcome,
-  Tr = treat,
-  X = X,
-  estimand = "ATT",
-  Weight.matrix = genout
+    Y = re78,
+    Tr = treat,
+    X = X,
+    estimand = "ATE",
+    Weight.matrix = genout
 )
 
-# Results
+# ATE Results
 summary(mout)
 
 # Assess balance
 mb <- MatchBalance(
-  treat ~ age + educ + black + hisp + married + nodegr + u74 + u75 + re75 + re74,
-  match.out = mout,
-  nboots = 500
+    treat ~ age + educ + black + hisp + married + nodegr + u74 + u75 + re75 + re74,
+    match.out = mout,
+    nboots = 500
 )
+
+
 ```
 
 ::: 
@@ -353,13 +386,14 @@ where $w_i^{(0)} = 1/n_0$ are uniform base weights.
 - **Unique solution** via convex optimization
 - **No iteration** required
 
+## Estimation
 
 ::: {.panel-tabset}
 
 ## R
 
 ```{r}
-#| eval: false
+#| cache: true
 
 library(ebal)
 
@@ -373,7 +407,7 @@ eb.out <- ebalance(
 weights <- c(eb.out$w, rep(1, sum(treat)))
 
 # Estimate ATE
-fit <- lm(outcome ~ treat, weights = weights)
+fit <- lm(re78 ~ treat, weights = weights)
 summary(fit)
 ```
 
@@ -387,6 +421,9 @@ summary(fit)
 | CEM | Exact (discretized) | Monotonic balance, interpretable | Information loss from coarsening |
 | Genetic | Optimized | Data-adaptive, superior balance | Computationally intensive |
 | Entropy | Reweighting | Exact balance, efficient | Requires all units, potential extreme weights |
+
+
+# References
 
 ::: {#refs}
 :::

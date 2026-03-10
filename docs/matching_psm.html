@@ -91,7 +91,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-b18a7f4b6f3202b6080e6fe89b64549f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-4bfece9002f65aa168ea8461ef0c0dc7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -151,8 +151,11 @@ window.Quarto = {
 </script>
 
 <meta property="og:title" content="Matching Methods">
-<meta property="og:description" content="Propensity Score Matching">
+<meta property="og:description" content="Propensity Score Matching (PSM)">
+<meta property="og:image" content="https://mcwayrm.github.io/matching_methods/assets/images/kernels.png">
 <meta property="og:site_name" content="Matching Methods">
+<meta property="og:image:height" content="692">
+<meta property="og:image:width" content="960">
 </head>
 
 <body class="nav-sidebar docked">
@@ -271,12 +274,6 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./practice.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Practice</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./application_psp.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">The PSP Program</span></a>
   </div>
@@ -312,16 +309,20 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#nearest-neighbor-matching" id="toc-nearest-neighbor-matching" class="nav-link" data-scroll-target="#nearest-neighbor-matching">1. Nearest Neighbor Matching</a></li>
   <li><a href="#caliper-matching" id="toc-caliper-matching" class="nav-link" data-scroll-target="#caliper-matching">2. Caliper Matching</a></li>
-  <li><a href="#kernel-matching" id="toc-kernel-matching" class="nav-link" data-scroll-target="#kernel-matching">3. Kernel Matching</a></li>
-  </ul></li>
-  <li><a href="#why-psm-is-no-longer-recommended" id="toc-why-psm-is-no-longer-recommended" class="nav-link" data-scroll-target="#why-psm-is-no-longer-recommended">Why PSM Is No Longer Recommended</a>
+  <li><a href="#kernel-matching" id="toc-kernel-matching" class="nav-link" data-scroll-target="#kernel-matching">3. Kernel Matching</a>
   <ul class="collapse">
-  <li><a href="#key-problems" id="toc-key-problems" class="nav-link" data-scroll-target="#key-problems">Key Problems</a></li>
-  <li><a href="#better-alternatives" id="toc-better-alternatives" class="nav-link" data-scroll-target="#better-alternatives">Better Alternatives</a></li>
+  <li><a href="#kernel-selection" id="toc-kernel-selection" class="nav-link" data-scroll-target="#kernel-selection">Kernel Selection</a></li>
+  <li><a href="#optimal-bandwidth-selection" id="toc-optimal-bandwidth-selection" class="nav-link" data-scroll-target="#optimal-bandwidth-selection">Optimal Bandwidth Selection</a></li>
   </ul></li>
-  <li><a href="#when-psm-may-still-be-useful" id="toc-when-psm-may-still-be-useful" class="nav-link" data-scroll-target="#when-psm-may-still-be-useful">When PSM May Still Be Useful</a></li>
+  <li><a href="#estimation" id="toc-estimation" class="nav-link" data-scroll-target="#estimation">Estimation</a></li>
+  </ul></li>
+  <li><a href="#critiques-of-psm" id="toc-critiques-of-psm" class="nav-link" data-scroll-target="#critiques-of-psm">Critiques of PSM</a>
+  <ul class="collapse">
+  <li><a href="#potential-better-alternatives" id="toc-potential-better-alternatives" class="nav-link" data-scroll-target="#potential-better-alternatives">Potential Better Alternatives</a></li>
+  </ul></li>
   <li><a href="#common-pitfalls" id="toc-common-pitfalls" class="nav-link" data-scroll-target="#common-pitfalls">Common Pitfalls</a></li>
   <li><a href="#recommended-workflow" id="toc-recommended-workflow" class="nav-link" data-scroll-target="#recommended-workflow">Recommended Workflow</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
     </div>
@@ -331,7 +332,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title d-none d-lg-block">Matching Methods</h1>
-<p class="subtitle lead">Propensity Score Matching</p>
+<p class="subtitle lead">Propensity Score Matching (PSM)</p>
 </div>
 
 
@@ -361,11 +362,11 @@ e(X) = P(T = 1 | X)
 </ul>
 <section id="the-balancing-property" class="level2">
 <h2 class="anchored" data-anchor-id="the-balancing-property">The Balancing Property</h2>
-<p>Rosenbaum and Rubin (1983) proved that conditioning on the propensity score is sufficient to remove bias from observed confounders:</p>
+<p><span class="citation" data-cites="rosenbaum1983central">Rosenbaum and Rubin (<a href="#ref-rosenbaum1983central" role="doc-biblioref">1983</a>)</span> proved that conditioning on the propensity score is sufficient to remove bias from observed confounders:</p>
 <p><span class="math display">\[
 (Y^1, Y^0) \perp T | e(X)
 \]</span></p>
-<p>This remarkable result reduces the dimensionality of the matching problem: instead of matching on all <span class="math inline">\(p\)</span> covariates in <span class="math inline">\(X\)</span>, we can match on the single scalar <span class="math inline">\(e(X)\)</span>.</p>
+<p>This remarkable result reduces the dimensionality of the matching problem. Instead of matching on all <span class="math inline">\(p\)</span> covariates in <span class="math inline">\(X\)</span>, we can match on the single scalar <span class="math inline">\(e(X)\)</span>.</p>
 <p><strong>Why this works:</strong></p>
 <p>The propensity score is a <strong>balancing score</strong>: At each value <span class="math inline">\(e(X) = e_0\)</span>, the distribution of covariates <span class="math inline">\(X\)</span> is the same in the treated and control groups.</p>
 <p>Formally: <span class="math display">\[
@@ -389,15 +390,16 @@ X \perp T | e(X)
 <h2 class="anchored" data-anchor-id="alternative-methods">Alternative Methods</h2>
 <p>For more flexible functional forms:</p>
 <ul>
-<li><strong>Generalized boosted models (GBM)</strong> - adaptive nonparametric estimation</li>
-<li><strong>Random forests</strong> - ensemble tree-based methods</li>
-<li><strong>LASSO/Ridge</strong> - regularized regression for high-dimensional <span class="math inline">\(X\)</span></li>
-<li><strong>Neural networks</strong> - deep learning approaches</li>
+<li><strong>LASSO Regularization</strong>: Applies <span class="math inline">\(L1\)</span> penalty to linear models to perform automatic variable selection, shrinking coefficients of irrelevant predictors to zero while estimating treatment probabilities with reduced dimensionality.</li>
+<li><strong>Generalized Boosted Models (GBM)</strong>: Iteratively builds an ensemble of weak learners (typically trees) to minimize prediction error, effectively capturing nonlinear relationships and interactions in treatment assignment.</li>
+<li><strong>Random Forests</strong>: Aggregates predictions from multiple decision trees trained on random subsets of data and features, providing robust propensity score estimation with built-in feature importance measures.</li>
+<li><strong>Neural Networks</strong>: Uses interconnected layers of nonlinear activation functions to learn complex, high-dimensional relationships between covariates and treatment assignment, particularly useful with large covariate sets.</li>
 </ul>
 </section>
 </section>
 <section id="matching-algorithms" class="level1">
 <h1>Matching Algorithms</h1>
+<p>There are several practical matching algorithims you can use to construct match propensity scores along.</p>
 <section id="nearest-neighbor-matching" class="level2">
 <h2 class="anchored" data-anchor-id="nearest-neighbor-matching">1. Nearest Neighbor Matching</h2>
 <p>Match each treated unit to the <span class="math inline">\(k\)</span> closest control units based on propensity score distance:</p>
@@ -409,7 +411,7 @@ d(i, j) = |e(X_i) - e(X_j)|
 </section>
 <section id="caliper-matching" class="level2">
 <h2 class="anchored" data-anchor-id="caliper-matching">2. Caliper Matching</h2>
-<p>Impose a maximum distance threshold <span class="math inline">\(c &gt; 0\)</span> (the caliper). Only match if:</p>
+<p>Impose a maximum distance threshold <span class="math inline">\(c &gt; 0\)</span> (the caliper). Only considers matches if:</p>
 <p><span class="math display">\[
 |e(X_i) - e(X_j)| &lt; c
 \]</span></p>
@@ -422,92 +424,299 @@ d(i, j) = |e(X_i) - e(X_j)|
 \hat{Y}_i^0 = \frac{\sum_{j:T_j=0} K\left(\frac{e(X_i) - e(X_j)}{h}\right) Y_j}{\sum_{j:T_j=0} K\left(\frac{e(X_i) - e(X_j)}{h}\right)}
 \]</span></p>
 <p>where <span class="math inline">\(K(\cdot)\)</span> is a kernel function and <span class="math inline">\(h\)</span> is the bandwidth.</p>
+<section id="kernel-selection" class="level3">
+<h3 class="anchored" data-anchor-id="kernel-selection">Kernel Selection</h3>
+<p>There are several types of kernels to select from. The most common selection is the Epanechnikov (parabolic) kernel. Below I provide a visualization of these kernels as well as a comparision across these kernels.</p>
+<p><img src=".\assets/images/kernels.png" class="img-fluid"></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 24%">
+<col style="width: 21%">
+<col style="width: 32%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Kernel</th>
+<th>Support</th>
+<th><span class="math inline">\(K(u)\)</span></th>
+<th>Efficiency (relative to Epanechnikov)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Uniform (Rectangular)</td>
+<td><span class="math inline">\(\|u\| \leq 1\)</span></td>
+<td><span class="math inline">\(\frac{1}{2}\)</span></td>
+<td>92.9%</td>
+</tr>
+<tr class="even">
+<td>Triangular</td>
+<td><span class="math inline">\(\|u\| \leq 1\)</span></td>
+<td><span class="math inline">\(1 - \|u\|\)</span></td>
+<td>98.6%</td>
+</tr>
+<tr class="odd">
+<td>Epanechnikov (Parabolic)</td>
+<td><span class="math inline">\(\|u\| \leq 1\)</span></td>
+<td><span class="math inline">\(\frac{3}{4}(1 - u^2)\)</span></td>
+<td>100%</td>
+</tr>
+<tr class="even">
+<td>Quartic (Biweight)</td>
+<td><span class="math inline">\(\|u\| \leq 1\)</span></td>
+<td><span class="math inline">\(\frac{15}{16}(1 - u^2)^2\)</span></td>
+<td>99.4%</td>
+</tr>
+<tr class="odd">
+<td>Triweight</td>
+<td><span class="math inline">\(\|u\| \leq 1\)</span></td>
+<td><span class="math inline">\(\frac{35}{32}(1 - u^2)^3\)</span></td>
+<td>98.7%</td>
+</tr>
+<tr class="even">
+<td>Tricube</td>
+<td><span class="math inline">\(\|u\| \leq 1\)</span></td>
+<td><span class="math inline">\(\frac{70}{81}(1 - \|u\|^3)^3\)</span></td>
+<td>99.8%</td>
+</tr>
+<tr class="odd">
+<td>Gaussian</td>
+<td>All <span class="math inline">\(u\)</span></td>
+<td><span class="math inline">\(\frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}u^2}\)</span></td>
+<td>95.1%</td>
+</tr>
+<tr class="even">
+<td>Cosine</td>
+<td><span class="math inline">\(\|u\| \leq 1\)</span></td>
+<td><span class="math inline">\(\frac{\pi}{4}\cos(\frac{\pi}{2}u)\)</span></td>
+<td>99.9%</td>
+</tr>
+<tr class="odd">
+<td>Logistic</td>
+<td>All <span class="math inline">\(u\)</span></td>
+<td><span class="math inline">\(\frac{1}{e^u + 2 + e^{-u}}\)</span></td>
+<td>88.7%</td>
+</tr>
+<tr class="even">
+<td>Sigmoid</td>
+<td>All <span class="math inline">\(u\)</span></td>
+<td><span class="math inline">\(\frac{2}{\pi(e^u + e^{-u})}\)</span></td>
+<td>84.3%</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="optimal-bandwidth-selection" class="level3">
+<h3 class="anchored" data-anchor-id="optimal-bandwidth-selection">Optimal Bandwidth Selection</h3>
+<p>The choice of bandwidth <span class="math inline">\(h\)</span> is critical for kernel matching, as it controls the trade-off between bias and variance. The most common optimality criterion is the <strong>Mean Integrated Squared Error (MISE)</strong>:</p>
+<p><span class="math display">\[
+\text{MISE}(h) = E\left[\int \left(\hat{f}_h(x) - f(x)\right)^2 dx\right]
+\]</span></p>
+<p>where <span class="math inline">\(\hat{f}_h(x)\)</span> is the kernel density estimate and <span class="math inline">\(f(x)\)</span> is the true (unknown) density function.</p>
+<p>Under mild assumptions, the MISE can be approximated by the <strong>Asymptotic MISE (AMISE)</strong>:</p>
+<p><span class="math display">\[
+\text{AMISE}(h) = \frac{R(K)}{nh} + \frac{1}{4}m_2(K)^2 h^4 R(f'')
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(R(g) = \int g(x)^2 dx\)</span> for a function <span class="math inline">\(g\)</span></li>
+<li><span class="math inline">\(m_2(K) = \int x^2 K(x) dx\)</span> is the second moment of the kernel</li>
+<li><span class="math inline">\(R(f'')\)</span> involves the second derivative of the true density</li>
+<li><span class="math inline">\(n\)</span> is the sample size</li>
+</ul>
+<p>The optimal bandwidth that minimizes AMISE is:</p>
+<p><span class="math display">\[
+h_{\text{AMISE}} = \left[\frac{R(K)}{m_2(K)^2 R(f'')}\right]^{1/5} n^{-1/5}
+\]</span></p>
+<p><strong>Silverman’s Rule of Thumb:</strong></p>
+<p>Since <span class="math inline">\(R(f'')\)</span> is unknown in practice, the <strong>Rule of Thumb estimator</strong> provides a practical solution by assuming the underlying density is approximately normal:</p>
+<p><span class="math display">\[
+h_{\text{ROT}} = \left(\frac{4\hat{\sigma}^5}{3n}\right)^{1/5} \approx 1.06\hat{\sigma}n^{-1/5}
+\]</span></p>
+<p>where <span class="math inline">\(\hat{\sigma}\)</span> is the sample standard deviation. A more robust version uses:</p>
+<p><span class="math display">\[
+h_{\text{ROT}} = 0.9 \cdot \min\left(\hat{\sigma}, \frac{\text{IQR}}{1.34}\right) \cdot n^{-1/5}
+\]</span></p>
+<p>where IQR is the interquartile range. This modification improves performance for skewed or heavy-tailed distributions. The Rule of Thumb is the default bandwidth selector in most statistical packages due to its simplicity and reasonable performance, though it may oversmooth bimodal or multimodal distributions.</p>
+</section>
+</section>
+<section id="estimation" class="level2">
+<h2 class="anchored" data-anchor-id="estimation">Estimation</h2>
+<p>As an example, we will explore the <code>lalonde</code> data set that comes with the <code>MatchIt</code> R package. This is data from the National Supported Work Demonstration used by <span class="citation" data-cites="dehejia1999causal">Dehejia and Wahba (<a href="#ref-dehejia1999causal" role="doc-biblioref">1999</a>)</span>. The outcome of interest is 1978 real wages <code>re78</code>.</p>
+<blockquote class="blockquote">
+<p>“We use data from Lalonde’s evaluation of nonexperimental methods that combine the treated units from a randomized evaluation of the NSW with nonexperimental comparison units drawn from survey datasets.”</p>
+</blockquote>
+<p>The variables in this data are:</p>
+<ul>
+<li>treat: The treatment assignment indicator is the first variable of the data frame: treatment (1 = treated; 0 = control).</li>
+<li>age, measured in years;</li>
+<li>education, measured in years;</li>
+<li>black, indicating race (1 if black, 0 otherwise);</li>
+<li>hispanic, indicating race (1 if Hispanic, 0 otherwise);</li>
+<li>married, indicating marital status (1 if married, 0 otherwise);</li>
+<li>nodegree, indicating high school diploma (1 if no degree, 0 otherwise);</li>
+<li>re74, real earnings in 1974;</li>
+<li>re75, real earnings in 1975.</li>
+</ul>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Stata</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MatchIt)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate propensity scores and match</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> married <span class="sc">+</span> nodegree <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mydata,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"nearest"</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">distance =</span> <span class="st">"glm"</span>,  <span class="co"># logistic regression</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">ratio =</span> <span class="dv">1</span>,         <span class="co"># 1:1 matching</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">caliper =</span> <span class="fl">0.25</span>,    <span class="co"># caliper in standard deviations</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">replace =</span> <span class="cn">FALSE</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Check balance</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m.out, <span class="at">un =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize overlap</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m.out, <span class="at">type =</span> <span class="st">"jitter"</span>, <span class="at">interactive =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract matched data</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>matched_data <span class="ot">&lt;-</span> <span class="fu">match.data</span>(m.out)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate treatment effect</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sandwich)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(outcome <span class="sc">~</span> treat <span class="sc">+</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>          <span class="at">data =</span> matched_data,</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>          <span class="at">weights =</span> weights)</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Robust standard errors</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fit, <span class="at">vcov =</span> vcovCL, <span class="at">cluster =</span> <span class="sc">~</span>subclass)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Key Matching Package</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MatchIt)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the lalonde data </span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> MatchIt<span class="sc">::</span>lalonde</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate propensity scores and match</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    treat <span class="sc">~</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> married <span class="sc">+</span> nodegree <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">"nearest"</span>,<span class="co"># Nearest neighbor matching</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">distance =</span> <span class="st">"glm"</span>,  <span class="co"># logistic regression</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio =</span> <span class="dv">1</span>,         <span class="co"># 1:1 matching</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">caliper =</span> <span class="fl">0.25</span>,    <span class="co"># caliper in standard deviations</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">replace =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Check balance</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m.out, <span class="at">un =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+matchit(formula = treat ~ age + educ + race + married + nodegree + 
+    re74 + re75, data = df, method = "nearest", distance = "glm", 
+    replace = FALSE, caliper = 0.25, ratio = 1)
+
+Summary of Balance for Matched Data:
+           Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+distance          0.5321        0.4892          0.1948     1.2188    0.0470
+age              26.8879       26.3017          0.0819     0.4566    0.0871
+educ             10.5517       10.5000          0.0257     0.6006    0.0281
+raceblack         0.7500        0.7328          0.0474          .    0.0172
+racehispan        0.0948        0.1034         -0.0365          .    0.0086
+racewhite         0.1552        0.1638         -0.0291          .    0.0086
+married           0.1983        0.2759         -0.1981          .    0.0776
+nodegree          0.7155        0.6121          0.2275          .    0.1034
+re74           2710.0046     2768.0725         -0.0119     1.5371    0.0512
+re75           1944.4850     1931.8969          0.0039     1.6501    0.0422
+           eCDF Max Std. Pair Dist.
+distance     0.2672          0.1956
+age          0.2672          1.4579
+educ         0.1034          1.1148
+raceblack    0.0172          0.0948
+racehispan   0.0086          0.4739
+racewhite    0.0086          0.3200
+married      0.0776          0.6823
+nodegree     0.1034          0.8343
+re74         0.2672          0.7508
+re75         0.1552          0.8402
+
+Sample Sizes:
+          Control Treated
+All           429     185
+Matched       116     116
+Unmatched     313      69
+Discarded       0       0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize overlap</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m.out, <span class="at">type =</span> <span class="st">"jitter"</span>, <span class="at">interactive =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="matching_psm_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract matched data</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>matched_data <span class="ot">&lt;-</span> <span class="fu">match.data</span>(m.out)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate treatment effect</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sandwich)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(re78 <span class="sc">~</span> treat <span class="sc">+</span> age <span class="sc">+</span> educ <span class="sc">+</span> race <span class="sc">+</span> married <span class="sc">+</span> nodegree <span class="sc">+</span> re74 <span class="sc">+</span> re75,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> matched_data, <span class="co"># Data already has matches</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">weights =</span> weights <span class="co"># Re-weights for PSM</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Robust standard errors</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fit, <span class="at">vcov =</span> vcovCL, <span class="at">cluster =</span> <span class="sc">~</span>subclass)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+               Estimate  Std. Error t value Pr(&gt;|t|)  
+(Intercept) -2.3293e+03  3.8256e+03 -0.6089  0.54323  
+treat        1.8873e+03  9.0485e+02  2.0857  0.03815 *
+age         -2.5187e+00  5.0885e+01 -0.0495  0.96057  
+educ         5.3057e+02  2.4030e+02  2.2079  0.02827 *
+racehispan  -3.7369e+02  1.5291e+03 -0.2444  0.80716  
+racewhite    6.1285e+02  1.1210e+03  0.5467  0.58515  
+married      5.9076e+02  1.2424e+03  0.4755  0.63489  
+nodegree     1.6133e+03  1.3913e+03  1.1595  0.24748  
+re74         8.0925e-02  1.9583e-01  0.4132  0.67983  
+re75         1.4340e-01  1.9686e-01  0.7284  0.46711  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
 </div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> causalinference <span class="im">import</span> CausalModel</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> data[<span class="st">'outcome'</span>].values</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> data[<span class="st">'treat'</span>].values  </span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> data[[<span class="st">'age'</span>, <span class="st">'educ'</span>, <span class="st">'married'</span>, <span class="st">'re74'</span>, <span class="st">'re75'</span>]].values</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit model</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>causal <span class="op">=</span> CausalModel(Y, D, X)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate propensity scores</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>causal.est_propensity_s()</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Match with caliper</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>causal.est_via_matching(matches<span class="op">=</span><span class="dv">1</span>, bias_adj<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Results</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(causal.estimates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> causalinference <span class="im">import</span> CausalModel</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.read_csv(<span class="st">'lalonde.csv'</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> data[<span class="st">'re78'</span>].values</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> data[<span class="st">'treat'</span>].values  </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> data[[<span class="st">'age'</span>, <span class="st">'educ'</span>, <span class="st">'race'</span>, <span class="st">'married'</span>,<span class="st">'nodegree'</span>, <span class="st">'re74'</span>, <span class="st">'re75'</span>]].values</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit model</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>causal <span class="op">=</span> CausalModel(Y, D, X)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate propensity scores</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>causal.est_propensity_s()</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Match with caliper</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>causal.est_via_matching(matches <span class="op">=</span> <span class="dv">1</span>, bias_adj <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Results</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(causal.estimates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>* Estimate propensity <span class="kw">score</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">logit</span> treat age educ <span class="bn">black</span> hispanic married nodegree re74 re75</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>* Predict propensity scores</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> pscore, pr</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>* Nearest neighbor matching with caliper</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>psmatch2 treat, pscore(pscore) outcome(re78) caliper(0.25) ate</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>* Check balance</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>pstest age educ <span class="bn">black</span> hispanic married nodegree re74 re75, <span class="co">///</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>       treated(treat) pscore(pscore)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>* Load <span class="kw">data</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>import delimited <span class="st">"lalonde.csv"</span>, <span class="kw">clear</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>* Estimate propensity <span class="kw">score</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">logit</span> treat age educ race married nodegree re74 re75</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>* Predict propensity scores</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> pscore, pr</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>* Nearest neighbor matching with caliper</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>psmatch2 treat, pscore(pscore) outcome(re78) caliper(0.25) ate</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>* Check balance</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>pstest age educ race married nodegree re74 re75, <span class="co">///</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    treated(treat) pscore(pscore)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
 </div>
 </section>
 </section>
-<section id="why-psm-is-no-longer-recommended" class="level1">
-<h1>Why PSM Is No Longer Recommended</h1>
+<section id="critiques-of-psm" class="level1">
+<h1>Critiques of PSM</h1>
 <p>Despite its intuitive appeal, <span class="citation" data-cites="king2019propensity">King and Nielsen (<a href="#ref-king2019propensity" role="doc-biblioref">2019</a>)</span> show that propensity score matching often <strong>fails to achieve adequate covariate balance</strong> and can even <strong>increase imbalance</strong> compared to simpler methods.</p>
-<section id="key-problems" class="level2">
-<h2 class="anchored" data-anchor-id="key-problems">Key Problems</h2>
+<p><strong>Key Problems:</strong></p>
 <ol type="1">
 <li><strong>Paradox of PSM:</strong> Equal propensity scores do not guarantee similar covariates</li>
 </ol>
@@ -522,24 +731,21 @@ X_i = X_j \Rightarrow e(X_i) = e(X_j)
 <li><p><strong>Inefficiency:</strong> Discarding unmatched units reduces sample size unnecessarily</p></li>
 <li><p><strong>Approximation stochasticity:</strong> The quality of matches varies randomly based on the specific sample</p></li>
 </ol>
-</section>
-<section id="better-alternatives" class="level2">
-<h2 class="anchored" data-anchor-id="better-alternatives">Better Alternatives</h2>
+<section id="potential-better-alternatives" class="level2">
+<h2 class="anchored" data-anchor-id="potential-better-alternatives">Potential Better Alternatives</h2>
 <ul>
 <li><strong>Covariate matching</strong> (Mahalanobis distance, CEM)</li>
-<li><strong>Inverse probability weighting</strong> (IPTW)</li>
+<li><strong>Inverse probability weighting</strong> (IPW)</li>
 <li><strong>Doubly robust estimators</strong></li>
 <li><strong>Entropy balancing</strong></li>
 </ul>
+<!-- 
+## When PSM May Still Be Useful
+
+- **Diagnostic tool** for assessing overlap
+- **Combined with other methods** (e.g., within propensity score strata, use Mahalanobis matching)
+- **Sensitivity analysis** -->
 </section>
-</section>
-<section id="when-psm-may-still-be-useful" class="level1">
-<h1>When PSM May Still Be Useful</h1>
-<ul>
-<li><strong>Diagnostic tool</strong> for assessing overlap</li>
-<li><strong>Combined with other methods</strong> (e.g., within propensity score strata, use Mahalanobis matching)</li>
-<li><strong>Sensitivity analysis</strong></li>
-</ul>
 </section>
 <section id="common-pitfalls" class="level1">
 <h1>Common Pitfalls</h1>
@@ -556,14 +762,20 @@ X_i = X_j \Rightarrow e(X_i) = e(X_j)
 <ol type="1">
 <li>Specify covariates based on domain knowledge (include all confounders)</li>
 <li>Estimate propensity scores</li>
-<li><strong>Check overlap</strong> (common support)</li>
+<li>Check overlap (common support)</li>
 <li>Perform matching</li>
-<li><strong>Assess balance</strong> (standardized mean differences, variance ratios)</li>
+<li>Assess balance (standardized mean differences, variance ratios)</li>
 <li>If imbalance remains: refine model or try different matching method</li>
 <li>Estimate treatment effect on matched sample</li>
-<li><strong>Sensitivity analysis</strong> for hidden bias</li>
+<li>Sensitivity analysis for potential hidden bias</li>
 </ol>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-dehejia1999causal" class="csl-entry" role="listitem">
+Dehejia, Rajeev, and Sadek Wahba. 1999. <span>“Causal Effects in Nonexperimental Studies: Reevaluating the Evaluation of Training Programs.”</span> <em>Journal of the American Statistical Association</em> 94: 1053–62.
+</div>
 <div id="ref-king2019propensity" class="csl-entry" role="listitem">
 King, Gary, and Richard Nielsen. 2019. <span>“Why Propensity Scores Should Not Be Used for Matching.”</span> <em>Political Analysis</em> 27 (4): 435–54. <a href="https://doi.org/10.1017/pan.2019.11">https://doi.org/10.1017/pan.2019.11</a>.
 </div>

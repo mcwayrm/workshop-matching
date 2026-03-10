@@ -162,7 +162,7 @@ for covariate profiles $x$ used in estimation. In practice, this fails quickly w
 
 As dimensionality grows, exact profile matches become rare (the "curse of dimensionality"[^1]), which can lead to substantial sample loss and limit external validity even if internal validity is improved.
 
-[^1] The curse of dimensionality is a phenomena that arise when analyzing high-dimensional data, where the volume of the space increases exponentially with dimensions, causing data to become sparse and, in turn, making distance-based models struggle to generalize.
+[^1]: The curse of dimensionality is a phenomena that arise when analyzing high-dimensional data, where the volume of the space increases exponentially with dimensions, causing data to become sparse and, in turn, making distance-based models struggle to generalize.
 
 
 Exact matching works best when matching on a small set of key, coarsened, or categorical covariates. When overlap is weak, researchers typically move to near-exact approaches (for example, calipers, Mahalanobis distance, or propensity score methods) to preserve more observations while still improving balance.
@@ -251,7 +251,7 @@ $$
 - Matching naturally enforces common support by discarding units outside the region of overlap
 - This "pruning" improves internal validity but may reduce external validity
 
-![](./assets/images/common_support.png.png)
+![](./assets/images/common_support.png)
 
 ### 3. Stable Unit Treatment Value Assumption (SUTVA)
 
@@ -283,8 +283,7 @@ When unobserved confounders exist, sensitivity analyses help assess how strong u
 - **Coefficient stability tests** (assess impact of additional controls)
 
 
-
-
+# References
 
 ::: {#refs}
 :::

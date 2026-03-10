@@ -24,6 +24,7 @@ ul.task-list li input[type="checkbox"] {
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -56,7 +57,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-b18a7f4b6f3202b6080e6fe89b64549f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-4bfece9002f65aa168ea8461ef0c0dc7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -116,8 +117,11 @@ window.Quarto = {
 </script>
 
 <meta property="og:title" content="Distance Measures – Matching Methods">
-<meta property="og:description" content="How to Determine Matching?">
+<meta property="og:description" content="How to Determine the Best Matches?">
+<meta property="og:image" content="https://mcwayrm.github.io/matching_methods/assets/images/caliper_size.png">
 <meta property="og:site_name" content="Matching Methods">
+<meta property="og:image:height" content="1180">
+<meta property="og:image:width" content="2060">
 </head>
 
 <body class="nav-sidebar docked">
@@ -236,12 +240,6 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./practice.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Practice</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./application_psp.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">The PSP Program</span></a>
   </div>
@@ -264,37 +262,20 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#variable-selection-guidelines" id="toc-variable-selection-guidelines" class="nav-link active" data-scroll-target="#variable-selection-guidelines">Variable Selection Guidelines</a></li>
-  <li><a href="#exact-matching" id="toc-exact-matching" class="nav-link" data-scroll-target="#exact-matching">Exact Matching</a>
-  <ul class="collapse">
-  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
-  <li><a href="#when-it-works" id="toc-when-it-works" class="nav-link" data-scroll-target="#when-it-works">When It Works</a></li>
-  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
-  </ul></li>
+  <li><a href="#covariate-selection" id="toc-covariate-selection" class="nav-link active" data-scroll-target="#covariate-selection">Covariate Selection</a></li>
+  <li><a href="#coarsened-exact-matching" id="toc-coarsened-exact-matching" class="nav-link" data-scroll-target="#coarsened-exact-matching">Coarsened Exact Matching</a></li>
+  <li><a href="#euclidean-distance" id="toc-euclidean-distance" class="nav-link" data-scroll-target="#euclidean-distance">Euclidean Distance</a></li>
   <li><a href="#mahalanobis-distance" id="toc-mahalanobis-distance" class="nav-link" data-scroll-target="#mahalanobis-distance">Mahalanobis Distance</a>
   <ul class="collapse">
-  <li><a href="#definition-1" id="toc-definition-1" class="nav-link" data-scroll-target="#definition-1">Definition</a></li>
   <li><a href="#which-covariance-matrix" id="toc-which-covariance-matrix" class="nav-link" data-scroll-target="#which-covariance-matrix">Which Covariance Matrix?</a></li>
-  <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">Properties</a></li>
-  <li><a href="#advantages" id="toc-advantages" class="nav-link" data-scroll-target="#advantages">Advantages</a></li>
-  <li><a href="#limitations-1" id="toc-limitations-1" class="nav-link" data-scroll-target="#limitations-1">Limitations</a></li>
   </ul></li>
   <li><a href="#propensity-score-distance" id="toc-propensity-score-distance" class="nav-link" data-scroll-target="#propensity-score-distance">Propensity Score Distance</a>
   <ul class="collapse">
-  <li><a href="#definition-2" id="toc-definition-2" class="nav-link" data-scroll-target="#definition-2">Definition</a></li>
-  <li><a href="#the-balancing-property" id="toc-the-balancing-property" class="nav-link" data-scroll-target="#the-balancing-property">The Balancing Property</a></li>
-  <li><a href="#estimation" id="toc-estimation" class="nav-link" data-scroll-target="#estimation">Estimation</a>
-  <ul class="collapse">
-  <li><a href="#logistic-regression" id="toc-logistic-regression" class="nav-link" data-scroll-target="#logistic-regression">Logistic Regression</a></li>
-  <li><a href="#machine-learning-methods" id="toc-machine-learning-methods" class="nav-link" data-scroll-target="#machine-learning-methods">Machine Learning Methods</a></li>
+  <li><a href="#estimation" id="toc-estimation" class="nav-link" data-scroll-target="#estimation">Estimation</a></li>
   </ul></li>
-  </ul></li>
-  <li><a href="#logit-propensity-score-distance" id="toc-logit-propensity-score-distance" class="nav-link" data-scroll-target="#logit-propensity-score-distance">Logit Propensity Score Distance</a>
-  <ul class="collapse">
-  <li><a href="#definition-3" id="toc-definition-3" class="nav-link" data-scroll-target="#definition-3">Definition</a></li>
-  <li><a href="#why-use-logit-scale" id="toc-why-use-logit-scale" class="nav-link" data-scroll-target="#why-use-logit-scale">Why Use Logit Scale?</a></li>
-  </ul></li>
+  <li><a href="#logit-propensity-score-distance" id="toc-logit-propensity-score-distance" class="nav-link" data-scroll-target="#logit-propensity-score-distance">Logit Propensity Score Distance</a></li>
   <li><a href="#comparison-of-distance-measures" id="toc-comparison-of-distance-measures" class="nav-link" data-scroll-target="#comparison-of-distance-measures">Comparison of Distance Measures</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
     </div>
@@ -304,7 +285,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title d-none d-lg-block">Distance Measures</h1>
-<p class="subtitle lead">How to Determine Matching?</p>
+<p class="subtitle lead">How to Determine the Best Matches?</p>
 </div>
 
 
@@ -321,9 +302,10 @@ window.Quarto = {
 </header>
 
 
-<p>Defining “closeness” between units is the foundation of matching. The choice of distance metric determines which treated and control units are considered similar enough to compare.</p>
-<section id="variable-selection-guidelines" class="level1">
-<h1>Variable Selection Guidelines</h1>
+<p>How do we define “closeness” between observaitons is the foundation of matching. The choice of distance metric determines which treated and control units are considered similar enough to compare. This leads to the sample selection to estimate causal effects across treatment assignment.</p>
+<p>For the following distance measures, recognize that the best design are those that best represent perfect stratificaiton of treatment assignment on observable characteristics (and by assumption unobservable characteristics).</p>
+<section id="covariate-selection" class="level1">
+<h1>Covariate Selection</h1>
 <p>Before selecting a distance measure, determine which covariates to include:</p>
 <p><strong>Include:</strong></p>
 <ul>
@@ -337,11 +319,11 @@ window.Quarto = {
 <li>Variables affected by treatment</li>
 <li>Pure instrumental variables (increases variance without reducing bias)</li>
 </ul>
+<p>Selecting on these covariates will be determined by a matching algorithim commonly referred to as a matching method. For each of the subsequent matching methods, you can determine the degree of tolerance between matching across treatment and control units. The diagram visually show how this varies by the caliper size (viz., degree of tolerance). Caliper size has a tradeoff. The smaller the caliper, the closer the match. But larger the caliper, the larger the selection of controls.</p>
+<p><img src="./assets/images/caliper_size.png" class="img-fluid"></p>
 </section>
-<section id="exact-matching" class="level1">
-<h1>Exact Matching</h1>
-<section id="definition" class="level2">
-<h2 class="anchored" data-anchor-id="definition">Definition</h2>
+<section id="coarsened-exact-matching" class="level1">
+<h1>Coarsened Exact Matching</h1>
 <p>Two units match exactly if all their covariate values are identical:</p>
 <p><span class="math display">\[
 D_{ij} = \begin{cases}
@@ -349,34 +331,63 @@ D_{ij} = \begin{cases}
 \infty &amp; \text{if } X_i \neq X_j
 \end{cases}
 \]</span></p>
-</section>
-<section id="when-it-works" class="level2">
-<h2 class="anchored" data-anchor-id="when-it-works">When It Works</h2>
+<p><strong>When It Works:</strong></p>
 <ul>
-<li><strong>Few discrete covariates</strong> (e.g., race, gender, region)</li>
+<li><strong>Few, discrete covariates</strong> (e.g., race, gender, region)</li>
 <li><strong>Large sample</strong> with sufficient overlap</li>
 <li><strong>All covariates categorical</strong> or can be meaningfully discretized</li>
 </ul>
-</section>
-<section id="limitations" class="level2">
-<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
+<p><strong>Limitations:</strong></p>
 <ul>
 <li><strong>Curse of dimensionality</strong>: With <span class="math inline">\(p\)</span> covariates each having <span class="math inline">\(k\)</span> levels, there are <span class="math inline">\(k^p\)</span> possible cells</li>
 <li><strong>Sparsity</strong>: Many cells will be empty or have only treated or only control units</li>
 <li><strong>Inefficiency</strong>: Discards many observations</li>
 </ul>
 </section>
+<section id="euclidean-distance" class="level1">
+<h1>Euclidean Distance</h1>
+<p>The Euclidean distance is the straight-line distance between two observations in covariate space:</p>
+<p><span class="math display">\[
+D_{E}(X_i, X_j) = \sqrt{\sum_{k=1}^{p} (X_{ik} - X_{jk})^2}
+\]</span></p>
+<p>where <span class="math inline">\(p\)</span> is the number of covariates and <span class="math inline">\(X_{ik}\)</span> is the <span class="math inline">\(k\)</span>-th covariate for observation <span class="math inline">\(i\)</span>.</p>
+<p><img src=".\assets/images/euclidean_distance.png" class="img-fluid"></p>
+<p><strong>When It Works:</strong></p>
+<ul>
+<li><strong>Few covariates</strong> (<span class="math inline">\(p &lt; 10\)</span>) with continuous measures</li>
+<li><strong>Variables on similar scales</strong> (or after standardization: <span class="math inline">\(X_k' = \frac{X_k - \bar{X}_k}{SD(X_k)}\)</span>)</li>
+<li><strong>Straight-line distance intuitive</strong> in problem context</li>
+<li><strong>Computational simplicity</strong> desired (fast to compute)</li>
+</ul>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li><strong>Interpretable</strong>: Direct distance measurement in original covariate space</li>
+<li><strong>Computationally efficient</strong>: Simple calculation, scales well with sample size</li>
+<li><strong>Geometric intuition</strong>: Natural interpretation as physical distance</li>
+<li><strong>No model required</strong>: Unlike propensity scores, requires no estimation step</li>
+</ul>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li><strong>Scale-dependent</strong>: Without standardization, covariates with large ranges dominate (e.g., income overwhelms age)</li>
+<li><strong>Ignores correlations</strong>: Does not account for relationships among covariates</li>
+<li><strong>Curse of dimensionality</strong>: Distance becomes uninformative with many covariates—all points appear roughly equidistant in high dimensions</li>
+<li><strong>Not statistically weighted</strong>: Treats all covariates equally regardless of predictive importance</li>
+</ul>
+<p><strong>Standardized Euclidean Distance:</strong></p>
+<p>To address the scale issue, standardize each covariate first:</p>
+<p><span class="math display">\[
+D_{SE}(X_i, X_j) = \sqrt{\sum_{k=1}^{p} \left(\frac{X_{ik} - X_{jk}}{SD(X_k)}\right)^2}
+\]</span></p>
+<p>This is equivalent to the L2 norm in normalized space and is more suitable for matching when covariates have different units.</p>
 </section>
 <section id="mahalanobis-distance" class="level1">
 <h1>Mahalanobis Distance</h1>
-<section id="definition-1" class="level2">
-<h2 class="anchored" data-anchor-id="definition-1">Definition</h2>
 <p>The Mahalanobis distance accounts for scale and correlation among covariates:</p>
 <p><span class="math display">\[
 D_{M}(X_i, X_j) = \sqrt{(X_i - X_j)^\top \Sigma^{-1} (X_i - X_j)}
 \]</span></p>
 <p>where <span class="math inline">\(\Sigma\)</span> is the covariance matrix of <span class="math inline">\(X\)</span>.</p>
-</section>
+<p><img src=".\assets/images/mahalanobis_matching.png" class="img-fluid"></p>
 <section id="which-covariance-matrix" class="level2">
 <h2 class="anchored" data-anchor-id="which-covariance-matrix">Which Covariance Matrix?</h2>
 <p><strong>For ATT (Average Treatment Effect on the Treated):</strong></p>
@@ -387,27 +398,20 @@ D_{M}(X_i, X_j) = \sqrt{(X_i - X_j)^\top \Sigma^{-1} (X_i - X_j)}
 <p><strong>For ATE (Average Treatment Effect):</strong></p>
 <p><span class="math display">\[
 \Sigma = \text{Cov}(X | T = 0, T = 1)
-\]</span></p>
-<p>Use <strong>pooled</strong> covariance from treated and control groups.</p>
-</section>
-<section id="properties" class="level2">
-<h2 class="anchored" data-anchor-id="properties">Properties</h2>
+\]</span> Use <strong>pooled</strong> covariance from treated and control groups.</p>
+<p><strong>Properties:</strong></p>
 <ol type="1">
 <li><strong>Scale-invariant</strong>: Variables in different units (age in years, income in dollars) are comparable</li>
 <li><strong>Correlation-adjusted</strong>: Accounts for relationships among covariates</li>
 <li><strong>Geometric interpretation</strong>: Measures statistical distance in standardized space</li>
 </ol>
-</section>
-<section id="advantages" class="level2">
-<h2 class="anchored" data-anchor-id="advantages">Advantages</h2>
+<p><strong>Advantages:</strong></p>
 <ul>
 <li>Works with <strong>continuous and categorical</strong> variables</li>
 <li><strong>Robust</strong> to adding irrelevant variables</li>
-<li>No parametric model required</li>
+<li>No parametric model required (i.e., do not need to assume distribution of errors)</li>
 </ul>
-</section>
-<section id="limitations-1" class="level2">
-<h2 class="anchored" data-anchor-id="limitations-1">Limitations</h2>
+<p><strong>Limitations:</strong></p>
 <ul>
 <li><strong>Assumes multivariate normality</strong> (implicitly)</li>
 <li><strong>Sensitive to dimensionality</strong>: Performance degrades with many covariates</li>
@@ -417,8 +421,6 @@ D_{M}(X_i, X_j) = \sqrt{(X_i - X_j)^\top \Sigma^{-1} (X_i - X_j)}
 </section>
 <section id="propensity-score-distance" class="level1">
 <h1>Propensity Score Distance</h1>
-<section id="definition-2" class="level2">
-<h2 class="anchored" data-anchor-id="definition-2">Definition</h2>
 <p>The <strong>propensity score</strong> is the conditional probability of treatment:</p>
 <p><span class="math display">\[
 e(X) = P(T = 1 | X)
@@ -427,39 +429,33 @@ e(X) = P(T = 1 | X)
 <p><span class="math display">\[
 D_{PS}(X_i, X_j) = |e(X_i) - e(X_j)|
 \]</span></p>
-</section>
-<section id="the-balancing-property" class="level2">
-<h2 class="anchored" data-anchor-id="the-balancing-property">The Balancing Property</h2>
-<p><strong>Rosenbaum &amp; Rubin (1983)</strong> proved that conditioning on <span class="math inline">\(e(X)\)</span> is equivalent to conditioning on <span class="math inline">\(X\)</span>:</p>
+<p><strong>The Balancing Property:</strong></p>
+<p><span class="citation" data-cites="rosenbaum1983central">Rosenbaum and Rubin (<a href="#ref-rosenbaum1983central" role="doc-biblioref">1983</a>)</span> proved that conditioning on <span class="math inline">\(e(X)\)</span> is equivalent to conditioning on <span class="math inline">\(X\)</span>:</p>
 <p><span class="math display">\[
 X \perp T | e(X)
 \]</span></p>
-<p>This means: <strong>At each propensity score value, the distribution of <span class="math inline">\(X\)</span> is the same in treated and control groups</strong>.</p>
-</section>
+<p>This means at each propensity score value, the distribution of <span class="math inline">\(X\)</span> is the same in treated and control groups.</p>
+<p><img src=".\assets/images/propensity_score.jpg" class="img-fluid"></p>
 <section id="estimation" class="level2">
 <h2 class="anchored" data-anchor-id="estimation">Estimation</h2>
-<section id="logistic-regression" class="level3">
-<h3 class="anchored" data-anchor-id="logistic-regression">Logistic Regression</h3>
+<p><strong>Logistic Regression:</strong></p>
+<p>Most commonly this is estimated using a logit:</p>
 <p><span class="math display">\[
 \log \left( \frac{e(X)}{1 - e(X)} \right) = X^\top \beta
 \]</span></p>
-</section>
-<section id="machine-learning-methods" class="level3">
-<h3 class="anchored" data-anchor-id="machine-learning-methods">Machine Learning Methods</h3>
+<p><strong>Machine Learning Methods:</strong></p>
+<p>But there is increasing use a machine learning techniques to estimate the propensity score. Machine learning is a useful applicaiton in this setting as we would like to condense a large variation of information into a single predictive score. Machine learning techniquese are extreme useful at predicting outcomes using a large set of information (e.g., big data).</p>
 <ul>
-<li>Generalized Boosted Models (GBM)</li>
-<li>Random Forests</li>
-<li>LASSO regularization</li>
-<li>Neural networks</li>
+<li><strong>LASSO Regularization</strong>: Applies <span class="math inline">\(L1\)</span> penalty to linear models to perform automatic variable selection, shrinking coefficients of irrelevant predictors to zero while estimating treatment probabilities with reduced dimensionality.</li>
+<li><strong>Generalized Boosted Models (GBM)</strong>: Iteratively builds an ensemble of weak learners (typically trees) to minimize prediction error, effectively capturing nonlinear relationships and interactions in treatment assignment.</li>
+<li><strong>Random Forests</strong>: Aggregates predictions from multiple decision trees trained on random subsets of data and features, providing robust propensity score estimation with built-in feature importance measures.</li>
+<li><strong>Neural Networks</strong>: Uses interconnected layers of nonlinear activation functions to learn complex, high-dimensional relationships between covariates and treatment assignment, particularly useful with large covariate sets.</li>
 </ul>
-</section>
 </section>
 </section>
 <section id="logit-propensity-score-distance" class="level1">
 <h1>Logit Propensity Score Distance</h1>
-<section id="definition-3" class="level2">
-<h2 class="anchored" data-anchor-id="definition-3">Definition</h2>
-<p>Transform propensity scores to logit scale:</p>
+<p>As an alternative to a propensity score, you may transform propensity scores to logit scale:</p>
 <p><span class="math display">\[
 D_{\text{logit}}(X_i, X_j) = |\text{logit}(e(X_i)) - \text{logit}(e(X_j))|
 \]</span></p>
@@ -467,15 +463,12 @@ D_{\text{logit}}(X_i, X_j) = |\text{logit}(e(X_i)) - \text{logit}(e(X_j))|
 <p><span class="math display">\[
 \text{logit}(e) = \log \left( \frac{e}{1 - e} \right)
 \]</span></p>
-</section>
-<section id="why-use-logit-scale" class="level2">
-<h2 class="anchored" data-anchor-id="why-use-logit-scale">Why Use Logit Scale?</h2>
+<p><strong>Why Use Logit Scale?</strong></p>
 <ol type="1">
 <li><strong>Unbounded</strong>: Maps <span class="math inline">\((0, 1) \rightarrow (-\infty, \infty)\)</span></li>
 <li><strong>More stable in tails</strong>: Small differences near 0 or 1 are magnified</li>
 <li><strong>Symmetric</strong>: Equal weighting to low and high propensity scores</li>
 </ol>
-</section>
 </section>
 <section id="comparison-of-distance-measures" class="level1">
 <h1>Comparison of Distance Measures</h1>
@@ -517,12 +510,17 @@ D_{\text{logit}}(X_i, X_j) = |\text{logit}(e(X_i)) - \text{logit}(e(X_j))|
 <td>Logit PS</td>
 <td><span class="math inline">\(\|\text{logit}(e(X_i)) - \text{logit}(e(X_j))\|\)</span></td>
 <td>Better tail behavior</td>
-<td>Still model-dependent</td>
+<td>Model-dependent</td>
 </tr>
 </tbody>
 </table>
-<div id="refs" role="list">
-
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-rosenbaum1983central" class="csl-entry" role="listitem">
+Rosenbaum, Paul R., and Donald B. Rubin. 1983. <span>“The Central Role of the Propensity Score in Observational Studies for Causal Effects.”</span> <em>Biometrika</em> 70 (1): 41–55. <a href="https://doi.org/10.1093/biomet/70.1.41">https://doi.org/10.1093/biomet/70.1.41</a>.
+</div>
 </div>
 
 

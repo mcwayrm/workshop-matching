@@ -100,7 +100,7 @@ This mirrors the paper's approach: machine-learning selection is used to discipl
 
 The candidate set includes baseline student-level variables (e.g., demographics, baseline score measures, social safety net status) and baseline school-level variables (e.g., school average test scores, region, average class size, student-teacher ratio), plus interactions as specified in the paper's high-dimensional design.
 
-# Practical Replication Workflow
+# Replication Workflow
 
 For readers reproducing the PSP approach:
 
@@ -124,6 +124,8 @@ The contribution of this design is not a single estimator, but a **design pipeli
 This makes the counterfactual more credible than either naive DiD without pairing or naive matching without time differencing.
 
 
+
+# References
 
 ::: {#refs}
 :::
