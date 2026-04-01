@@ -66,7 +66,7 @@ This workshop is organized into the following modules:
 
 This workshop was graciously recorded by the MEL J-PAL staff and is provided as a publicly available video to accompany the written materials. 
 
-*Video link to be added.*
+{{< video https://youtu.be/AVfvbAZgjJc >}}
 
 
 # References

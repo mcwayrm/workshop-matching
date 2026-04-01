@@ -261,8 +261,10 @@ print(causal.estimates)
 * Load data 
 import delimited "lalonde.csv", clear
 
+egen race1 = group(race)
+
 * Estimate propensity score
-logit treat age educ race married nodegree re74 re75
+logit treat age educ race1 married nodegree re74 re75
 
 * Predict propensity scores
 predict pscore, pr
@@ -271,7 +273,7 @@ predict pscore, pr
 psmatch2 treat, pscore(pscore) outcome(re78) caliper(0.25) ate
 
 * Check balance
-pstest age educ race married nodegree re74 re75, ///
+pstest age educ1 race married nodegree re74 re75, ///
     treated(treat) pscore(pscore)
 ```
 
